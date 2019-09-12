@@ -1,0 +1,41 @@
+{
+  "name": "setup-swift",
+  "version": "0.0.0",
+  "description": "Set up GitHub Actions workflow with Swift support",
+  "private": true,
+  "main": "lib/main.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fwal/setup-swift.git"
+  },
+  "keywords": [
+    "github",
+    "actions",
+    "swift",
+    "ci",
+    "swiftenv"
+  ],
+  "author": "Frederik Wallner",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fwal/setup-swift/issues"
+  },
+  "homepage": "https://github.com/fwal/setup-swift#readme",
+  "dependencies": {
+    "@actions/core": "^1.1.0",
+    "@actions/exec": "^1.0.1",
+    "@actions/tool-cache": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.18",
+    "@types/node": "^12.7.4",
+    "jest": "^24.9.0",
+    "prettier": "^1.18.2",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.6.2"
+  }
+}

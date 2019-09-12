@@ -9,10 +9,10 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest]
-        swift: [4.2.4]
+        swift: [4.2.4, 5.0]
     steps:
     - uses: fwal/setup-swift@master
       with:
-        - swift-version: ${{ matrix.swift }}
+        swift-version: ${{ matrix.swift }}
     - name: Swift version
       run: swift --version

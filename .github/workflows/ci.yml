@@ -12,7 +12,7 @@ jobs:
         swift: [4.2.4, 5.0]
     steps:
     - uses: actions/checkout@master
-    - uses: ./
+    - uses: fwal/setup-swift@master
       with:
         swift-version: ${{ matrix.swift }}
     - name: Swift version

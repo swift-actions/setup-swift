@@ -2,8 +2,9 @@ name: Setup Swift environment
 description: Setup a Swift environment using swiftenv
 author: Frederik Wallner
 inputs:
-  swift-version: Swift version to configure
-    default: 5.0
+  swift-version: 
+    description: Swift version to configure
+    default: '5.0'
 runs:
   using: node12
   main: lib/main.js

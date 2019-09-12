@@ -4,6 +4,7 @@ author: Frederik Wallner
 inputs:
   swift-version: 
     description: Swift version to configure
+    required: true
     default: '5.0'
 runs:
   using: node12

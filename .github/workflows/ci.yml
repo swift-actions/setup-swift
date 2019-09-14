@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest]
-        swift: [4.2.4, 5.0]
+        swift: ["4.2.4", "5.0"]
     steps:
     - uses: actions/checkout@master
     - uses: fwal/setup-swift@master

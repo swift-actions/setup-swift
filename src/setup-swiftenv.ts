@@ -9,7 +9,7 @@ export async function setupSwiftenv(version: string) {
   let binPath = path.join(toolPath, '/bin' )
   core.addPath(binPath)
   
-  return binPath
+  return path.join(binPath, '/swiftenv' )
 }
 
 async function installSwiftenv(version: string) {

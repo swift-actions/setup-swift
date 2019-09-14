@@ -1,14 +1,15 @@
+import * as path from 'path'
 import * as core from '@actions/core'
 import * as toolCache from '@actions/tool-cache'
 
-export async function getSwiftenv(version: string) {
-  let toolPath = toolCache.find('swiftenv', version)
+export async function setupSwiftenv(version: string) {
+  let toolPath = toolCache.find('swiftenv', version) || await installSwiftenv(version)
 
-  if (!toolPath) {
-    return installSwiftenv(version)
-  }
+  core.exportVariable('SWIFTENV_ROOT', toolPath)
+  let binPath = path.join(toolPath, '/bin' )
+  core.addPath(binPath)
   
-  return toolPath
+  return binPath
 }
 
 async function installSwiftenv(version: string) {

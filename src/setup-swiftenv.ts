@@ -6,7 +6,7 @@ export async function setupSwiftenv(version: string) {
   let toolPath = toolCache.find('swiftenv', version) || await installSwiftenv(version)
 
   core.exportVariable('SWIFTENV_ROOT', toolPath)
-  let binPath = path.join(toolPath, '/bin' )
+  let binPath = path.join(toolPath, '/libexec' )
   core.addPath(binPath)
   
   return path.join(binPath, '/swiftenv' )

@@ -12,7 +12,8 @@ async function installSwift(version: string) {
 
   core.startGroup('Install swift')
   try {
-    await exec('ls', ['-las', '/opt/hostedtoolcache/swiftenv/1.4.0/x64/bin/'])
+    await exec('ls', ['-las', '/opt/hostedtoolcache/swiftenv/1.4.0/x64'])
+    await exec('ls', ['-las', '/opt/hostedtoolcache/swiftenv/1.4.0/x64/libexec'])
     await exec(`"${swiftenv}"`, ['install', version, '--verify'])
   } catch(error) {
     if (/already installed/.test(error)) {

@@ -16,7 +16,7 @@ async function installSwiftenv(version: string) {
   return await core.group('Install swifenv', async () => {
     let downloadPath = await toolCache.downloadTool('https://github.com/kylef/swiftenv/archive/' + version + '.tar.gz')
     let extractPath = await toolCache.extractTar(downloadPath)
-    let cachedPath = await toolCache.cacheDir(extractPath, 'swiftenv', version)
+    let cachedPath = await toolCache.cacheDir(path.join(extractPath, `swiftenv-${version}`), 'swiftenv', version)
     return cachedPath
   })
 }

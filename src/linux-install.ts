@@ -30,7 +30,7 @@ export async function install(version: string) {
 async function download(version: string, ubuntuVersion: string) {
   let versionUpperCased = version.toUpperCase()
   let ubuntuVersionString = ubuntuVersion.replace(/\D/g, "")
-  let url = `https://swift.org/builds/swift-${version}/ubuntu${ubuntuVersionString}/swift-${versionUpperCased}/swift-${versionUpperCased}-ubuntu${ubuntuVersion}.tar.gz`
+  let url = `https://swift.org/builds/swift-${version}/ubuntu${ubuntuVersionString}/swift-${versionUpperCased}-RELEASE/swift-${versionUpperCased}-RELEASE-ubuntu${ubuntuVersion}.tar.gz`
 
   return await Promise.all([
     toolCache.downloadTool(url),

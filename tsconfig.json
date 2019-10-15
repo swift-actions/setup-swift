@@ -6,7 +6,8 @@
     "rootDir": "./src",
     "strict": true,
     "noImplicitAny": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "lib": ["es2019"]
   },
-  "exclude": ["node_modules", "**/*.test.js"]
+  "exclude": ["node_modules", "**/*.test.ts"]
 }

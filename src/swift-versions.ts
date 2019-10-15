@@ -1,6 +1,8 @@
 import * as semver from 'semver' 
 
 const AVAILABLE_VERSIONS = [
+    '5.1.1',
+    '5.1',
     '5.0.3',
     '5.0.2',
     '5.0.1',

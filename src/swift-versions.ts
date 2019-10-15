@@ -1,4 +1,5 @@
 import * as semver from 'semver' 
+import * as core from '@actions/core'
 
 const AVAILABLE_VERSIONS = [
     '5.1.1',
@@ -38,10 +39,14 @@ export function verify(version: string) {
     throw new Error('Version must be a valid semver format.')
   }
 
+  core.debug(`Resolved range ${range}`)
+
   let matchingVersion = evaluateVersions(AVAILABLE_VERSIONS, version)
   if (matchingVersion === null) {
     throw new Error(`Version "${version}" is not available`)
   }
+
+  core.debug(`Found matching version ${matchingVersion}`)
 
   return matchingVersion
 }

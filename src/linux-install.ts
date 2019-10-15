@@ -55,7 +55,8 @@ async function unpack(packagePath: string, version: string) {
 
 async function setupKeys() {
   core.debug('Fetching verification keys')
-  await exec('wget -q -O - https://swift.org/keys/all-keys.asc | gpg --import -')
+  let path = await toolCache.downloadTool('https://swift.org/keys/all-keys.asc')
+  await exec(`gpg --import "${path}"`)
   await exec('gpg --keyserver hkp://pool.sks-keyservers.net --refresh-keys Swift')
 }
 

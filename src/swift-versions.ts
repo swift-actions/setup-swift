@@ -24,11 +24,15 @@ const AVAILABLE_VERSIONS = [
     '3.0',
     '2.2.1',
     '2.2'
-]
+].map(semver.coerce).filter(notEmpty)
 
-export function  verify(version: string) {
+function notEmpty<T>(value: T | null | undefined): value is T {
+  return value !== null && value !== undefined;
+}
 
-  if (!semver.valid(version)) {
+export function verify(version: string) {
+  let range = semver.validRange(version)
+  if (range === null) {
     throw new Error('Version must be a valid semver format.')
   }
 
@@ -37,22 +41,12 @@ export function  verify(version: string) {
     throw new Error(`Version "${version}" is not available`)
   }
 
-  let semverVersion = semver.parse(matchingVersion)
-  if (semverVersion === null) {
-    throw new Error('Matched version is not a valid semver version.')
-  }
-
-  let [prerelease] = semverVersion.prerelease
-  if (!prerelease) {
-    semverVersion.prerelease = ['release']
-  }
-
   return matchingVersion
 }
 
 // TODO - should we just export this from @actions/tool-cache? Lifted directly from there
-function evaluateVersions(versions: string[], versionSpec: string): string {
-  let version = ''
+function evaluateVersions(versions: semver.SemVer[], versionSpec: string) {
+  let version = null
 
   versions = versions.sort((a, b) => {
     if (semver.gt(a, b)) {
@@ -62,7 +56,7 @@ function evaluateVersions(versions: string[], versionSpec: string): string {
   })
 
   for (let i = versions.length - 1; i >= 0; i--) {
-    const potential: string = versions[i]
+    const potential = versions[i]
     const satisfied: boolean = semver.satisfies(potential, versionSpec)
     if (satisfied) {
       version = potential
@@ -70,5 +64,9 @@ function evaluateVersions(versions: string[], versionSpec: string): string {
     }
   }
 
-  return version
+  if (version === null) {
+    return null
+  }
+
+  return `${version.major}.${version.minor}${version.patch > 0 ? `.${version.patch}` : ''}`
 }

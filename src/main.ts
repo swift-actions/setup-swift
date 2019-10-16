@@ -13,7 +13,7 @@ async function run() {
       await linux.install(version, platform)
       break
     default:
-      core.setFailed(`${platform} is not supported`)
+      core.setFailed(`${platform.name} is not supported`)
       return
   }
 }

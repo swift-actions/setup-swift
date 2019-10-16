@@ -8,12 +8,12 @@ async function run() {
   let os = core.getInput('os', { required: true })
 
   let platform = system.getSystem(os)
-  switch (platform.name) {
+  switch (platform.os) {
     case system.OS.Ubuntu:
       await linux.install(version, platform)
       break
     default:
-      core.setFailed(`${platform.name} is not supported`)
+      core.setFailed(`${os} is not supported`)
       return
   }
 }

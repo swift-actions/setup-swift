@@ -23,10 +23,13 @@ export async function install(version: string, system: System) {
     ])
 
     await verify(signature, pkg)
-    swiftPath = await unpack(pkg, version)
+
+    swiftPath = await unpack(pkg, version, system)
   } else {
     core.debug('Matching installation found')
   }
+
+  core.debug('Adding swift to path')
 
   let binPath = path.join(swiftPath, '/usr/bin' )
   core.addPath(binPath)
@@ -47,11 +50,12 @@ async function download(version: string, ubuntuVersion: string) {
   ])
 }
 
-async function unpack(packagePath: string, version: string) {
+async function unpack(packagePath: string, version: string, system: System) {
   core.debug('Extracting package')
   let extractPath = await toolCache.extractTar(packagePath)
-  let basename = path.basename(packagePath, '.tar.gz')
-  let cachedPath = await toolCache.cacheDir(path.join(extractPath, basename), 'swift-linux', version)
+  core.debug('Package extracted')
+  let cachedPath = await toolCache.cacheDir(extractPath, `swift-${system.name}`, version)
+  core.debug('Package cached')
   return cachedPath
 }
 

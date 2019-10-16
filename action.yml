@@ -5,7 +5,10 @@ inputs:
   swift-version: 
     description: Swift version to configure
     required: true
-    default: '5.0'
+    default: '5.1'
+  os:
+    description: Operating system and version
+    required: true
 runs:
   using: node12
   main: lib/main.js

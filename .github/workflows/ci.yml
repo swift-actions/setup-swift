@@ -15,5 +15,6 @@ jobs:
     - uses: fwal/setup-swift@master
       with:
         swift-version: ${{ matrix.swift }}
+        os: ${{ matrix.os }}
     - name: Swift version
       run: swift --version

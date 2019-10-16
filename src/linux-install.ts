@@ -17,10 +17,9 @@ export async function install(version: string, system: System) {
   if (swiftPath === null || swiftPath.trim().length == 0) {
     core.debug(`No matching installation found`)
 
-    let [[pkg, signature], _] = await Promise.all([
-      download(version, system.version),
-      setupKeys()
-    ])
+    await setupKeys()
+
+    let { pkg, signature } = await download(version, system.version)
 
     await verify(signature, pkg)
 
@@ -44,10 +43,13 @@ async function download(version: string, ubuntuVersion: string) {
   let ubuntuVersionString = ubuntuVersion.replace(/\D/g, "")
   let url = `https://swift.org/builds/swift-${version}-release/ubuntu${ubuntuVersionString}/swift-${versionUpperCased}-RELEASE/swift-${versionUpperCased}-RELEASE-ubuntu${ubuntuVersion}.tar.gz`
 
-  return await Promise.all([
+  let [pkg, signature] = await Promise.all([
     toolCache.downloadTool(url),
     toolCache.downloadTool(`${url}.sig`)
   ])
+
+  core.debug('Swift download complete')
+  return { pkg, signature }
 }
 
 async function unpack(packagePath: string, version: string, system: System) {
@@ -62,7 +64,9 @@ async function unpack(packagePath: string, version: string, system: System) {
 async function setupKeys() {
   core.debug('Fetching verification keys')
   let path = await toolCache.downloadTool('https://swift.org/keys/all-keys.asc')
+  core.debug('Importing verification keys')
   await exec(`gpg --import "${path}"`)
+  core.debug('Refreshing keys')
   await exec('gpg --keyserver hkp://pool.sks-keyservers.net --refresh-keys Swift')
 }
 

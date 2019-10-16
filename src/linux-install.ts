@@ -4,6 +4,7 @@ import { exec } from '@actions/exec'
 import * as core from '@actions/core'
 import * as toolCache from '@actions/tool-cache'
 import { System } from './os'
+import { sign } from 'crypto'
 
 export async function install(version: string, system: System) {
   if (os.platform() !== 'linux') {
@@ -21,7 +22,7 @@ export async function install(version: string, system: System) {
       setupKeys()
     ])
 
-    await verify(signature)
+    await verify(signature, pkg)
     swiftPath = await unpack(pkg, version)
   } else {
     core.debug('Matching installation found')
@@ -61,7 +62,7 @@ async function setupKeys() {
   await exec('gpg --keyserver hkp://pool.sks-keyservers.net --refresh-keys Swift')
 }
 
-async function verify(path: string) {
+async function verify(signaturePath: string, packagePath: string) {
   core.debug('Verifying signature')
-  await exec('gpg', ['--verify', path])
+  await exec('gpg', ['--verify', signaturePath, packagePath])
 }

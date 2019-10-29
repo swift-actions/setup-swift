@@ -32,7 +32,7 @@ export async function install(version: string, system: System) {
 
   let binPath = path.join(swiftPath, '/usr/bin')
   core.addPath(binPath)
-  await exec(`ls -las "${swiftPath}"`)
+  
   core.debug('Swift installed')
 }
 

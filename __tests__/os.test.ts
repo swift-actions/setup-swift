@@ -7,7 +7,6 @@ describe('os resolver', () => {
     expect(ubuntu.version).toBe('18.04')
     expect(ubuntu.name).toBe('ubuntu-18.04')
 
-
     let mac = os.getSystem('macOS-latest')
     expect(mac.os).toBe(os.OS.MacOS)
     expect(mac.version).toBe('latest')

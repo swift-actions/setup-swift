@@ -4,7 +4,6 @@ import { exec } from '@actions/exec'
 import * as core from '@actions/core'
 import * as toolCache from '@actions/tool-cache'
 import { System } from './os'
-import { sign } from 'crypto'
 
 export async function install(version: string, system: System) {
   if (os.platform() !== 'linux') {
@@ -32,7 +31,7 @@ export async function install(version: string, system: System) {
 
   let binPath = path.join(swiftPath, '/usr/bin')
   core.addPath(binPath)
-  
+
   core.debug('Swift installed')
 }
 

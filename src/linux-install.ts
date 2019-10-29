@@ -19,18 +19,18 @@ export async function install(version: string, system: System) {
 
     await setupKeys()
 
-    let { pkg, signature } = await download(version, system.version)
+    let { pkg, signature, name } = await download(version, system.version)
 
     await verify(signature, pkg)
 
-    swiftPath = await unpack(pkg, version, system)
+    swiftPath = await unpack(pkg, name, version, system)
   } else {
     core.debug('Matching installation found')
   }
 
   core.debug('Adding swift to path')
 
-  let binPath = path.join(swiftPath, '/usr/bin' )
+  let binPath = path.join(swiftPath, '/usr/bin')
   core.addPath(binPath)
   await exec(`ls -las "${swiftPath}"`)
   core.debug('Swift installed')
@@ -41,7 +41,8 @@ async function download(version: string, ubuntuVersion: string) {
 
   let versionUpperCased = version.toUpperCase()
   let ubuntuVersionString = ubuntuVersion.replace(/\D/g, "")
-  let url = `https://swift.org/builds/swift-${version}-release/ubuntu${ubuntuVersionString}/swift-${versionUpperCased}-RELEASE/swift-${versionUpperCased}-RELEASE-ubuntu${ubuntuVersion}.tar.gz`
+  let name = `swift-${versionUpperCased}-RELEASE-ubuntu${ubuntuVersion}`
+  let url = `https://swift.org/builds/swift-${version}-release/ubuntu${ubuntuVersionString}/swift-${versionUpperCased}-RELEASE/${name}.tar.gz`
 
   let [pkg, signature] = await Promise.all([
     toolCache.downloadTool(url),
@@ -49,14 +50,14 @@ async function download(version: string, ubuntuVersion: string) {
   ])
 
   core.debug('Swift download complete')
-  return { pkg, signature }
+  return { pkg, signature, name }
 }
 
-async function unpack(packagePath: string, version: string, system: System) {
+async function unpack(packagePath: string, packageName: string, version: string, system: System) {
   core.debug('Extracting package')
   let extractPath = await toolCache.extractTar(packagePath)
   core.debug('Package extracted')
-  let cachedPath = await toolCache.cacheDir(extractPath, `swift-${system.name}`, version)
+  let cachedPath = await toolCache.cacheDir(path.join(extractPath, packageName), `swift-${system.name}`, version)
   core.debug('Package cached')
   return cachedPath
 }

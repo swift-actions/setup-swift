@@ -17,4 +17,4 @@ jobs:
         swift-version: ${{ matrix.swift }}
         os: ${{ matrix.os }}
     - name: Swift version
-      run: swift --version
+      run: echo $PATH && swift --version

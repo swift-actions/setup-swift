@@ -5,7 +5,7 @@ inputs:
   swift-version: 
     description: Swift version to configure
     required: true
-    default: '5.1'
+    default: '5.1.1'
   os:
     description: Operating system and version
     required: true

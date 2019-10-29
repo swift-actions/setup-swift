@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-18.04]
-        swift: ["4.2.4"]
+        swift: ["5.1.1", "4.2.4"]
     steps:
     - uses: actions/checkout@master
     - uses: ./

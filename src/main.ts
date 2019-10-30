@@ -7,6 +7,9 @@ async function run() {
   let version = versions.verify(core.getInput('swift-version', { required: true }))
   let os = core.getInput('os', { required: true })
 
+  console.log(`This platform is ${process.platform}`)
+  console.log(process.env['RUNNER_OS']) 
+
   let platform = system.getSystem(os)
   switch (platform.os) {
     case system.OS.Ubuntu:

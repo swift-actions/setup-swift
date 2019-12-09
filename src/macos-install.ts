@@ -17,8 +17,9 @@ export async function install(version: string, system: System) {
     if (swiftPath === null || swiftPath.trim().length == 0) {
       core.debug(`No matching installation found`)
 
-      const path = await download(swiftPackage(version, system))
-      const extracted = await unpack(path, version)
+      const pkg = swiftPackage(version, system)
+      const path = await download(pkg)
+      const extracted = await unpack(pkg, path, version)
 
       swiftPath = extracted
     } else {
@@ -66,46 +67,15 @@ async function toolchainVersion(requestedVersion: string) {
   return match.groups.version
 }
 
-async function setToolchainVersion(requestedVersion: string) {
-  let output = ''
-  let error = ''
-
-  const options = {
-    listeners: {
-      stdout: (data: Buffer) => {
-        output += data.toString()
-      },
-      stderr: (data: Buffer) => {
-        error += data.toString()
-      }
-    }
-  }
-
-  await exec('xcrun', ['--toolchain', requestedVersion, '--run', 'swift', '--version'], options)
-
-  if (error) {
-    throw new Error(error)
-  }
-
-  const match = output.match(/(?<version>[0-9]+\.[0-9+]+(\.[0-9]+)?)/) || { groups: { version: null } }
-
-  if (!match.groups || !match.groups.version) {
-    return null
-  }
-
-  return match.groups.version
-}
-
 async function download({ url }: Package) {
   core.debug('Downloading swift for macOS')
   return toolCache.downloadTool(url)
 }
 
-async function unpack(packagePath: string, version: string) {
+async function unpack({ name }: Package, packagePath: string, version: string) {
   core.debug('Extracting package')
   const unpackedPath = await extractXar(packagePath)
-  await exec('ls', ['-las', unpackedPath])
-  const extractedPath = await toolCache.extractTar(path.join(unpackedPath, 'Payload'))
+  const extractedPath = await toolCache.extractTar(path.join(unpackedPath, name, 'Payload'))
   core.debug('Package extracted')
   const cachedPath = await toolCache.cacheDir(extractedPath, 'swift-macOS', version)
   core.debug('Package cached')

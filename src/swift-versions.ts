@@ -52,7 +52,7 @@ export function swiftPackage(version: string, system: System): Package {
       break
     case OS.Ubuntu:
       platform = `ubuntu${system.version.replace(/\D/g, "")}`
-      archiveName = `swift-${version}-RELEASE-${platform}`
+      archiveName = `swift-${version}-RELEASE-ubuntu${system.version}`
       archiveFile = `${archiveName}.tar.gz`
       break
     default:

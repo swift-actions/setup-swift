@@ -32,10 +32,40 @@ export async function install(version: string, system: System) {
     core.debug('Swift installed')
   }
 
-  core.exportVariable('TOOLCHAINS', version)
+  core.exportVariable('TOOLCHAINS', `swift ${version}`)
 }
 
 async function toolchainVersion(requestedVersion: string) {
+  let output = ''
+  let error = ''
+
+  const options = {
+    listeners: {
+      stdout: (data: Buffer) => {
+        output += data.toString()
+      },
+      stderr: (data: Buffer) => {
+        error += data.toString()
+      }
+    }
+  }
+
+  await exec('xcrun', ['--toolchain', requestedVersion, '--run', 'swift', '--version'], options)
+
+  if (error) {
+    throw new Error(error)
+  }
+
+  const match = output.match(/(?<version>[0-9]+\.[0-9+]+(\.[0-9]+)?)/) || { groups: { version: null } }
+
+  if (!match.groups || !match.groups.version) {
+    return null
+  }
+
+  return match.groups.version
+}
+
+async function setToolchainVersion(requestedVersion: string) {
   let output = ''
   let error = ''
 

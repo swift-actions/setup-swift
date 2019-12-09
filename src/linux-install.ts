@@ -4,6 +4,7 @@ import { exec } from '@actions/exec'
 import * as core from '@actions/core'
 import * as toolCache from '@actions/tool-cache'
 import { System } from './os'
+import { swiftPackage, Package } from './swift-versions'
 
 export async function install(version: string, system: System) {
   if (os.platform() !== 'linux') {
@@ -18,11 +19,12 @@ export async function install(version: string, system: System) {
 
     await setupKeys()
 
-    let { pkg, signature, name } = await download(version, system.version)
+    const swiftPkg = swiftPackage(version, system)
+    let { pkg, signature } = await download(swiftPkg)
 
     await verify(signature, pkg)
 
-    swiftPath = await unpack(pkg, name, version, system)
+    swiftPath = await unpack(pkg, swiftPkg.name, version, system)
   } else {
     core.debug('Matching installation found')
   }
@@ -35,13 +37,8 @@ export async function install(version: string, system: System) {
   core.debug('Swift installed')
 }
 
-async function download(version: string, ubuntuVersion: string) {
-  core.debug(`Downloading swift ${version} for ubuntu ${ubuntuVersion}`)
-
-  let versionUpperCased = version.toUpperCase()
-  let ubuntuVersionString = ubuntuVersion.replace(/\D/g, "")
-  let name = `swift-${versionUpperCased}-RELEASE-ubuntu${ubuntuVersion}`
-  let url = `https://swift.org/builds/swift-${version}-release/ubuntu${ubuntuVersionString}/swift-${versionUpperCased}-RELEASE/${name}.tar.gz`
+async function download({ url, name }: Package) {
+  core.debug('Downloading swift for linux')
 
   let [pkg, signature] = await Promise.all([
     toolCache.downloadTool(url),

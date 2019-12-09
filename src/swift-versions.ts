@@ -1,5 +1,6 @@
 import * as semver from 'semver' 
 import * as core from '@actions/core'
+import { System, OS } from './os'
 
 const AVAILABLE_VERSIONS = [
     '5.1.1',
@@ -31,6 +32,37 @@ const AVAILABLE_VERSIONS = [
 
 function notEmpty<T>(value: T | null | undefined): value is T {
   return value !== null && value !== undefined;
+}
+
+export interface Package {
+  url: string
+  name: string
+}
+
+export function swiftPackage(version: string, system: System): Package {
+  let platform: string
+  let archiveFile: string
+  let archiveName: string
+  
+  switch (system.os) {
+    case OS.MacOS:
+      platform = 'xcode'
+      archiveName = `swift-${version}-RELEASE-osx`
+      archiveFile = `${archiveName}.pkg`
+      break
+    case OS.Ubuntu:
+      platform = `ubuntu${system.version.replace(/\D/g, "")}`
+      archiveName = `swift-${version}-RELEASE-${platform}`
+      archiveFile = `${archiveName}.tar.gz`
+      break
+    default:
+      throw new Error('Cannot create download URL for an unsupported platform')
+  }
+
+  return {
+    url: `https://swift.org/builds/swift-${version}-release/${platform}/swift-${version}-RELEASE/${archiveFile}`,
+    name: archiveName
+  }
 }
 
 export function verify(version: string) {

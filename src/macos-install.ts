@@ -5,6 +5,7 @@ import * as path from 'path'
 import { exec } from '@actions/exec'
 import { System } from './os'
 import { swiftPackage, Package } from './swift-versions'
+import { getVersion } from './get-version'
 
 export async function install(version: string, system: System) {
   
@@ -38,33 +39,7 @@ export async function install(version: string, system: System) {
 }
 
 async function toolchainVersion(requestedVersion: string) {
-  let output = ''
-  let error = ''
-
-  const options = {
-    listeners: {
-      stdout: (data: Buffer) => {
-        output += data.toString()
-      },
-      stderr: (data: Buffer) => {
-        error += data.toString()
-      }
-    }
-  }
-
-  await exec('xcrun', ['--toolchain', requestedVersion, '--run', 'swift', '--version'], options)
-
-  if (error) {
-    throw new Error(error)
-  }
-
-  const match = output.match(/(?<version>[0-9]+\.[0-9+]+(\.[0-9]+)?)/) || { groups: { version: null } }
-
-  if (!match.groups || !match.groups.version) {
-    return null
-  }
-
-  return match.groups.version
+  return await getVersion('xcrun', ['--toolchain', requestedVersion, '--run', 'swift', '--version'])
 }
 
 async function download({ url }: Package) {

@@ -3,9 +3,11 @@ import * as system from './os'
 import * as versions from './swift-versions'
 import * as macos from './macos-install'
 import * as linux from './linux-install'
+import { getVersion } from './get-version'
 
 async function run() {
-  let version = versions.verify(core.getInput('swift-version', { required: true }))
+  const requestedVersion = core.getInput('swift-version', { required: true })
+  let version = versions.verify(requestedVersion)
 
   let platform = await system.getSystem()
   switch (platform.os) {
@@ -15,6 +17,11 @@ async function run() {
     case system.OS.Ubuntu:
       await linux.install(version, platform)
       break
+  }
+
+  const current = await getVersion()
+  if (current !== requestedVersion) {
+    core.error('Failed to setup requested swift version')
   }
 }
 

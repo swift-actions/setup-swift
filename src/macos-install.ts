@@ -104,6 +104,7 @@ async function download({ url }: Package) {
 async function unpack(packagePath: string, version: string) {
   core.debug('Extracting package')
   const unpackedPath = await extractXar(packagePath)
+  await exec('ls', ['-las', unpackedPath])
   const extractedPath = await toolCache.extractTar(path.join(unpackedPath, 'Payload'))
   core.debug('Package extracted')
   const cachedPath = await toolCache.cacheDir(extractedPath, 'swift-macOS', version)
@@ -113,7 +114,7 @@ async function unpack(packagePath: string, version: string) {
 
 //FIXME: Workaround until https://github.com/actions/toolkit/pull/207 is merged
 export async function extractXar(file: string): Promise<string> {
-  const dest = path.join(process.env['RUNNER_TEMP'] || '', 'setup-swift', 'tmp', 'extract')
+  const dest = path.join(process.env['RUNNER_TEMP'] || '', 'setup-swift', 'extract.tmp')
   await io.mkdirP(dest)
   const xarPath: string = await io.which('xar', true)
   await exec(`"${xarPath}"`, ['-x', '-C', dest, '-f', file])

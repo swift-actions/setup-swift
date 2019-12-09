@@ -37,6 +37,7 @@ function notEmpty<T>(value: T | null | undefined): value is T {
 export interface Package {
   url: string
   name: string
+  fileName: string
 }
 
 export function swiftPackage(version: string, system: System): Package {
@@ -61,7 +62,8 @@ export function swiftPackage(version: string, system: System): Package {
 
   return {
     url: `https://swift.org/builds/swift-${version}-release/${platform}/swift-${version}-RELEASE/${archiveFile}`,
-    name: archiveName
+    name: archiveName,
+    fileName: archiveFile
   }
 }
 

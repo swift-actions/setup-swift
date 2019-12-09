@@ -72,10 +72,10 @@ async function download({ url }: Package) {
   return toolCache.downloadTool(url)
 }
 
-async function unpack({ name }: Package, packagePath: string, version: string) {
+async function unpack({ fileName }: Package, packagePath: string, version: string) {
   core.debug('Extracting package')
   const unpackedPath = await extractXar(packagePath)
-  const extractedPath = await toolCache.extractTar(path.join(unpackedPath, name, 'Payload'))
+  const extractedPath = await toolCache.extractTar(path.join(unpackedPath, fileName, 'Payload'))
   core.debug('Package extracted')
   const cachedPath = await toolCache.cacheDir(extractedPath, 'swift-macOS', version)
   core.debug('Package cached')

@@ -8,7 +8,8 @@ import { swiftPackage, Package } from './swift-versions'
 
 export async function install(version: string, system: System) {
   
-  const toolchain = await toolchainVersion(version)
+  const toolchainName = `swift ${version}`
+  const toolchain = await toolchainVersion(toolchainName)
 
   if (toolchain !== version) {
     let swiftPath = toolCache.find('swift-macOS', version)
@@ -32,7 +33,7 @@ export async function install(version: string, system: System) {
     core.debug('Swift installed')
   }
 
-  core.exportVariable('TOOLCHAINS', `swift ${version}`)
+  core.exportVariable('TOOLCHAINS', toolchainName)
 }
 
 async function toolchainVersion(requestedVersion: string) {
@@ -112,7 +113,8 @@ async function unpack(packagePath: string, version: string) {
 
 //FIXME: Workaround until https://github.com/actions/toolkit/pull/207 is merged
 export async function extractXar(file: string): Promise<string> {
-  const dest = path.join(process.env['RUNNER_TEMP'] || '', 'setup-swift', 'tmp')
+  const dest = path.join(process.env['RUNNER_TEMP'] || '', 'setup-swift', 'tmp', 'extract')
+  await io.mkdirP(dest)
   const xarPath: string = await io.which('xar', true)
   await exec(`"${xarPath}"`, ['-x', '-C', dest, '-f', file])
   return dest

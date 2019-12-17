@@ -1,7 +1,9 @@
 # Setup Swift
-<img src=".github/swift.svg" height="20">
-<img src="https://img.shields.io/badge/macOS-grey">
-<img src="https://img.shields.io/badge/Ubuntu-grey">
+<p>
+  <img src=".github/swift.svg" height="20" alt="Swift" />
+  <img src="https://img.shields.io/badge/macOS-grey" alt="macOS" />
+  <img src="https://img.shields.io/badge/Ubuntu-grey" alt="Ubuntu" />
+</p>
 
 GitHub Action to setup a Swift environment with a specific version. Works on both Ubuntu and macOS environments.
 

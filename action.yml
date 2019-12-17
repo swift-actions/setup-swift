@@ -1,5 +1,5 @@
 name: Setup Swift environment
-description: Setup a Swift environment using swiftenv
+description: Setup a Swift environment on Ubuntu or macOS 
 author: Frederik Wallner
 inputs:
   swift-version: 
@@ -9,3 +9,6 @@ inputs:
 runs:
   using: node12
   main: lib/main.js
+branding:
+  icon: 'command'  
+  color: 'orange'

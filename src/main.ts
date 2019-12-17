@@ -20,7 +20,7 @@ async function run() {
   }
 
   const current = await getVersion()
-  if (current !== requestedVersion) {
+  if (current !== version) {
     core.error('Failed to setup requested swift version')
   }
 }

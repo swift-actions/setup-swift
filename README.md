@@ -9,9 +9,6 @@
   <a href="https://help.github.com/en/actions/automating-your-workflow-with-github-actions/virtual-environments-for-github-hosted-runners#supported-runners-and-hardware-resources">
     <img src="https://img.shields.io/badge/OS-macOS+Ubuntu-brightgreen" alt="Supports macOS and Ubuntu" />
   </a>
-  <a href="https://github.com/fwal/setup-swift/actions">
-    <img src="https://img.shields.io/github/workflow/status/fwal/setup-swift/CI/master?label=CI&logo=github" alt="Build status" />
-  </a>
 </p>
 
 [GitHub Action](https://github.com/features/actions) to setup a [Swift](https://swift.org) environment with a specific version. Works on both Ubuntu and macOS environments.

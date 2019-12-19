@@ -11,7 +11,7 @@
   </a>
 </p>
 
-[GitHub Action](https://github.com/features/actions) to setup a [Swift](https://swift.org) environment with a specific version. Works on both Ubuntu and macOS environments.
+[GitHub Action](https://github.com/features/actions) that will setup a [Swift](https://swift.org) environment with a specific version. Works on both Ubuntu and macOS runners.
 
 ## Usage
 

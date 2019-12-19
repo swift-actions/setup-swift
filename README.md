@@ -21,12 +21,21 @@ To run the action with the latest swift version available, simply add the action
 - uses: fwal/setup-swift@master
 ```
 
-A version can be provided by setting the `swift-version` input:
+After the environment is configured you can run swift commands using the standard [`run`](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions#jobsjob_idstepsrun) step:
+```yaml
+- uses: fwal/setup-swift@master
+- name: Get swift version
+  run: swift --version # Swift 5.1.1
+```
+
+A specific Swift version can be set using the `swift-version` input:
 
 ```yaml
 - uses: fwal/setup-swift@master
   with:
     swift-version: "5.1.0"
+- name: Get swift version
+  run: swift --version # Swift 5.1.0
 ```
 
 Works perfect together with matrixes: 
@@ -42,6 +51,8 @@ steps:
 - uses: fwal/setup-swift@master
   with:
     swift-version: ${{ matrix.swift }}
+- name: Get swift version
+  run: swift --version
 ```
 
 ## Note about versions

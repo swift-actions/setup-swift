@@ -3,6 +3,7 @@ import * as core from '@actions/core'
 import { System, OS } from './os'
 
 const AVAILABLE_VERSIONS = [
+    '5.2',
     '5.1.1',
     '5.1',
     '5.0.3',

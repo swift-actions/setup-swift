@@ -3,7 +3,14 @@ name: CI
 on: [push]
 
 jobs:
-  test:
+  unit-test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - run: npm run format-check
+    - run: npm test
+  integration-test:
     name: Swift ${{ matrix.swift }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -12,6 +19,7 @@ jobs:
         swift: ["5.1.0", "4.2.4"]
     steps:
     - uses: actions/checkout@master
+    - run: npm run build && npm run pack
     - uses: ./
       with:
         swift-version: ${{ matrix.swift }}

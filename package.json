@@ -37,7 +37,7 @@
     "@types/getos": "^3.0.0",
     "@types/jest": "^25.2.1",
     "@types/node": "^13.13.1",
-    "@types/semver": "^6.0.2",
+    "@types/semver": "^7.1.0",
     "jest": "^24.9.0",
     "prettier": "^1.18.2",
     "ts-jest": "^24.3.0",

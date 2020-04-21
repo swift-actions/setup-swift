@@ -5,8 +5,12 @@
   "private": true,
   "main": "lib/main.js",
   "scripts": {
-    "build": "rm -r lib/ && tsc",
-    "test": "jest"
+    "build": "tsc",
+    "pack": "ncc build",
+    "format": "prettier --write **/*.ts",
+    "format-check": "prettier --check **/*.ts",
+    "test": "jest",
+    "all": "npm run format && npm run build && npm run pack && npm test"
   },
   "repository": {
     "type": "git",
@@ -38,6 +42,7 @@
     "@types/jest": "^25.2.1",
     "@types/node": "^13.13.1",
     "@types/semver": "^7.1.0",
+    "@zeit/ncc": "^0.22.1",
     "jest": "^25.4.0",
     "prettier": "^2.0.5",
     "ts-jest": "^25.4.0",

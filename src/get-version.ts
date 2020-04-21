@@ -1,31 +1,36 @@
-import { exec } from '@actions/exec'
+import { exec } from "@actions/exec";
 
-export async function getVersion(command: string = 'swift', args: string[] = ['--version']) {
-  let output = ''
-  let error = ''
+export async function getVersion(
+  command: string = "swift",
+  args: string[] = ["--version"]
+) {
+  let output = "";
+  let error = "";
 
   const options = {
     listeners: {
       stdout: (data: Buffer) => {
-        output += data.toString()
+        output += data.toString();
       },
       stderr: (data: Buffer) => {
-        error += data.toString()
-      }
-    }
-  }
+        error += data.toString();
+      },
+    },
+  };
 
-  await exec(command, args, options)
+  await exec(command, args, options);
 
   if (error) {
-    throw new Error(error)
+    throw new Error(error);
   }
 
-  const match = output.match(/(?<version>[0-9]+\.[0-9+]+(\.[0-9]+)?)/) || { groups: { version: null } }
+  const match = output.match(/(?<version>[0-9]+\.[0-9+]+(\.[0-9]+)?)/) || {
+    groups: { version: null },
+  };
 
   if (!match.groups || !match.groups.version) {
-    return null
+    return null;
   }
 
-  return match.groups.version
+  return match.groups.version;
 }

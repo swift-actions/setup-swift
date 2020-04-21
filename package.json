@@ -5,8 +5,12 @@
   "private": true,
   "main": "lib/main.js",
   "scripts": {
-    "build": "rm -r lib/ && tsc",
-    "test": "jest"
+    "build": "tsc",
+    "pack": "ncc build",
+    "format": "prettier --write **/*.ts",
+    "format-check": "prettier --check **/*.ts",
+    "test": "jest",
+    "all": "npm run format && npm run build && npm run pack && npm test"
   },
   "repository": {
     "type": "git",

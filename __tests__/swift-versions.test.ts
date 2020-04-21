@@ -23,7 +23,7 @@ describe('swift version resolver', () => {
 
   it('identifies X versions', async () => {
     const version = await versions.verify('5')
-    expect(version).toBe('5.1.1')
+    expect(version).toBe('5.2')
   })
 
   it('throws an error if version is invalid', async () => {

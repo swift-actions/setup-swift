@@ -29,7 +29,7 @@ const AVAILABLE_VERSIONS = [
     '3.0',
     '2.2.1',
     '2.2'
-].map(semver.coerce).filter(notEmpty)
+].map(version => semver.coerce(version)).filter(notEmpty)
 
 function notEmpty<T>(value: T | null | undefined): value is T {
   return value !== null && value !== undefined;

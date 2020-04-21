@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
+    - run: npm install
     - run: npm run format-check
     - run: npm test
   integration-test:
@@ -19,6 +20,7 @@ jobs:
         swift: ["5.1.0", "4.2.4"]
     steps:
     - uses: actions/checkout@master
+    - run: npm install
     - run: npm run build && npm run pack
     - uses: ./
       with:

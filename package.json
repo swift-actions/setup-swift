@@ -30,7 +30,7 @@
     "@actions/exec": "^1.0.1",
     "@actions/io": "^1.0.1",
     "@actions/tool-cache": "^1.1.2",
-    "getos": "^3.1.1",
+    "getos": "^3.2.0",
     "semver": "^7.3.2"
   },
   "devDependencies": {

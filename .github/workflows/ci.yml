@@ -26,4 +26,4 @@ jobs:
       with:
         swift-version: ${{ matrix.swift }}
     - name: Swift version
-      run: swift --version | grep ${{ matrix.swift }} || echo "Swift version mismatch after run!" && exit 1
+      run: swift --version | grep ${{ matrix.swift }} || exit 1

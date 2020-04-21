@@ -1,4 +1,4 @@
-name: CI
+name: Tests
 
 on: [push]
 
@@ -12,12 +12,12 @@ jobs:
     - run: npm run format-check
     - run: npm test
   integration-test:
-    name: Swift ${{ matrix.swift }} on ${{ matrix.os }}
+    name: Integrate Swift ${{ matrix.swift }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        swift: ["5.2", "4.2.4"]
+        swift: ["5.2.1", "4.2.4"]
     steps:
     - uses: actions/checkout@master
     - run: npm install

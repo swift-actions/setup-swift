@@ -20,7 +20,7 @@ module.exports = function getOs (cb) {
   // Linux is a special case.
   if (osName === 'linux') return getLinuxDistro(cb)
   // Else, node's builtin is acceptable.
-  return cb(null, { 'os': osName })
+  return cb(null, { os: osName })
 }
 
 /**
@@ -48,7 +48,7 @@ function getLinuxDistro (cb) {
      * files and match them to a potential distribution
      */
     var candidates = distros[file]
-    var os = { 'os': 'linux', 'dist': candidates[0] }
+    var os = { os: 'linux', dist: candidates[0] }
 
     fs.readFile(file, 'utf-8', function (e, file) {
       if (e) return cb(e)

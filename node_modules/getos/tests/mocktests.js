@@ -26,7 +26,7 @@ fs.readFile = function (file, enc, callback) {
 mockdata.forEach(function (data) {
   test('test ' + data.desc, function (t) {
     // reload each time to avoid internal caching
-    require.cache[require.resolve('../')] = null
+    delete require.cache[require.resolve('../')]
     var getos = require('../')
 
     currentData = data

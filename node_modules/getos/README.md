@@ -46,7 +46,7 @@ For example:
 ```js
 {
   os: "linux",
-  dist: "Ubuntu Linux",
+  dist: "Ubuntu",
   codename: "precise",
   release: "12.04"
 }

@@ -2300,20 +2300,26 @@ const linux = __importStar(__webpack_require__(349));
 const get_version_1 = __webpack_require__(778);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        const requestedVersion = core.getInput("swift-version", { required: true });
-        let version = versions.verify(requestedVersion);
-        let platform = yield system.getSystem();
-        switch (platform.os) {
-            case system.OS.MacOS:
-                yield macos.install(version, platform);
-                break;
-            case system.OS.Ubuntu:
-                yield linux.install(version, platform);
-                break;
+        try {
+            const requestedVersion = core.getInput("swift-version", { required: true });
+            let version = versions.verify(requestedVersion);
+            let platform = yield system.getSystem();
+            switch (platform.os) {
+                case system.OS.MacOS:
+                    yield macos.install(version, platform);
+                    break;
+                case system.OS.Ubuntu:
+                    yield linux.install(version, platform);
+                    break;
+            }
+            const current = yield get_version_1.getVersion();
+            if (current !== version) {
+                core.error("Failed to setup requested swift version");
+            }
         }
-        const current = yield get_version_1.getVersion();
-        if (current !== version) {
-            core.error("Failed to setup requested swift version");
+        catch (error) {
+            core.error(error);
+            core.setFailed("Unexpected error, unable to continue. Please report at https://github.com/fwal/setup-swift/issues");
         }
     });
 }

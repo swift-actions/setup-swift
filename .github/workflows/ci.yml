@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        swift: ["5.1.0", "4.2.4"]
+        swift: ["5.2", "4.2.4"]
     steps:
     - uses: actions/checkout@master
     - run: npm install
@@ -26,4 +26,4 @@ jobs:
       with:
         swift-version: ${{ matrix.swift }}
     - name: Swift version
-      run: swift --version
+      run: swift --version | grep ${{ matrix.swift }} || echo "Swift version mismatch after run!" && exit 1

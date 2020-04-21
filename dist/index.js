@@ -7436,6 +7436,8 @@ const semver = __importStar(__webpack_require__(876));
 const core = __importStar(__webpack_require__(470));
 const os_1 = __webpack_require__(316);
 const AVAILABLE_VERSIONS = [
+    "5.2.2",
+    "5.2.1",
     "5.2",
     "5.1.1",
     "5.1",

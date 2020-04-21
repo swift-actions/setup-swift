@@ -5,7 +5,7 @@ inputs:
   swift-version: 
     description: Swift version to configure
     required: true
-    default: '5.1.1'
+    default: '5.2.2'
 runs:
   using: node12
   main: dist/index.js

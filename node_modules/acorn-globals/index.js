@@ -134,7 +134,7 @@ function findGlobals(source, options) {
     'TryStatement': function (node) {
       if (node.handler === null) return;
       node.handler.locals = node.handler.locals || Object.create(null);
-      node.handler.locals[node.handler.param.name] = true;
+      declarePattern(node.handler.param, node.handler);
     },
     'ImportDefaultSpecifier': declareModuleSpecifier,
     'ImportSpecifier': declareModuleSpecifier,

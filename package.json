@@ -40,7 +40,7 @@
   "devDependencies": {
     "@types/getos": "^3.0.0",
     "@types/jest": "^25.2.1",
-    "@types/node": "^13.13.1",
+    "@types/node": "^13.13.2",
     "@types/semver": "^7.1.0",
     "@zeit/ncc": "^0.22.1",
     "jest": "^25.4.0",

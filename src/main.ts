@@ -1,4 +1,4 @@
-import { EOL } from 'os'
+import { EOL } from "os";
 import * as core from "@actions/core";
 import * as system from "./os";
 import * as versions from "./swift-versions";
@@ -26,12 +26,11 @@ async function run() {
       core.error("Failed to setup requested swift version");
     }
   } catch (error) {
-
-    let dump: String
-    if(error instanceof Error) {
-      dump = `${error.message}${EOL}Stacktrace:${EOL}${error.stack}`
+    let dump: String;
+    if (error instanceof Error) {
+      dump = `${error.message}${EOL}Stacktrace:${EOL}${error.stack}`;
     } else {
-      dump = `${error}`
+      dump = `${error}`;
     }
 
     core.setFailed(

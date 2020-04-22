@@ -6,7 +6,7 @@ const setSystem = require("getos").__setSystem;
 
 describe("os resolver", () => {
   it("finds matching system and version", async () => {
-    setSystem({ os: "linux", dist: "Ubuntu Linux", release: "18.04" });
+    setSystem({ os: "linux", dist: "Ubuntu", release: "18.04" });
 
     let ubuntu = await os.getSystem();
     expect(ubuntu.os).toBe(os.OS.Ubuntu);
@@ -32,7 +32,7 @@ describe("os resolver", () => {
   });
 
   it("throws an error if the version is not supported", async () => {
-    setSystem({ os: "linux", dist: "Ubuntu Linux", release: "15.04" });
+    setSystem({ os: "linux", dist: "Ubuntu", release: "15.04" });
     expect.assertions(1);
     try {
       await os.getSystem();

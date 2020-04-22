@@ -25,7 +25,6 @@ async function run() {
       core.error("Failed to setup requested swift version");
     }
   } catch (error) {
-    core.error(error);
     core.setFailed(
       "Unexpected error, unable to continue. Please report at https://github.com/fwal/setup-swift/issues"
     );

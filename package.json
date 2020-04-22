@@ -7,6 +7,7 @@
   "scripts": {
     "build": "tsc",
     "pack": "ncc build",
+    "pack-source-map": "ncc build --source-map",
     "format": "prettier --write **/*.ts",
     "format-check": "prettier --check **/*.ts",
     "test": "jest",

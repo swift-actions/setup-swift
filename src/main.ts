@@ -26,7 +26,7 @@ async function run() {
     }
   } catch (error) {
     core.setFailed(
-      "Unexpected error, unable to continue. Please report at https://github.com/fwal/setup-swift/issues"
+      `Unexpected error, unable to continue. Please report at https://github.com/fwal/setup-swift/issues\n${error}`
     );
   }
 }

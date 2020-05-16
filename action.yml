@@ -1,4 +1,4 @@
-name: Setup Swift environment
+name: Setup Swift
 description: Setup a Swift environment on Ubuntu or macOS 
 author: Frederik Wallner
 inputs:

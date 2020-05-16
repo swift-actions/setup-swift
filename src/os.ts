@@ -30,7 +30,7 @@ export async function getSystem(): Promise<System> {
       system = { os: OS.MacOS, version: "latest", name: "macOS" };
       break;
     case "linux":
-      if (detectedSystem.dist !== "Ubuntu Linux") {
+      if (detectedSystem.dist !== "Ubuntu") {
         throw new Error(
           `"${detectedSystem.dist}" is not a supported linux distribution`
         );

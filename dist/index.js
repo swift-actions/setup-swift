@@ -1245,6 +1245,37 @@ module.exports = SemVer
 
 /***/ }),
 
+/***/ 85:
+/***/ (function(module) {
+
+var releaseRegex = /release (..)/
+var codenameRegex = /\((.*)\)/
+
+module.exports = function fedoraCustomLogic (os, file, cb) {
+  var release = file.match(releaseRegex)
+  if (release && release.length === 2) os.release = release[1]
+  var codename = file.match(codenameRegex)
+  if (codename && codename.length === 2) os.codename = codename[1]
+  cb(null, os)
+}
+
+
+/***/ }),
+
+/***/ 86:
+/***/ (function(module) {
+
+var releaseRegex = /(.*)/
+
+module.exports = function alpineCustomLogic (os, file, cb) {
+  var release = file.match(releaseRegex)
+  if (release && release.length === 2) os.release = release[1]
+  cb(null, os)
+}
+
+
+/***/ }),
+
 /***/ 87:
 /***/ (function(module) {
 
@@ -2026,6 +2057,23 @@ exports.debug = debug; // for test
 
 /***/ }),
 
+/***/ 156:
+/***/ (function(module) {
+
+var releaseRegex = /distrib_release=(.*)/
+var codenameRegex = /distrib_codename=(.*)/
+
+module.exports = function ubuntuCustomLogic (os, file, cb) {
+  var codename = file.match(codenameRegex)
+  if (codename && codename.length === 2) os.codename = codename[1]
+  var release = file.match(releaseRegex)
+  if (release && release.length === 2) os.release = release[1]
+  cb(null, os)
+}
+
+
+/***/ }),
+
 /***/ 164:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -2292,6 +2340,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const os_1 = __webpack_require__(87);
 const core = __importStar(__webpack_require__(470));
 const system = __importStar(__webpack_require__(316));
 const versions = __importStar(__webpack_require__(336));
@@ -2300,24 +2349,50 @@ const linux = __importStar(__webpack_require__(349));
 const get_version_1 = __webpack_require__(778);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        const requestedVersion = core.getInput("swift-version", { required: true });
-        let version = versions.verify(requestedVersion);
-        let platform = yield system.getSystem();
-        switch (platform.os) {
-            case system.OS.MacOS:
-                yield macos.install(version, platform);
-                break;
-            case system.OS.Ubuntu:
-                yield linux.install(version, platform);
-                break;
+        try {
+            const requestedVersion = core.getInput("swift-version", { required: true });
+            let version = versions.verify(requestedVersion);
+            let platform = yield system.getSystem();
+            switch (platform.os) {
+                case system.OS.MacOS:
+                    yield macos.install(version, platform);
+                    break;
+                case system.OS.Ubuntu:
+                    yield linux.install(version, platform);
+                    break;
+            }
+            const current = yield get_version_1.getVersion();
+            if (current !== version) {
+                core.error("Failed to setup requested swift version");
+            }
         }
-        const current = yield get_version_1.getVersion();
-        if (current !== version) {
-            core.error("Failed to setup requested swift version");
+        catch (error) {
+            let dump;
+            if (error instanceof Error) {
+                dump = `${error.message}${os_1.EOL}Stacktrace:${os_1.EOL}${error.stack}`;
+            }
+            else {
+                dump = `${error}`;
+            }
+            core.setFailed(`Unexpected error, unable to continue. Please report at https://github.com/fwal/setup-swift/issues${os_1.EOL}${dump}`);
         }
     });
 }
 run();
+
+
+/***/ }),
+
+/***/ 207:
+/***/ (function(module) {
+
+var releaseRegex = /release (.*)/
+
+module.exports = function amazonCustomLogic (os, file, cb) {
+  var release = file.match(releaseRegex)
+  if (release && release.length === 2) os.release = release[1]
+  cb(null, os)
+}
 
 
 /***/ }),
@@ -7220,6 +7295,23 @@ module.exports = compareLoose
 
 /***/ }),
 
+/***/ 288:
+/***/ (function(module) {
+
+var releaseRegex = /distrib_release=(.*)/
+var codenameRegex = /distrib_codename=(.*)/
+
+module.exports = function ubuntuCustomLogic (os, file, cb) {
+  var codename = file.match(codenameRegex)
+  if (codename && codename.length === 2) os.codename = codename[1]
+  var release = file.match(releaseRegex)
+  if (release && release.length === 2) os.release = release[1]
+  cb(null, os)
+}
+
+
+/***/ }),
+
 /***/ 298:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -7288,7 +7380,7 @@ function getSystem() {
                 system = { os: OS.MacOS, version: "latest", name: "macOS" };
                 break;
             case "linux":
-                if (detectedSystem.dist !== "Ubuntu Linux") {
+                if (detectedSystem.dist !== "Ubuntu") {
                     throw new Error(`"${detectedSystem.dist}" is not a supported linux distribution`);
                 }
                 system = {
@@ -7318,6 +7410,20 @@ const outside = __webpack_require__(462)
 // Determine if version is less than all the versions possible in the range
 const ltr = (version, range, options) => outside(version, range, '<', options)
 module.exports = ltr
+
+
+/***/ }),
+
+/***/ 325:
+/***/ (function(module) {
+
+var releaseRegex = /VERSION = (.*)\n/
+
+module.exports = function suseCustomLogic (os, file, cb) {
+  var release = file.match(releaseRegex)
+  if (release && release.length === 2) os.release = release[1]
+  cb(null, os)
+}
 
 
 /***/ }),
@@ -7530,6 +7636,14 @@ function evaluateVersions(versions, versionSpec) {
     }
     return `${version.major}.${version.minor}${version.patch > 0 ? `.${version.patch}` : ""}`;
 }
+
+
+/***/ }),
+
+/***/ 347:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+module.exports = __webpack_require__(288)
 
 
 /***/ }),
@@ -10858,12 +10972,36 @@ module.exports = require("net");
 
 /***/ }),
 
+/***/ 645:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+module.exports = __webpack_require__(288)
+
+
+/***/ }),
+
 /***/ 647:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 /**
  * Things we will need
  */
+function __ncc_wildcard$0 (arg) {
+  if (arg === "alpine") return __webpack_require__(86);
+  else if (arg === "amazon") return __webpack_require__(207);
+  else if (arg === "arch") return __webpack_require__(858);
+  else if (arg === "centos") return __webpack_require__(767);
+  else if (arg === "debian") return __webpack_require__(814);
+  else if (arg === "fedora") return __webpack_require__(85);
+  else if (arg === "kde") return __webpack_require__(862);
+  else if (arg === "manjaro") return __webpack_require__(156);
+  else if (arg === "mint") return __webpack_require__(645);
+  else if (arg === "raspbian") return __webpack_require__(952);
+  else if (arg === "red") return __webpack_require__(953);
+  else if (arg === "suse") return __webpack_require__(325);
+  else if (arg === "ubuntu") return __webpack_require__(288);
+  else if (arg === "zorin") return __webpack_require__(347);
+}
 var async = __webpack_require__(225)
 var distros = __webpack_require__(350)
 var fs = __webpack_require__(747)
@@ -10983,8 +11121,7 @@ function getName (candidate) {
  * Loads a custom logic module to populate additional distribution information
  */
 function customLogic (os, name, file, cb) {
-  var logic = './logic/' + name + '.js'
-  try { require(logic)(os, file, cb) } catch (e) { cb(null, os) }
+  try { __ncc_wildcard$0(name)(os, file, cb) } catch (e) { cb(null, os) }
 }
 
 /**
@@ -11406,6 +11543,23 @@ module.exports = {
 
 /***/ }),
 
+/***/ 767:
+/***/ (function(module) {
+
+var releaseRegex = /release ([^ ]+)/
+var codenameRegex = /\((.*)\)/
+
+module.exports = function centosCustomLogic (os, file, cb) {
+  var release = file.match(releaseRegex)
+  if (release && release.length === 2) os.release = release[1]
+  var codename = file.match(codenameRegex)
+  if (codename && codename.length === 2) os.codename = codename[1]
+  cb(null, os)
+}
+
+
+/***/ }),
+
 /***/ 778:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -11499,6 +11653,39 @@ const maxSatisfying = (versions, range, options) => {
   return max
 }
 module.exports = maxSatisfying
+
+
+/***/ }),
+
+/***/ 814:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+var exec = __webpack_require__(129).exec
+var lsbRelease = /Release:\t(.*)/
+var lsbCodename = /Codename:\t(.*)/
+var releaseRegex = /(.*)/
+
+module.exports = function (os, file, cb) {
+  // first try lsb_release
+  return lsbrelease(os, file, cb)
+}
+
+function lsbrelease (os, file, cb) {
+  exec('lsb_release -a', function (e, stdout, stderr) {
+    if (e) return releasefile(os, file, cb)
+    var release = stdout.match(lsbRelease)
+    if (release && release.length === 2) os.release = release[1]
+    var codename = stdout.match(lsbCodename)
+    if (codename && release.length === 2) os.codename = codename[1]
+    cb(null, os)
+  })
+}
+
+function releasefile (os, file, cb) {
+  var release = file.match(releaseRegex)
+  if (release && release.length === 2) os.release = release[1]
+  cb(null, os)
+}
 
 
 /***/ }),
@@ -11624,6 +11811,22 @@ module.exports = parse
 /***/ (function(module) {
 
 module.exports = require("url");
+
+/***/ }),
+
+/***/ 858:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+module.exports = __webpack_require__(288)
+
+
+/***/ }),
+
+/***/ 862:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+module.exports = __webpack_require__(288)
+
 
 /***/ }),
 
@@ -11848,6 +12051,31 @@ function checkBypass(reqUrl) {
     return false;
 }
 exports.checkBypass = checkBypass;
+
+
+/***/ }),
+
+/***/ 952:
+/***/ (function(module) {
+
+var releaseRegex = /VERSION_ID="(.*)"/
+var codenameRegex = /VERSION="[0-9] \((.*)\)"/
+
+module.exports = function raspbianCustomLogic (os, file, cb) {
+  var release = file.match(releaseRegex)
+  if (release && release.length === 2) os.release = release[1]
+  var codename = file.match(codenameRegex)
+  if (codename && codename.length === 2) os.codename = codename[1]
+  cb(null, os)
+}
+
+
+/***/ }),
+
+/***/ 953:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+module.exports = __webpack_require__(767)
 
 
 /***/ }),

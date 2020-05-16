@@ -18,20 +18,20 @@
 To run the action with the latest swift version available, simply add the action as a step in your workflow:
 
 ```yaml
-- uses: fwal/setup-swift@master
+- uses: fwal/setup-swift@v1
 ```
 
 After the environment is configured you can run swift commands using the standard [`run`](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions#jobsjob_idstepsrun) step:
 ```yaml
-- uses: fwal/setup-swift@master
+- uses: fwal/setup-swift@v1
 - name: Get swift version
-  run: swift --version # Swift 5.1.1
+  run: swift --version # Swift 5.2.2
 ```
 
 A specific Swift version can be set using the `swift-version` input:
 
 ```yaml
-- uses: fwal/setup-swift@master
+- uses: fwal/setup-swift@v1
   with:
     swift-version: "5.1.0"
 - name: Get swift version
@@ -48,7 +48,7 @@ strategy:
     os: [ubuntu-latest, macos-latest]
     swift: ["5.1.0", "4.2.4"]
 steps:
-- uses: fwal/setup-swift@master
+- uses: fwal/setup-swift@v1
   with:
     swift-version: ${{ matrix.swift }}
 - name: Get swift version
@@ -65,7 +65,7 @@ For example, Swift is available as version `5.1` but this will be interpreted as
 In other words specifying...
 - `"5.1.0"` will resolve to version `5.1`
 - `"5.1"` will resolve to latest patch version (aka `5.1.1`)
-- `"5"` will resolve to latest minor and patch version (aka `5.1.1`)
+- `"5"` will resolve to latest minor and patch version (aka `5.2.2`)
 
 
 ## Legal

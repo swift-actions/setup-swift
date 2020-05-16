@@ -1,13 +1,16 @@
 # Setup Swift
 <p>
-  <a href="https://swift.org">
-    <img src=".github/swift.svg" height="20" alt="Swift" />
-  </a>
   <a href="https://github.com/features/actions">
     <img src="https://img.shields.io/badge/GitHub-Action-blue?logo=github" alt="GitHub Action" />
   </a>
   <a href="https://help.github.com/en/actions/automating-your-workflow-with-github-actions/virtual-environments-for-github-hosted-runners#supported-runners-and-hardware-resources">
-    <img src="https://img.shields.io/badge/OS-macOS+Ubuntu-brightgreen" alt="Supports macOS and Ubuntu" />
+    <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Ubuntu-lightgray" alt="Supports macOS and Ubuntu" />
+  </a>
+  <a href="https://swift.org">
+    <img src="https://img.shields.io/badge/Swift-5.2.2-F05138?logo=swift&logoColor=white" alt="GitHub Action" />
+  </a>
+  <a href="https://github.com/fwal/setup-swift/releases/latest">
+    <img src="https://img.shields.io/github/v/release/fwal/setup-swift?sort=semver" alt="Latest release" />
   </a>
 </p>
 

@@ -1,0 +1,13 @@
+name: Detect
+
+on:
+  schedule:
+    - cron:  '0 0 * * *'
+
+jobs:
+  swift-versions:
+    name: Swift release
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: ./.github/workflows/check_releases.sh

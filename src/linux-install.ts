@@ -5,6 +5,7 @@ import * as core from "@actions/core";
 import * as toolCache from "@actions/tool-cache";
 import { System } from "./os";
 import { swiftPackage, Package } from "./swift-versions";
+import { setupKeys, verify } from "./gpg";
 
 export async function install(version: string, system: System) {
   if (os.platform() !== "linux") {
@@ -65,22 +66,4 @@ async function unpack(
   );
   core.debug("Package cached");
   return cachedPath;
-}
-
-async function setupKeys() {
-  core.debug("Fetching verification keys");
-  let path = await toolCache.downloadTool(
-    "https://swift.org/keys/all-keys.asc"
-  );
-  core.debug("Importing verification keys");
-  await exec(`gpg --import "${path}"`);
-  core.debug("Refreshing keys");
-  await exec(
-    "gpg --keyserver hkp://pool.sks-keyservers.net --refresh-keys Swift"
-  );
-}
-
-async function verify(signaturePath: string, packagePath: string) {
-  core.debug("Verifying signature");
-  await exec("gpg", ["--verify", signaturePath, packagePath]);
 }

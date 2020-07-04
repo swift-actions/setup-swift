@@ -26,28 +26,28 @@ export async function refreshKeys() {
     "ha.pool.sks-keyservers.net",
     "keyserver.ubuntu.com",
     "hkp://keyserver.ubuntu.com",
-    "pgp.mit.edu"
-  ]
+    "pgp.mit.edu",
+  ];
 
   for (const server of pool) {
     core.debug(`Refreshing keys from ${server}`);
-    if (await refreshKeysFromServer(server)) { 
+    if (await refreshKeysFromServer(server)) {
       core.debug(`Refresh successful`);
-      return
+      return;
     }
     core.debug(`Refresh failed`);
   }
-  
+
   throw new Error("Failed to refresh keys from any server in the pool.");
 }
 
 function refreshKeysFromServer(server: string): Promise<boolean> {
-  return exec(
-    `gpg --keyserver ${server} --refresh-keys Swift`
-  )
-  .then( code => code === 0 )
-  .catch(error => {
-    core.warning(`An error occurred when trying to refresh keys from ${server}: ${error}`)
-    return false
-  })
+  return exec(`gpg --keyserver ${server} --refresh-keys Swift`)
+    .then((code) => code === 0)
+    .catch((error) => {
+      core.warning(
+        `An error occurred when trying to refresh keys from ${server}: ${error}`
+      );
+      return false;
+    });
 }

@@ -2470,7 +2470,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -7593,7 +7593,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -7703,7 +7703,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -7840,7 +7840,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -7857,10 +7857,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.install = void 0;
 const os = __importStar(__webpack_require__(87));
 const path = __importStar(__webpack_require__(622));
-const exec_1 = __webpack_require__(986);
 const core = __importStar(__webpack_require__(470));
 const toolCache = __importStar(__webpack_require__(533));
 const swift_versions_1 = __webpack_require__(336);
+const gpg_1 = __webpack_require__(525);
 function install(version, system) {
     return __awaiter(this, void 0, void 0, function* () {
         if (os.platform() !== "linux") {
@@ -7870,10 +7870,10 @@ function install(version, system) {
         let swiftPath = toolCache.find(`swift-${system.name}`, version);
         if (swiftPath === null || swiftPath.trim().length == 0) {
             core.debug(`No matching installation found`);
-            yield setupKeys();
+            yield gpg_1.setupKeys();
             const swiftPkg = swift_versions_1.swiftPackage(version, system);
             let { pkg, signature } = yield download(swiftPkg);
-            yield verify(signature, pkg);
+            yield gpg_1.verify(signature, pkg);
             swiftPath = yield unpack(pkg, swiftPkg.name, version, system);
         }
         else {
@@ -7905,22 +7905,6 @@ function unpack(packagePath, packageName, version, system) {
         let cachedPath = yield toolCache.cacheDir(path.join(extractPath, packageName), `swift-${system.name}`, version);
         core.debug("Package cached");
         return cachedPath;
-    });
-}
-function setupKeys() {
-    return __awaiter(this, void 0, void 0, function* () {
-        core.debug("Fetching verification keys");
-        let path = yield toolCache.downloadTool("https://swift.org/keys/all-keys.asc");
-        core.debug("Importing verification keys");
-        yield exec_1.exec(`gpg --import "${path}"`);
-        core.debug("Refreshing keys");
-        yield exec_1.exec("gpg --keyserver hkp://pool.sks-keyservers.net --refresh-keys Swift");
-    });
-}
-function verify(signaturePath, packagePath) {
-    return __awaiter(this, void 0, void 0, function* () {
-        core.debug("Verifying signature");
-        yield exec_1.exec("gpg", ["--verify", signaturePath, packagePath]);
     });
 }
 
@@ -8476,6 +8460,95 @@ const clean = (version, options) => {
   return s ? s.version : null
 }
 module.exports = clean
+
+
+/***/ }),
+
+/***/ 525:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.refreshKeys = exports.verify = exports.setupKeys = void 0;
+const exec_1 = __webpack_require__(986);
+const core = __importStar(__webpack_require__(470));
+const toolCache = __importStar(__webpack_require__(533));
+function setupKeys() {
+    return __awaiter(this, void 0, void 0, function* () {
+        core.debug("Fetching verification keys");
+        let path = yield toolCache.downloadTool("https://swift.org/keys/all-keys.asc");
+        core.debug("Importing verification keys");
+        yield exec_1.exec(`gpg --import "${path}"`);
+        core.debug("Refreshing keys");
+        yield refreshKeys();
+    });
+}
+exports.setupKeys = setupKeys;
+function verify(signaturePath, packagePath) {
+    return __awaiter(this, void 0, void 0, function* () {
+        core.debug("Verifying signature");
+        yield exec_1.exec("gpg", ["--verify", signaturePath, packagePath]);
+    });
+}
+exports.verify = verify;
+function refreshKeys() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const pool = [
+            "hkp://pool.sks-keyservers.net",
+            "ha.pool.sks-keyservers.net",
+            "keyserver.ubuntu.com",
+            "hkp://keyserver.ubuntu.com",
+            "pgp.mit.edu",
+        ];
+        for (const server of pool) {
+            core.debug(`Refreshing keys from ${server}`);
+            if (yield refreshKeysFromServer(server)) {
+                core.debug(`Refresh successful`);
+                return;
+            }
+            core.debug(`Refresh failed`);
+        }
+        throw new Error("Failed to refresh keys from any server in the pool.");
+    });
+}
+exports.refreshKeys = refreshKeys;
+function refreshKeysFromServer(server) {
+    return exec_1.exec(`gpg --keyserver ${server} --refresh-keys Swift`)
+        .then((code) => code === 0)
+        .catch((error) => {
+        core.warning(`An error occurred when trying to refresh keys from ${server}: ${error}`);
+        return false;
+    });
+}
 
 
 /***/ }),

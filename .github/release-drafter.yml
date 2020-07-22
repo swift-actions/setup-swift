@@ -1,0 +1,16 @@
+exclude-labels:
+  - 'tooling'
+  - 'documentation'
+categories:
+  - title: 'Security'
+    label: 'security'
+  - title: 'Features'
+    label: 'enhancement'
+  - title: 'Fixes'
+    label: 'bug'
+  - title: 'Dependencies'
+    label: 'dependencies'
+template: |
+  ## Changes
+
+  $CHANGES

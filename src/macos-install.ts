@@ -54,7 +54,7 @@ async function download({ url }: Package) {
 
 async function unpack({ name }: Package, packagePath: string, version: string) {
   core.debug("Extracting package");
-  const unpackedPath = await extractXar(packagePath);
+  const unpackedPath = await toolCache.extractXar(packagePath);
   const extractedPath = await toolCache.extractTar(
     path.join(unpackedPath, `${name}-package.pkg`, "Payload")
   );
@@ -66,17 +66,4 @@ async function unpack({ name }: Package, packagePath: string, version: string) {
   );
   core.debug("Package cached");
   return cachedPath;
-}
-
-//FIXME: Workaround until https://github.com/actions/toolkit/pull/207 is merged
-export async function extractXar(file: string): Promise<string> {
-  const dest = path.join(
-    process.env["RUNNER_TEMP"] || "",
-    "setup-swift",
-    "extract.tmp"
-  );
-  await io.mkdirP(dest);
-  const xarPath: string = await io.which("xar", true);
-  await exec(`"${xarPath}"`, ["-x", "-C", dest, "-f", file]);
-  return dest;
 }

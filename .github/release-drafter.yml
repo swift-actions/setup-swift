@@ -11,6 +11,4 @@ categories:
   - title: 'Dependencies'
     label: 'dependencies'
 template: |
-  ## Changes
-
   $CHANGES

@@ -70,6 +70,23 @@ In other words specifying...
 - `"5.1"` will resolve to latest patch version (aka `5.1.1`)
 - `"5"` will resolve to latest minor and patch version (aka `5.2.4`)
 
+### Caveats
+
+YAML interprets eg. `5.0` as a float, this action will then interpret that as `5` which will result in eg. Swift 5.3 being resolved. Quote your inputs! Thus:
+
+```
+- uses: fwal/setup-swift@v1
+  with:
+    swift-version: '5.0'
+```
+
+Not:
+
+```
+- uses: fwal/setup-swift@v1
+  with:
+    swift-version: 5.0
+```
 
 ## Legal
 Uses MIT license. 

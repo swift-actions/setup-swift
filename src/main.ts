@@ -22,7 +22,9 @@ async function run() {
     }
 
     const current = await getVersion();
-    if (current !== version) {
+    if (current === version) {
+      core.setOutput("version", version);
+    } else {
       core.error("Failed to setup requested swift version");
     }
   } catch (error) {

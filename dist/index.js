@@ -2506,7 +2506,10 @@ function run() {
                     break;
             }
             const current = yield get_version_1.getVersion();
-            if (current !== version) {
+            if (current === version) {
+                core.setOutput("version", version);
+            }
+            else {
                 core.error("Failed to setup requested swift version");
             }
         }
@@ -7700,6 +7703,7 @@ const semver = __importStar(__webpack_require__(876));
 const core = __importStar(__webpack_require__(470));
 const os_1 = __webpack_require__(316);
 const AVAILABLE_VERSIONS = [
+    "5.3",
     "5.2.4",
     "5.2.2",
     "5.2.1",

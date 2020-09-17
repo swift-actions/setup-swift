@@ -23,7 +23,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        swift: ["5.2.4", "4.2.4"]
+        swift: ["5.3", "4.2.4"]
     steps:
     - uses: actions/checkout@v2
     - run: npm install

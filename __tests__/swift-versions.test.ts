@@ -1,8 +1,8 @@
 import { OS, System } from "../src/os";
 import * as versions from "../src/swift-versions";
 
-const macOS: System = { os: OS.MacOS, version: 'latest', name: 'macOS'}
-const ubuntu: System = { os: OS.Ubuntu, version: 'latest', name: 'Ubuntu'}
+const macOS: System = { os: OS.MacOS, version: "latest", name: "macOS" };
+const ubuntu: System = { os: OS.Ubuntu, version: "latest", name: "Ubuntu" };
 
 describe("swift version resolver", () => {
   it("identifies X.X.X versions", async () => {
@@ -43,7 +43,7 @@ describe("swift version resolver", () => {
     try {
       await versions.verify("5.0.3", macOS);
     } catch (e) {
-      expect(e).toEqual(new Error("Version \"5.0.3\" is not available"));
+      expect(e).toEqual(new Error('Version "5.0.3" is not available'));
     }
   });
 

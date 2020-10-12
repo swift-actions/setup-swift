@@ -39,12 +39,14 @@ const VERSIONS_LIST: [string, OS[]][] = [
   ["3.0", [OS.MacOS, OS.Ubuntu]],
   ["2.2.1", [OS.MacOS, OS.Ubuntu]],
   ["2.2", [OS.MacOS, OS.Ubuntu]],
-]
+];
 
-const AVAILABLE_VERSIONS: [semver.SemVer, OS[]][] = VERSIONS_LIST.map(([version, os]) => {
-  const semverVersion = semver.coerce(version)
-  return <[semver.SemVer, OS[]]> [semverVersion, os]
-})
+const AVAILABLE_VERSIONS: [semver.SemVer, OS[]][] = VERSIONS_LIST.map(
+  ([version, os]) => {
+    const semverVersion = semver.coerce(version);
+    return <[semver.SemVer, OS[]]>[semverVersion, os];
+  }
+);
 
 function notEmpty<T>(value: T | null | undefined): value is T {
   return value !== null && value !== undefined;
@@ -89,7 +91,9 @@ export function verify(version: string, system: System) {
 
   core.debug(`Resolved range ${range}`);
 
-  let systemVersions = AVAILABLE_VERSIONS.filter(([_, os]) => os.includes(system.os)).map(([version, _]) => version)
+  let systemVersions = AVAILABLE_VERSIONS.filter(([_, os]) =>
+    os.includes(system.os)
+  ).map(([version, _]) => version);
 
   let matchingVersion = evaluateVersions(systemVersions, version);
   if (matchingVersion === null) {

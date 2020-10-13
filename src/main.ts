@@ -9,9 +9,10 @@ import { getVersion } from "./get-version";
 async function run() {
   try {
     const requestedVersion = core.getInput("swift-version", { required: true });
-    let version = versions.verify(requestedVersion);
 
     let platform = await system.getSystem();
+    let version = versions.verify(requestedVersion, platform);
+
     switch (platform.os) {
       case system.OS.MacOS:
         await macos.install(version, platform);

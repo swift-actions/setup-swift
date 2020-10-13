@@ -2,40 +2,51 @@ import * as semver from "semver";
 import * as core from "@actions/core";
 import { System, OS } from "./os";
 
-const AVAILABLE_VERSIONS = [
-  "5.3",
-  "5.2.4",
-  "5.2.2",
-  "5.2.1",
-  "5.2",
-  "5.1.1",
-  "5.1",
-  "5.0.3",
-  "5.0.2",
-  "5.0.1",
-  "5.0",
-  "4.2.4",
-  "4.2.3",
-  "4.2.2",
-  "4.2.1",
-  "4.2",
-  "4.1.3",
-  "4.1.2",
-  "4.1.1",
-  "4.1",
-  "4.0.3",
-  "4.0.2",
-  "4.0",
-  "3.1.1",
-  "3.1",
-  "3.0.2",
-  "3.0.1",
-  "3.0",
-  "2.2.1",
-  "2.2",
-]
-  .map((version) => semver.coerce(version))
-  .filter(notEmpty);
+const VERSIONS_LIST: [string, OS[]][] = [
+  ["5.3", [OS.MacOS, OS.Ubuntu]],
+  ["5.2.5", [OS.Ubuntu]],
+  ["5.2.4", [OS.MacOS, OS.Ubuntu]],
+  ["5.2.3", [OS.Ubuntu]],
+  ["5.2.2", [OS.MacOS, OS.Ubuntu]],
+  ["5.2.1", [OS.Ubuntu]],
+  ["5.2", [OS.MacOS, OS.Ubuntu]],
+  ["5.1.5", [OS.Ubuntu]],
+  ["5.1.4", [OS.Ubuntu]],
+  ["5.1.3", [OS.MacOS, OS.Ubuntu]],
+  ["5.1.2", [OS.MacOS, OS.Ubuntu]],
+  ["5.1.1", [OS.Ubuntu]],
+  ["5.1", [OS.MacOS, OS.Ubuntu]],
+  ["5.0.3", [OS.Ubuntu]],
+  ["5.0.2", [OS.Ubuntu]],
+  ["5.0.1", [OS.MacOS, OS.Ubuntu]],
+  ["5.0", [OS.MacOS, OS.Ubuntu]],
+  ["4.2.4", [OS.Ubuntu]],
+  ["4.2.3", [OS.Ubuntu]],
+  ["4.2.2", [OS.Ubuntu]],
+  ["4.2.1", [OS.MacOS, OS.Ubuntu]],
+  ["4.2", [OS.MacOS, OS.Ubuntu]],
+  ["4.1.3", [OS.Ubuntu]],
+  ["4.1.2", [OS.MacOS, OS.Ubuntu]],
+  ["4.1.1", [OS.Ubuntu]],
+  ["4.1", [OS.MacOS, OS.Ubuntu]],
+  ["4.0.3", [OS.MacOS, OS.Ubuntu]],
+  ["4.0.2", [OS.MacOS, OS.Ubuntu]],
+  ["4.0", [OS.MacOS, OS.Ubuntu]],
+  ["3.1.1", [OS.MacOS, OS.Ubuntu]],
+  ["3.1", [OS.MacOS, OS.Ubuntu]],
+  ["3.0.2", [OS.MacOS, OS.Ubuntu]],
+  ["3.0.1", [OS.MacOS, OS.Ubuntu]],
+  ["3.0", [OS.MacOS, OS.Ubuntu]],
+  ["2.2.1", [OS.MacOS, OS.Ubuntu]],
+  ["2.2", [OS.MacOS, OS.Ubuntu]],
+];
+
+const AVAILABLE_VERSIONS: [semver.SemVer, OS[]][] = VERSIONS_LIST.map(
+  ([version, os]) => {
+    const semverVersion = semver.coerce(version);
+    return <[semver.SemVer, OS[]]>[semverVersion, os];
+  }
+);
 
 function notEmpty<T>(value: T | null | undefined): value is T {
   return value !== null && value !== undefined;
@@ -72,7 +83,7 @@ export function swiftPackage(version: string, system: System): Package {
   };
 }
 
-export function verify(version: string) {
+export function verify(version: string, system: System) {
   let range = semver.validRange(version);
   if (range === null) {
     throw new Error("Version must be a valid semver format.");
@@ -80,7 +91,11 @@ export function verify(version: string) {
 
   core.debug(`Resolved range ${range}`);
 
-  let matchingVersion = evaluateVersions(AVAILABLE_VERSIONS, version);
+  let systemVersions = AVAILABLE_VERSIONS.filter(([_, os]) =>
+    os.includes(system.os)
+  ).map(([version, _]) => version);
+
+  let matchingVersion = evaluateVersions(systemVersions, version);
   if (matchingVersion === null) {
     throw new Error(`Version "${version}" is not available`);
   }

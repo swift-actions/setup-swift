@@ -3,6 +3,7 @@ import getos from "getos";
 export enum OS {
   MacOS,
   Ubuntu,
+  Windows,
 }
 
 const AVAILABLE_OS: { [platform: string]: string[] } = {

@@ -22,8 +22,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        swift: ["5.3", "4.2.1"]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        swift: ["5.3"]
     steps:
     - uses: actions/checkout@v2
     - run: npm install

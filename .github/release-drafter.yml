@@ -4,6 +4,8 @@ exclude-labels:
 categories:
   - title: 'Security'
     label: 'security'
+  - title: 'Breaking changes'
+    label: 'breaking'
   - title: 'Features'
     label: 'enhancement'
   - title: 'Fixes'

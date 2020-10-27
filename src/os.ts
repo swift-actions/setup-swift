@@ -44,6 +44,7 @@ export async function getSystem(): Promise<System> {
       break;
     case "win32":
       system = { os: OS.Windows, version: "latest", name: "Windows" };
+      break;
     default:
       throw new Error(`"${detectedSystem.os}" is not a supported platform`);
   }

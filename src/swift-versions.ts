@@ -77,6 +77,7 @@ export function swiftPackage(version: string, system: System): Package {
       platform = "windows10";
       archiveName = `swift-${version}-RELEASE-windows10.exe`;
       archiveFile = archiveName;
+      break;
     default:
       throw new Error("Cannot create download URL for an unsupported platform");
   }

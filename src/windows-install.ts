@@ -19,7 +19,9 @@ export async function install(version: string, system: System) {
     const swiftPkg = swiftPackage(version, system);
     let { exe, signature } = await download(swiftPkg);
 
-    swiftPath = exe;
+    const exePath = await toolCache.cacheFile(exe, swiftPkg.name, `swift-${system.name}`, version);
+
+    swiftPath = exePath;
     //await verify(signature, pkg);
   } else {
     core.debug("Cached installer found");
@@ -33,7 +35,7 @@ export async function install(version: string, system: System) {
 }
 
 async function download({ url, name }: Package) {
-  core.debug("Downloading swift for windows");
+  core.debug("Downloading Swift for windows");
 
   let [exe, signature] = await Promise.all([
     toolCache.downloadTool(url),

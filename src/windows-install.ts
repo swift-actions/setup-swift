@@ -1,6 +1,7 @@
 import * as os from "os";
 import * as core from "@actions/core";
 import * as toolCache from "@actions/tool-cache";
+import * as path from "path";
 import { exec } from "@actions/exec";
 import { System } from "./os";
 import { swiftPackage, Package } from "./swift-versions";
@@ -21,7 +22,7 @@ export async function install(version: string, system: System) {
 
     const exePath = await toolCache.cacheFile(exe, swiftPkg.name, `swift-${system.name}`, version);
 
-    swiftPath = exePath;
+    swiftPath = path.join(exePath, swiftPkg.name);
     //await verify(signature, pkg);
   } else {
     core.debug("Cached installer found");

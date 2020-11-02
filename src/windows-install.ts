@@ -20,7 +20,12 @@ export async function install(version: string, system: System) {
     const swiftPkg = swiftPackage(version, system);
     let { exe, signature } = await download(swiftPkg);
 
-    const exePath = await toolCache.cacheFile(exe, swiftPkg.name, `swift-${system.name}`, version);
+    const exePath = await toolCache.cacheFile(
+      exe,
+      swiftPkg.name,
+      `swift-${system.name}`,
+      version
+    );
 
     swiftPath = path.join(exePath, swiftPkg.name);
     //await verify(signature, pkg);

@@ -2495,8 +2495,8 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const requestedVersion = core.getInput("swift-version", { required: true });
-            let version = versions.verify(requestedVersion);
             let platform = yield system.getSystem();
+            let version = versions.verify(requestedVersion, platform);
             switch (platform.os) {
                 case system.OS.MacOS:
                     yield macos.install(version, platform);
@@ -7512,8 +7512,8 @@ var OS;
     OS[OS["Ubuntu"] = 1] = "Ubuntu";
 })(OS = exports.OS || (exports.OS = {}));
 const AVAILABLE_OS = {
-    macOS: ["latest"],
-    Ubuntu: ["18.04", "16.04"],
+    macOS: ["latest", "11.0", "10.15"],
+    Ubuntu: ["latest", "20.04", "18.04", "16.04"],
 };
 function getSystem() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -7702,40 +7702,48 @@ exports.verify = exports.swiftPackage = void 0;
 const semver = __importStar(__webpack_require__(876));
 const core = __importStar(__webpack_require__(470));
 const os_1 = __webpack_require__(316);
-const AVAILABLE_VERSIONS = [
-    "5.3",
-    "5.2.4",
-    "5.2.2",
-    "5.2.1",
-    "5.2",
-    "5.1.1",
-    "5.1",
-    "5.0.3",
-    "5.0.2",
-    "5.0.1",
-    "5.0",
-    "4.2.4",
-    "4.2.3",
-    "4.2.2",
-    "4.2.1",
-    "4.2",
-    "4.1.3",
-    "4.1.2",
-    "4.1.1",
-    "4.1",
-    "4.0.3",
-    "4.0.2",
-    "4.0",
-    "3.1.1",
-    "3.1",
-    "3.0.2",
-    "3.0.1",
-    "3.0",
-    "2.2.1",
-    "2.2",
-]
-    .map((version) => semver.coerce(version))
-    .filter(notEmpty);
+const VERSIONS_LIST = [
+    ["5.3", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["5.2.5", [os_1.OS.Ubuntu]],
+    ["5.2.4", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["5.2.3", [os_1.OS.Ubuntu]],
+    ["5.2.2", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["5.2.1", [os_1.OS.Ubuntu]],
+    ["5.2", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["5.1.5", [os_1.OS.Ubuntu]],
+    ["5.1.4", [os_1.OS.Ubuntu]],
+    ["5.1.3", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["5.1.2", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["5.1.1", [os_1.OS.Ubuntu]],
+    ["5.1", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["5.0.3", [os_1.OS.Ubuntu]],
+    ["5.0.2", [os_1.OS.Ubuntu]],
+    ["5.0.1", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["5.0", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["4.2.4", [os_1.OS.Ubuntu]],
+    ["4.2.3", [os_1.OS.Ubuntu]],
+    ["4.2.2", [os_1.OS.Ubuntu]],
+    ["4.2.1", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["4.2", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["4.1.3", [os_1.OS.Ubuntu]],
+    ["4.1.2", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["4.1.1", [os_1.OS.Ubuntu]],
+    ["4.1", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["4.0.3", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["4.0.2", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["4.0", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["3.1.1", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["3.1", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["3.0.2", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["3.0.1", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["3.0", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["2.2.1", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["2.2", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+];
+const AVAILABLE_VERSIONS = VERSIONS_LIST.map(([version, os]) => {
+    const semverVersion = semver.coerce(version);
+    return [semverVersion, os];
+});
 function notEmpty(value) {
     return value !== null && value !== undefined;
 }
@@ -7763,13 +7771,14 @@ function swiftPackage(version, system) {
     };
 }
 exports.swiftPackage = swiftPackage;
-function verify(version) {
+function verify(version, system) {
     let range = semver.validRange(version);
     if (range === null) {
         throw new Error("Version must be a valid semver format.");
     }
     core.debug(`Resolved range ${range}`);
-    let matchingVersion = evaluateVersions(AVAILABLE_VERSIONS, version);
+    let systemVersions = AVAILABLE_VERSIONS.filter(([_, os]) => os.includes(system.os)).map(([version, _]) => version);
+    let matchingVersion = evaluateVersions(systemVersions, version);
     if (matchingVersion === null) {
         throw new Error(`Version "${version}" is not available`);
     }

@@ -1,0 +1,21 @@
+name: Stability
+
+on:
+  schedule:
+    - cron:  '0 0 * * *'
+
+jobs:
+  v1:
+    name: ${{ matrix.version }} Swift ${{ matrix.swift }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        swift: ["5.3"]
+        version: ["v1"]
+    steps:
+    - uses: fwal/setup-swift@${{ matrix.version }}
+      with:
+        swift-version: ${{ matrix.swift }}
+    - name: Swift version
+      run: swift --version | grep ${{ matrix.swift }} || exit 1

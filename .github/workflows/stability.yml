@@ -6,7 +6,7 @@ on:
 
 jobs:
   v1:
-    name: ${{ matrix.version }} Swift ${{ matrix.swift }} on ${{ matrix.os }}
+    name: "v1: Swift ${{ matrix.swift }} on ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
     continue-on-error: true
     strategy:
@@ -20,7 +20,7 @@ jobs:
     - name: Swift version
       run: swift --version | grep ${{ matrix.swift }} || exit 1
   master:
-    name: ${{ matrix.version }} Swift ${{ matrix.swift }} on ${{ matrix.os }}
+    name: "v1-next: Swift ${{ matrix.swift }} on ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
     continue-on-error: true
     strategy:
@@ -28,7 +28,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         swift: ["5.3"]
     steps:
-    - uses: fwal/setup-swift@master
+    - uses: fwal/setup-swift@v1-next
       with:
         swift-version: ${{ matrix.swift }}
     - name: Swift version

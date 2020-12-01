@@ -7,7 +7,7 @@
     <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Ubuntu-lightgray" alt="Supports macOS and Ubuntu" />
   </a>
   <a href="https://swift.org">
-    <img src="https://img.shields.io/badge/Swift-5.3-F05138?logo=swift&logoColor=white" alt="Swift 5.3" />
+    <img src="https://img.shields.io/badge/Swift-5.3.1-F05138?logo=swift&logoColor=white" alt="Swift 5.3.1" />
   </a>
   <a href="https://github.com/fwal/setup-swift/releases/latest">
     <img src="https://img.shields.io/github/v/release/fwal/setup-swift?sort=semver" alt="Latest release" />
@@ -28,7 +28,7 @@ After the environment is configured you can run swift commands using the standar
 ```yaml
 - uses: fwal/setup-swift@v1
 - name: Get swift version
-  run: swift --version # Swift 5.3
+  run: swift --version # Swift 5.3.1
 ```
 
 A specific Swift version can be set using the `swift-version` input:
@@ -68,11 +68,11 @@ For example, Swift is available as version `5.1` but this will be interpreted as
 In other words specifying...
 - `"5.1.0"` will resolve to version `5.1`
 - `"5.1"` will resolve to latest patch version (aka `5.1.1`)
-- `"5"` will resolve to latest minor and patch version (aka `5.3.0`)
+- `"5"` will resolve to latest minor and patch version (aka `5.3.1`)
 
 ### Caveats
 
-YAML interprets eg. `5.0` as a float, this action will then interpret that as `5` which will result in eg. Swift 5.3 being resolved. Quote your inputs! Thus:
+YAML interprets eg. `5.0` as a float, this action will then interpret that as `5` which will result in eg. Swift 5.3.1 being resolved. Quote your inputs! Thus:
 
 ```
 - uses: fwal/setup-swift@v1

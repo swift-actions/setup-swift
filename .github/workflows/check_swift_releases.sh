@@ -2,7 +2,7 @@
 latest_release_name=`hub api repos/apple/swift/releases/latest | jq '.name'`
 exp="[0-9\.]"
 re="Swift ([0-9\.]+)"
-if [[ $latest_release_name =~ $re ]]
+if [[ "$latest_release_name" =~ "$re" ]]
 then 
   latest_release_number=${BASH_REMATCH[1]}
 else
@@ -12,7 +12,7 @@ fi
 
 echo "Latest release is $latest_release_number"
 
-if grep -q $latest_release_number "./src/swift-versions.ts"
+if grep -q "$latest_release_number" "./src/swift-versions.ts"
 then
   echo "Version already added"
   exit 0

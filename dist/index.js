@@ -7765,6 +7765,7 @@ const semver = __importStar(__webpack_require__(876));
 const core = __importStar(__webpack_require__(470));
 const os_1 = __webpack_require__(316);
 const VERSIONS_LIST = [
+    ["5.3.1", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
     ["5.3", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
     ["5.2.5", [os_1.OS.Ubuntu]],
     ["5.2.4", [os_1.OS.MacOS, os_1.OS.Ubuntu]],

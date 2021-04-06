@@ -36,7 +36,7 @@
     "@actions/io": "^1.0.2",
     "@actions/tool-cache": "^1.6.1",
     "getos": "^3.2.1",
-    "semver": "^7.3.4"
+    "semver": "^7.3.5"
   },
   "devDependencies": {
     "@types/getos": "^3.0.0",

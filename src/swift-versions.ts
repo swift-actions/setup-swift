@@ -3,6 +3,7 @@ import * as core from "@actions/core";
 import { System, OS } from "./os";
 
 const VERSIONS_LIST: [string, OS[]][] = [
+  ["5.4", [OS.MacOS, OS.Ubuntu]],
   ["5.3.3", [OS.MacOS, OS.Ubuntu]],
   ["5.3.2", [OS.MacOS, OS.Ubuntu]],
   ["5.3.1", [OS.MacOS, OS.Ubuntu]],

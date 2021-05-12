@@ -14,7 +14,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         swift: ["5.4"]
     steps:
-    - uses: fwal/setup-swift@v1
+    - uses: fwal/setup-swift@v1.7.0
       with:
         swift-version: ${{ matrix.swift }}
     - name: Swift version
@@ -28,7 +28,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         swift: ["5.4"]
     steps:
-    - uses: fwal/setup-swift@main
+    - uses: fwal/setup-swift@v1.7.0
       with:
         swift-version: ${{ matrix.swift }}
     - name: Swift version

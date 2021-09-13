@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        swift: ["5.4"]
+        swift: ["5.4.3"]
     steps:
     - uses: fwal/setup-swift@v1
       with:
@@ -26,7 +26,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        swift: ["5.4"]
+        swift: ["5.4.3"]
     steps:
     - uses: fwal/setup-swift@main
       with:

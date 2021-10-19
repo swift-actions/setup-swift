@@ -2735,9 +2735,9 @@ const get_version_1 = __webpack_require__(778);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            // const requestedVersion = core.getInput("swift-version", { required: true });
+            const requestedVersion = core.getInput("swift-version", { required: true });
             let platform = yield system.getSystem();
-            let version = versions.verify("5.5", platform);
+            let version = versions.verify(requestedVersion, platform);
             switch (platform.os) {
                 case system.OS.MacOS:
                     yield macos.install(version, platform);

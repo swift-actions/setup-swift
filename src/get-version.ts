@@ -20,8 +20,8 @@ export async function getVersion(
 
   await exec(command, args, options);
 
-  if (error) {
-    throw new Error(error);
+  if (!output && error) {
+    throw new Error("Error getting swift version " + error);
   }
 
   return versionFromString(output);

@@ -8,6 +8,14 @@ describe("version lookup", () => {
     expect(version).toBe("5.4.2");
   });
 
+  it("identifies version from swift version with target", async () => {
+    const version = versionFromString(
+      `Apple Swift version 5.5 (swiftlang-1300.0.31.1 clang-1300.0.29.1)
+Target: x86_64-apple-macosx11.0`
+    );
+    expect(version).toBe("5.5");
+  });
+
   it("identifies version from swift-driver version", async () => {
     const version = versionFromString(
       "swift-driver version: 1.26.9 Apple Swift version 5.5 (swiftlang-1300.0.31.1 clang-1300.0.29.1)"

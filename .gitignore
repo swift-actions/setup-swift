@@ -60,3 +60,6 @@ lib/
 
 # next.js build output
 .next
+
+dist/
+yarn.lock

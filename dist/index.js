@@ -54,25 +54,6 @@ module.exports =
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -82,15 +63,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findInPath = exports.which = exports.mkdirP = exports.rmRF = exports.mv = exports.cp = void 0;
-const assert_1 = __webpack_require__(357);
 const childProcess = __importStar(__webpack_require__(129));
 const path = __importStar(__webpack_require__(622));
 const util_1 = __webpack_require__(669);
 const ioUtil = __importStar(__webpack_require__(672));
 const exec = util_1.promisify(childProcess.exec);
-const execFile = util_1.promisify(childProcess.execFile);
 /**
  * Copies a file or folder.
  * Based off of shelljs - https://github.com/shelljs/shelljs/blob/9237f66c52e5daa40458f94f9565e18e8132f5a6/src/cp.js
@@ -101,14 +86,14 @@ const execFile = util_1.promisify(childProcess.execFile);
  */
 function cp(source, dest, options = {}) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { force, recursive, copySourceDirectory } = readCopyOptions(options);
+        const { force, recursive } = readCopyOptions(options);
         const destStat = (yield ioUtil.exists(dest)) ? yield ioUtil.stat(dest) : null;
         // Dest is an existing file, but not forcing
         if (destStat && destStat.isFile() && !force) {
             return;
         }
         // If dest is an existing directory, should copy inside.
-        const newDest = destStat && destStat.isDirectory() && copySourceDirectory
+        const newDest = destStat && destStat.isDirectory()
             ? path.join(dest, path.basename(source))
             : dest;
         if (!(yield ioUtil.exists(source))) {
@@ -173,22 +158,12 @@ function rmRF(inputPath) {
         if (ioUtil.IS_WINDOWS) {
             // Node doesn't provide a delete operation, only an unlink function. This means that if the file is being used by another
             // program (e.g. antivirus), it won't be deleted. To address this, we shell out the work to rd/del.
-            // Check for invalid characters
-            // https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file
-            if (/[*"<>|]/.test(inputPath)) {
-                throw new Error('File path must not contain `*`, `"`, `<`, `>` or `|` on Windows');
-            }
             try {
-                const cmdPath = ioUtil.getCmdPath();
                 if (yield ioUtil.isDirectory(inputPath, true)) {
-                    yield exec(`${cmdPath} /s /c "rd /s /q "%inputPath%""`, {
-                        env: { inputPath }
-                    });
+                    yield exec(`rd /s /q "${inputPath}"`);
                 }
                 else {
-                    yield exec(`${cmdPath} /s /c "del /f /a "%inputPath%""`, {
-                        env: { inputPath }
-                    });
+                    yield exec(`del /f /a "${inputPath}"`);
                 }
             }
             catch (err) {
@@ -221,7 +196,7 @@ function rmRF(inputPath) {
                 return;
             }
             if (isDir) {
-                yield execFile(`rm`, [`-rf`, `${inputPath}`]);
+                yield exec(`rm -rf "${inputPath}"`);
             }
             else {
                 yield ioUtil.unlink(inputPath);
@@ -239,8 +214,7 @@ exports.rmRF = rmRF;
  */
 function mkdirP(fsPath) {
     return __awaiter(this, void 0, void 0, function* () {
-        assert_1.ok(fsPath, 'a path argument must be provided');
-        yield ioUtil.mkdir(fsPath, { recursive: true });
+        yield ioUtil.mkdirP(fsPath);
     });
 }
 exports.mkdirP = mkdirP;
@@ -338,10 +312,7 @@ exports.findInPath = findInPath;
 function readCopyOptions(options) {
     const force = options.force == null ? true : options.force;
     const recursive = Boolean(options.recursive);
-    const copySourceDirectory = options.copySourceDirectory == null
-        ? true
-        : Boolean(options.copySourceDirectory);
-    return { force, recursive, copySourceDirectory };
+    return { force, recursive };
 }
 function cpDirRecursive(sourceDir, destDir, currentDepth, force) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -402,25 +373,6 @@ function copyFile(srcFile, destFile, force) {
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -430,15 +382,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.argStringToArray = exports.ToolRunner = void 0;
 const os = __importStar(__webpack_require__(87));
 const events = __importStar(__webpack_require__(614));
 const child = __importStar(__webpack_require__(129));
 const path = __importStar(__webpack_require__(622));
 const io = __importStar(__webpack_require__(1));
 const ioUtil = __importStar(__webpack_require__(672));
-const timers_1 = __webpack_require__(213);
 /* eslint-disable @typescript-eslint/unbound-method */
 const IS_WINDOWS = process.platform === 'win32';
 /*
@@ -508,12 +465,11 @@ class ToolRunner extends events.EventEmitter {
                 s = s.substring(n + os.EOL.length);
                 n = s.indexOf(os.EOL);
             }
-            return s;
+            strBuffer = s;
         }
         catch (err) {
             // streaming lines to console is best effort.  Don't fail a build.
             this._debug(`error processing line. Failed with error ${err}`);
-            return '';
         }
     }
     _getSpawnFileName() {
@@ -795,7 +751,7 @@ class ToolRunner extends events.EventEmitter {
             // if the tool is only a file name, then resolve it from the PATH
             // otherwise verify it exists (add extension on Windows if necessary)
             this.toolPath = yield io.which(this.toolPath, true);
-            return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) => {
                 this._debug(`exec tool: ${this.toolPath}`);
                 this._debug('arguments:');
                 for (const arg of this.args) {
@@ -809,12 +765,9 @@ class ToolRunner extends events.EventEmitter {
                 state.on('debug', (message) => {
                     this._debug(message);
                 });
-                if (this.options.cwd && !(yield ioUtil.exists(this.options.cwd))) {
-                    return reject(new Error(`The cwd: ${this.options.cwd} does not exist!`));
-                }
                 const fileName = this._getSpawnFileName();
                 const cp = child.spawn(fileName, this._getSpawnArgs(optionsNonNull), this._getSpawnOptions(this.options, fileName));
-                let stdbuffer = '';
+                const stdbuffer = '';
                 if (cp.stdout) {
                     cp.stdout.on('data', (data) => {
                         if (this.options.listeners && this.options.listeners.stdout) {
@@ -823,14 +776,14 @@ class ToolRunner extends events.EventEmitter {
                         if (!optionsNonNull.silent && optionsNonNull.outStream) {
                             optionsNonNull.outStream.write(data);
                         }
-                        stdbuffer = this._processLineBuffer(data, stdbuffer, (line) => {
+                        this._processLineBuffer(data, stdbuffer, (line) => {
                             if (this.options.listeners && this.options.listeners.stdline) {
                                 this.options.listeners.stdline(line);
                             }
                         });
                     });
                 }
-                let errbuffer = '';
+                const errbuffer = '';
                 if (cp.stderr) {
                     cp.stderr.on('data', (data) => {
                         state.processStderr = true;
@@ -845,7 +798,7 @@ class ToolRunner extends events.EventEmitter {
                                 : optionsNonNull.outStream;
                             s.write(data);
                         }
-                        errbuffer = this._processLineBuffer(data, errbuffer, (line) => {
+                        this._processLineBuffer(data, errbuffer, (line) => {
                             if (this.options.listeners && this.options.listeners.errline) {
                                 this.options.listeners.errline(line);
                             }
@@ -892,7 +845,7 @@ class ToolRunner extends events.EventEmitter {
                     }
                     cp.stdin.end(this.options.input);
                 }
-            }));
+            });
         });
     }
 }
@@ -978,7 +931,7 @@ class ExecState extends events.EventEmitter {
             this._setResult();
         }
         else if (this.processExited) {
-            this.timeout = timers_1.setTimeout(ExecState.HandleTimeout, this.delay, this);
+            this.timeout = setTimeout(ExecState.HandleTimeout, this.delay, this);
         }
     }
     _debug(message) {
@@ -1023,9 +976,16 @@ class ExecState extends events.EventEmitter {
 /***/ }),
 
 /***/ 16:
-/***/ (function(module) {
+/***/ (function(module, __unusedexports, __webpack_require__) {
 
-module.exports = require("tls");
+const SemVer = __webpack_require__(65)
+const compareBuild = (a, b, loose) => {
+  const versionA = new SemVer(a, loose)
+  const versionB = new SemVer(b, loose)
+  return versionA.compare(versionB) || versionA.compareBuild(versionB)
+}
+module.exports = compareBuild
+
 
 /***/ }),
 
@@ -1034,25 +994,6 @@ module.exports = require("tls");
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -1062,8 +1003,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports._readLinuxVersionFile = exports._getOsVersion = exports._findMatch = void 0;
 const semver = __importStar(__webpack_require__(550));
 const core_1 = __webpack_require__(470);
 // needs to be require for core node modules to be mocked
@@ -1132,13 +1079,8 @@ function _getOsVersion() {
             const lines = lsbContents.split('\n');
             for (const line of lines) {
                 const parts = line.split('=');
-                if (parts.length === 2 &&
-                    (parts[0].trim() === 'VERSION_ID' ||
-                        parts[0].trim() === 'DISTRIB_RELEASE')) {
-                    version = parts[1]
-                        .trim()
-                        .replace(/^"/, '')
-                        .replace(/"$/, '');
+                if (parts.length === 2 && parts[0].trim() === 'DISTRIB_RELEASE') {
+                    version = parts[1].trim();
                     break;
                 }
             }
@@ -1148,14 +1090,10 @@ function _getOsVersion() {
 }
 exports._getOsVersion = _getOsVersion;
 function _readLinuxVersionFile() {
-    const lsbReleaseFile = '/etc/lsb-release';
-    const osReleaseFile = '/etc/os-release';
+    const lsbFile = '/etc/lsb-release';
     let contents = '';
-    if (fs.existsSync(lsbReleaseFile)) {
-        contents = fs.readFileSync(lsbReleaseFile).toString();
-    }
-    else if (fs.existsSync(osReleaseFile)) {
-        contents = fs.readFileSync(osReleaseFile).toString();
+    if (fs.existsSync(lsbFile)) {
+        contents = fs.readFileSync(lsbFile).toString();
     }
     return contents;
 }
@@ -1466,7 +1404,6 @@ module.exports = SemVer
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.toCommandProperties = exports.toCommandValue = void 0;
 /**
  * Sanitizes an input into a string so it can be passed into issueCommand safely
  * @param input input to sanitize into a string
@@ -1481,26 +1418,6 @@ function toCommandValue(input) {
     return JSON.stringify(input);
 }
 exports.toCommandValue = toCommandValue;
-/**
- *
- * @param annotationProperties
- * @returns The command properties to send with the actual annotation command
- * See IssueCommandProperties: https://github.com/actions/runner/blob/main/src/Runner.Worker/ActionCommandManager.cs#L646
- */
-function toCommandProperties(annotationProperties) {
-    if (!Object.keys(annotationProperties).length) {
-        return {};
-    }
-    return {
-        title: annotationProperties.title,
-        file: annotationProperties.file,
-        line: annotationProperties.startLine,
-        endLine: annotationProperties.endLine,
-        col: annotationProperties.startColumn,
-        endColumn: annotationProperties.endColumn
-    };
-}
-exports.toCommandProperties = toCommandProperties;
 //# sourceMappingURL=utils.js.map
 
 /***/ }),
@@ -1549,27 +1466,14 @@ module.exports = require("os");
 "use strict";
 
 // For internal use, subject to change.
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.issueCommand = void 0;
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const fs = __importStar(__webpack_require__(747));
@@ -1595,7 +1499,7 @@ exports.issueCommand = issueCommand;
 /***/ 120:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
-const compareBuild = __webpack_require__(465)
+const compareBuild = __webpack_require__(16)
 const sort = (list, loose) => list.sort((a, b) => compareBuild(a, b, loose))
 module.exports = sort
 
@@ -2148,7 +2052,7 @@ module.exports = function nodeRNG() {
 
 
 var net = __webpack_require__(631);
-var tls = __webpack_require__(16);
+var tls = __webpack_require__(818);
 var http = __webpack_require__(605);
 var https = __webpack_require__(211);
 var events = __webpack_require__(614);
@@ -2746,7 +2650,7 @@ function run() {
                     yield linux.install(version, platform);
                     break;
             }
-            const current = yield (0, get_version_1.getVersion)();
+            const current = yield get_version_1.getVersion();
             if (current === version) {
                 core.setOutput("version", version);
             }
@@ -2789,13 +2693,6 @@ module.exports = function amazonCustomLogic (os, file, cb) {
 /***/ (function(module) {
 
 module.exports = require("https");
-
-/***/ }),
-
-/***/ 213:
-/***/ (function(module) {
-
-module.exports = require("timers");
 
 /***/ }),
 
@@ -2880,7 +2777,6 @@ module.exports = toComparators
 
     /* istanbul ignore file */
 
-    var hasQueueMicrotask = typeof queueMicrotask === 'function' && queueMicrotask;
     var hasSetImmediate = typeof setImmediate === 'function' && setImmediate;
     var hasNextTick = typeof process === 'object' && typeof process.nextTick === 'function';
 
@@ -2894,9 +2790,7 @@ module.exports = toComparators
 
     var _defer;
 
-    if (hasQueueMicrotask) {
-        _defer = queueMicrotask;
-    } else if (hasSetImmediate) {
+    if (hasSetImmediate) {
         _defer = setImmediate;
     } else if (hasNextTick) {
         _defer = process.nextTick;
@@ -3348,19 +3242,12 @@ module.exports = toComparators
      * @returns {Promise} a promise, if a callback is omitted
      * @example
      *
-     * // dev.json is a file containing a valid json object config for dev environment
-     * // dev.json is a file containing a valid json object config for test environment
-     * // prod.json is a file containing a valid json object config for prod environment
-     * // invalid.json is a file with a malformed json object
+     * var obj = {dev: "/dev.json", test: "/test.json", prod: "/prod.json"};
+     * var configs = {};
      *
-     * let configs = {}; //global variable
-     * let validConfigFileMap = {dev: 'dev.json', test: 'test.json', prod: 'prod.json'};
-     * let invalidConfigFileMap = {dev: 'dev.json', test: 'test.json', invalid: 'invalid.json'};
-     *
-     * // asynchronous function that reads a json file and parses the contents as json object
-     * function parseFile(file, key, callback) {
-     *     fs.readFile(file, "utf8", function(err, data) {
-     *         if (err) return calback(err);
+     * async.forEachOf(obj, function (value, key, callback) {
+     *     fs.readFile(__dirname + value, "utf8", function (err, data) {
+     *         if (err) return callback(err);
      *         try {
      *             configs[key] = JSON.parse(data);
      *         } catch (e) {
@@ -3368,73 +3255,11 @@ module.exports = toComparators
      *         }
      *         callback();
      *     });
-     * }
-     *
-     * // Using callbacks
-     * async.forEachOf(validConfigFileMap, parseFile, function (err) {
-     *     if (err) {
-     *         console.error(err);
-     *     } else {
-     *         console.log(configs);
-     *         // configs is now a map of JSON data, e.g.
-     *         // { dev: //parsed dev.json, test: //parsed test.json, prod: //parsed prod.json}
-     *     }
+     * }, function (err) {
+     *     if (err) console.error(err.message);
+     *     // configs is now a map of JSON data
+     *     doSomethingWith(configs);
      * });
-     *
-     * //Error handing
-     * async.forEachOf(invalidConfigFileMap, parseFile, function (err) {
-     *     if (err) {
-     *         console.error(err);
-     *         // JSON parse error exception
-     *     } else {
-     *         console.log(configs);
-     *     }
-     * });
-     *
-     * // Using Promises
-     * async.forEachOf(validConfigFileMap, parseFile)
-     * .then( () => {
-     *     console.log(configs);
-     *     // configs is now a map of JSON data, e.g.
-     *     // { dev: //parsed dev.json, test: //parsed test.json, prod: //parsed prod.json}
-     * }).catch( err => {
-     *     console.error(err);
-     * });
-     *
-     * //Error handing
-     * async.forEachOf(invalidConfigFileMap, parseFile)
-     * .then( () => {
-     *     console.log(configs);
-     * }).catch( err => {
-     *     console.error(err);
-     *     // JSON parse error exception
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let result = await async.forEachOf(validConfigFileMap, parseFile);
-     *         console.log(configs);
-     *         // configs is now a map of JSON data, e.g.
-     *         // { dev: //parsed dev.json, test: //parsed test.json, prod: //parsed prod.json}
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     * //Error handing
-     * async () => {
-     *     try {
-     *         let result = await async.forEachOf(invalidConfigFileMap, parseFile);
-     *         console.log(configs);
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *         // JSON parse error exception
-     *     }
-     * }
-     *
      */
     function eachOf(coll, iteratee, callback) {
         var eachOfImplementation = isArrayLike(coll) ? eachOfArrayLike : eachOfGeneric;
@@ -3476,89 +3301,9 @@ module.exports = toComparators
      * @returns {Promise} a promise, if no callback is passed
      * @example
      *
-     * // file1.txt is a file that is 1000 bytes in size
-     * // file2.txt is a file that is 2000 bytes in size
-     * // file3.txt is a file that is 3000 bytes in size
-     * // file4.txt does not exist
-     *
-     * const fileList = ['file1.txt','file2.txt','file3.txt'];
-     * const withMissingFileList = ['file1.txt','file2.txt','file4.txt'];
-     *
-     * // asynchronous function that returns the file size in bytes
-     * function getFileSizeInBytes(file, callback) {
-     *     fs.stat(file, function(err, stat) {
-     *         if (err) {
-     *             return callback(err);
-     *         }
-     *         callback(null, stat.size);
-     *     });
-     * }
-     *
-     * // Using callbacks
-     * async.map(fileList, getFileSizeInBytes, function(err, results) {
-     *     if (err) {
-     *         console.log(err);
-     *     } else {
-     *         console.log(results);
-     *         // results is now an array of the file size in bytes for each file, e.g.
-     *         // [ 1000, 2000, 3000]
-     *     }
+     * async.map(['file1','file2','file3'], fs.stat, function(err, results) {
+     *     // results is now an array of stats for each file
      * });
-     *
-     * // Error Handling
-     * async.map(withMissingFileList, getFileSizeInBytes, function(err, results) {
-     *     if (err) {
-     *         console.log(err);
-     *         // [ Error: ENOENT: no such file or directory ]
-     *     } else {
-     *         console.log(results);
-     *     }
-     * });
-     *
-     * // Using Promises
-     * async.map(fileList, getFileSizeInBytes)
-     * .then( results => {
-     *     console.log(results);
-     *     // results is now an array of the file size in bytes for each file, e.g.
-     *     // [ 1000, 2000, 3000]
-     * }).catch( err => {
-     *     console.log(err);
-     * });
-     *
-     * // Error Handling
-     * async.map(withMissingFileList, getFileSizeInBytes)
-     * .then( results => {
-     *     console.log(results);
-     * }).catch( err => {
-     *     console.log(err);
-     *     // [ Error: ENOENT: no such file or directory ]
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let results = await async.map(fileList, getFileSizeInBytes);
-     *         console.log(results);
-     *         // results is now an array of the file size in bytes for each file, e.g.
-     *         // [ 1000, 2000, 3000]
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     * // Error Handling
-     * async () => {
-     *     try {
-     *         let results = await async.map(withMissingFileList, getFileSizeInBytes);
-     *         console.log(results);
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *         // [ Error: ENOENT: no such file or directory ]
-     *     }
-     * }
-     *
      */
     function map (coll, iteratee, callback) {
         return _asyncMap(eachOf$1, coll, iteratee, callback)
@@ -3732,40 +3477,15 @@ module.exports = toComparators
      * @returns {Promise} a promise, if a callback is not passed
      * @example
      *
-     * //Using Callbacks
      * async.auto({
-     *     get_data: function(callback) {
-     *         // async code to get some data
-     *         callback(null, 'data', 'converted to array');
-     *     },
-     *     make_folder: function(callback) {
-     *         // async code to create a directory to store a file in
-     *         // this is run at the same time as getting the data
-     *         callback(null, 'folder');
-     *     },
-     *     write_file: ['get_data', 'make_folder', function(results, callback) {
-     *         // once there is some data and the directory exists,
-     *         // write the data to a file in the directory
-     *         callback(null, 'filename');
-     *     }],
-     *     email_link: ['write_file', function(results, callback) {
-     *         // once the file is written let's email a link to it...
-     *         callback(null, {'file':results.write_file, 'email':'user@example.com'});
+     *     // this function will just be passed a callback
+     *     readData: async.apply(fs.readFile, 'data.txt', 'utf-8'),
+     *     showData: ['readData', function(results, cb) {
+     *         // results.readData is the file's contents
+     *         // ...
      *     }]
-     * }, function(err, results) {
-     *     if (err) {
-     *         console.log('err = ', err);
-     *     }
-     *     console.log('results = ', results);
-     *     // results = {
-     *     //     get_data: ['data', 'converted to array']
-     *     //     make_folder; 'folder',
-     *     //     write_file: 'filename'
-     *     //     email_link: { file: 'filename', email: 'user@example.com' }
-     *     // }
-     * });
+     * }, callback);
      *
-     * //Using Promises
      * async.auto({
      *     get_data: function(callback) {
      *         console.log('in get_data');
@@ -3779,62 +3499,21 @@ module.exports = toComparators
      *         callback(null, 'folder');
      *     },
      *     write_file: ['get_data', 'make_folder', function(results, callback) {
+     *         console.log('in write_file', JSON.stringify(results));
      *         // once there is some data and the directory exists,
      *         // write the data to a file in the directory
      *         callback(null, 'filename');
      *     }],
      *     email_link: ['write_file', function(results, callback) {
+     *         console.log('in email_link', JSON.stringify(results));
      *         // once the file is written let's email a link to it...
+     *         // results.write_file contains the filename returned by write_file.
      *         callback(null, {'file':results.write_file, 'email':'user@example.com'});
      *     }]
-     * }).then(results => {
-     *     console.log('results = ', results);
-     *     // results = {
-     *     //     get_data: ['data', 'converted to array']
-     *     //     make_folder; 'folder',
-     *     //     write_file: 'filename'
-     *     //     email_link: { file: 'filename', email: 'user@example.com' }
-     *     // }
-     * }).catch(err => {
+     * }, function(err, results) {
      *     console.log('err = ', err);
+     *     console.log('results = ', results);
      * });
-     *
-     * //Using async/await
-     * async () => {
-     *     try {
-     *         let results = await async.auto({
-     *             get_data: function(callback) {
-     *                 // async code to get some data
-     *                 callback(null, 'data', 'converted to array');
-     *             },
-     *             make_folder: function(callback) {
-     *                 // async code to create a directory to store a file in
-     *                 // this is run at the same time as getting the data
-     *                 callback(null, 'folder');
-     *             },
-     *             write_file: ['get_data', 'make_folder', function(results, callback) {
-     *                 // once there is some data and the directory exists,
-     *                 // write the data to a file in the directory
-     *                 callback(null, 'filename');
-     *             }],
-     *             email_link: ['write_file', function(results, callback) {
-     *                 // once the file is written let's email a link to it...
-     *                 callback(null, {'file':results.write_file, 'email':'user@example.com'});
-     *             }]
-     *         });
-     *         console.log('results = ', results);
-     *         // results = {
-     *         //     get_data: ['data', 'converted to array']
-     *         //     make_folder; 'folder',
-     *         //     write_file: 'filename'
-     *         //     email_link: { file: 'filename', email: 'user@example.com' }
-     *         // }
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
      */
     function auto(tasks, concurrency, callback) {
         if (typeof concurrency !== 'number') {
@@ -4642,7 +4321,7 @@ module.exports = toComparators
      * @param {AsyncFunction} iteratee - A function applied to each item in the
      * array to produce the next step in the reduction.
      * The `iteratee` should complete with the next state of the reduction.
-     * If the iteratee completes with an error, the reduction is stopped and the
+     * If the iteratee complete with an error, the reduction is stopped and the
      * main `callback` is immediately called with the error.
      * Invoked with (memo, item, callback).
      * @param {Function} [callback] - A callback which is called after all the
@@ -4651,90 +4330,14 @@ module.exports = toComparators
      * @returns {Promise} a promise, if no callback is passed
      * @example
      *
-     * // file1.txt is a file that is 1000 bytes in size
-     * // file2.txt is a file that is 2000 bytes in size
-     * // file3.txt is a file that is 3000 bytes in size
-     * // file4.txt does not exist
-     *
-     * const fileList = ['file1.txt','file2.txt','file3.txt'];
-     * const withMissingFileList = ['file1.txt','file2.txt','file3.txt', 'file4.txt'];
-     *
-     * // asynchronous function that computes the file size in bytes
-     * // file size is added to the memoized value, then returned
-     * function getFileSizeInBytes(memo, file, callback) {
-     *     fs.stat(file, function(err, stat) {
-     *         if (err) {
-     *             return callback(err);
-     *         }
-     *         callback(null, memo + stat.size);
+     * async.reduce([1,2,3], 0, function(memo, item, callback) {
+     *     // pointless async:
+     *     process.nextTick(function() {
+     *         callback(null, memo + item)
      *     });
-     * }
-     *
-     * // Using callbacks
-     * async.reduce(fileList, 0, getFileSizeInBytes, function(err, result) {
-     *     if (err) {
-     *         console.log(err);
-     *     } else {
-     *         console.log(result);
-     *         // 6000
-     *         // which is the sum of the file sizes of the three files
-     *     }
+     * }, function(err, result) {
+     *     // result is now equal to the last value of memo, which is 6
      * });
-     *
-     * // Error Handling
-     * async.reduce(withMissingFileList, 0, getFileSizeInBytes, function(err, result) {
-     *     if (err) {
-     *         console.log(err);
-     *         // [ Error: ENOENT: no such file or directory ]
-     *     } else {
-     *         console.log(result);
-     *     }
-     * });
-     *
-     * // Using Promises
-     * async.reduce(fileList, 0, getFileSizeInBytes)
-     * .then( result => {
-     *     console.log(result);
-     *     // 6000
-     *     // which is the sum of the file sizes of the three files
-     * }).catch( err => {
-     *     console.log(err);
-     * });
-     *
-     * // Error Handling
-     * async.reduce(withMissingFileList, 0, getFileSizeInBytes)
-     * .then( result => {
-     *     console.log(result);
-     * }).catch( err => {
-     *     console.log(err);
-     *     // [ Error: ENOENT: no such file or directory ]
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let result = await async.reduce(fileList, 0, getFileSizeInBytes);
-     *         console.log(result);
-     *         // 6000
-     *         // which is the sum of the file sizes of the three files
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     * // Error Handling
-     * async () => {
-     *     try {
-     *         let result = await async.reduce(withMissingFileList, 0, getFileSizeInBytes);
-     *         console.log(result);
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *         // [ Error: ENOENT: no such file or directory ]
-     *     }
-     * }
-     *
      */
     function reduce(coll, memo, iteratee, callback) {
         callback = once(callback);
@@ -4938,77 +4541,9 @@ module.exports = toComparators
      * @returns A Promise, if no callback is passed
      * @example
      *
-     * // dir1 is a directory that contains file1.txt, file2.txt
-     * // dir2 is a directory that contains file3.txt, file4.txt
-     * // dir3 is a directory that contains file5.txt
-     * // dir4 does not exist
-     *
-     * let directoryList = ['dir1','dir2','dir3'];
-     * let withMissingDirectoryList = ['dir1','dir2','dir3', 'dir4'];
-     *
-     * // Using callbacks
-     * async.concat(directoryList, fs.readdir, function(err, results) {
-     *    if (err) {
-     *        console.log(err);
-     *    } else {
-     *        console.log(results);
-     *        // [ 'file1.txt', 'file2.txt', 'file3.txt', 'file4.txt', file5.txt ]
-     *    }
+     * async.concat(['dir1','dir2','dir3'], fs.readdir, function(err, files) {
+     *     // files is now a list of filenames that exist in the 3 directories
      * });
-     *
-     * // Error Handling
-     * async.concat(withMissingDirectoryList, fs.readdir, function(err, results) {
-     *    if (err) {
-     *        console.log(err);
-     *        // [ Error: ENOENT: no such file or directory ]
-     *        // since dir4 does not exist
-     *    } else {
-     *        console.log(results);
-     *    }
-     * });
-     *
-     * // Using Promises
-     * async.concat(directoryList, fs.readdir)
-     * .then(results => {
-     *     console.log(results);
-     *     // [ 'file1.txt', 'file2.txt', 'file3.txt', 'file4.txt', file5.txt ]
-     * }).catch(err => {
-     *      console.log(err);
-     * });
-     *
-     * // Error Handling
-     * async.concat(withMissingDirectoryList, fs.readdir)
-     * .then(results => {
-     *     console.log(results);
-     * }).catch(err => {
-     *     console.log(err);
-     *     // [ Error: ENOENT: no such file or directory ]
-     *     // since dir4 does not exist
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let results = await async.concat(directoryList, fs.readdir);
-     *         console.log(results);
-     *         // [ 'file1.txt', 'file2.txt', 'file3.txt', 'file4.txt', file5.txt ]
-     *     } catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     * // Error Handling
-     * async () => {
-     *     try {
-     *         let results = await async.concat(withMissingDirectoryList, fs.readdir);
-     *         console.log(results);
-     *     } catch (err) {
-     *         console.log(err);
-     *         // [ Error: ENOENT: no such file or directory ]
-     *         // since dir4 does not exist
-     *     }
-     * }
-     *
      */
     function concat(coll, iteratee, callback) {
         return concatLimit$1(coll, Infinity, iteratee, callback)
@@ -5140,48 +4675,13 @@ module.exports = toComparators
      * @returns A Promise, if no callback is passed
      * @example
      *
-     * // dir1 is a directory that contains file1.txt, file2.txt
-     * // dir2 is a directory that contains file3.txt, file4.txt
-     * // dir3 is a directory that contains file5.txt
-     *
-     * // asynchronous function that checks if a file exists
-     * function fileExists(file, callback) {
-     *    fs.access(file, fs.constants.F_OK, (err) => {
-     *        callback(null, !err);
-     *    });
-     * }
-     *
-     * async.detect(['file3.txt','file2.txt','dir1/file1.txt'], fileExists,
-     *    function(err, result) {
-     *        console.log(result);
-     *        // dir1/file1.txt
-     *        // result now equals the first file in the list that exists
-     *    }
-     *);
-     *
-     * // Using Promises
-     * async.detect(['file3.txt','file2.txt','dir1/file1.txt'], fileExists)
-     * .then(result => {
-     *     console.log(result);
-     *     // dir1/file1.txt
+     * async.detect(['file1','file2','file3'], function(filePath, callback) {
+     *     fs.access(filePath, function(err) {
+     *         callback(null, !err)
+     *     });
+     * }, function(err, result) {
      *     // result now equals the first file in the list that exists
-     * }).catch(err => {
-     *     console.log(err);
      * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let result = await async.detect(['file3.txt','file2.txt','dir1/file1.txt'], fileExists);
-     *         console.log(result);
-     *         // dir1/file1.txt
-     *         // result now equals the file in the list that exists
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
      */
     function detect(coll, iteratee, callback) {
         return _createTester(bool => bool, (res, item) => item)(eachOf$1, coll, iteratee, callback)
@@ -5245,15 +4745,12 @@ module.exports = toComparators
 
     function consoleFunc(name) {
         return (fn, ...args) => wrapAsync(fn)(...args, (err, ...resultArgs) => {
-            /* istanbul ignore else */
             if (typeof console === 'object') {
-                /* istanbul ignore else */
                 if (err) {
-                    /* istanbul ignore else */
                     if (console.error) {
                         console.error(err);
                     }
-                } else if (console[name]) { /* istanbul ignore else */
+                } else if (console[name]) {
                     resultArgs.forEach(x => console[name](x));
                 }
             }
@@ -5398,78 +4895,37 @@ module.exports = toComparators
      * @returns {Promise} a promise, if a callback is omitted
      * @example
      *
-     * // dir1 is a directory that contains file1.txt, file2.txt
-     * // dir2 is a directory that contains file3.txt, file4.txt
-     * // dir3 is a directory that contains file5.txt
-     * // dir4 does not exist
+     * // assuming openFiles is an array of file names and saveFile is a function
+     * // to save the modified contents of that file:
      *
-     * const fileList = [ 'dir1/file2.txt', 'dir2/file3.txt', 'dir/file5.txt'];
-     * const withMissingFileList = ['dir1/file1.txt', 'dir4/file2.txt'];
+     * async.each(openFiles, saveFile, function(err){
+     *   // if any of the saves produced an error, err would equal that error
+     * });
      *
-     * // asynchronous function that deletes a file
-     * const deleteFile = function(file, callback) {
-     *     fs.unlink(file, callback);
-     * };
+     * // assuming openFiles is an array of file names
+     * async.each(openFiles, function(file, callback) {
      *
-     * // Using callbacks
-     * async.each(fileList, deleteFile, function(err) {
-     *     if( err ) {
-     *         console.log(err);
+     *     // Perform operation on file here.
+     *     console.log('Processing file ' + file);
+     *
+     *     if( file.length > 32 ) {
+     *       console.log('This file name is too long');
+     *       callback('File name too long');
      *     } else {
-     *         console.log('All files have been deleted successfully');
+     *       // Do work to process file here
+     *       console.log('File processed');
+     *       callback();
+     *     }
+     * }, function(err) {
+     *     // if any of the file processing produced an error, err would equal that error
+     *     if( err ) {
+     *       // One of the iterations produced an error.
+     *       // All processing will now stop.
+     *       console.log('A file failed to process');
+     *     } else {
+     *       console.log('All files have been processed successfully');
      *     }
      * });
-     *
-     * // Error Handling
-     * async.each(withMissingFileList, deleteFile, function(err){
-     *     console.log(err);
-     *     // [ Error: ENOENT: no such file or directory ]
-     *     // since dir4/file2.txt does not exist
-     *     // dir1/file1.txt could have been deleted
-     * });
-     *
-     * // Using Promises
-     * async.each(fileList, deleteFile)
-     * .then( () => {
-     *     console.log('All files have been deleted successfully');
-     * }).catch( err => {
-     *     console.log(err);
-     * });
-     *
-     * // Error Handling
-     * async.each(fileList, deleteFile)
-     * .then( () => {
-     *     console.log('All files have been deleted successfully');
-     * }).catch( err => {
-     *     console.log(err);
-     *     // [ Error: ENOENT: no such file or directory ]
-     *     // since dir4/file2.txt does not exist
-     *     // dir1/file1.txt could have been deleted
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         await async.each(files, deleteFile);
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     * // Error Handling
-     * async () => {
-     *     try {
-     *         await async.each(withMissingFileList, deleteFile);
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *         // [ Error: ENOENT: no such file or directory ]
-     *         // since dir4/file2.txt does not exist
-     *         // dir1/file1.txt could have been deleted
-     *     }
-     * }
-     *
      */
     function eachLimit(coll, iteratee, callback) {
         return eachOf$1(coll, _withoutIndex(wrapAsync(iteratee)), callback);
@@ -5604,78 +5060,13 @@ module.exports = toComparators
      * @returns {Promise} a promise, if no callback provided
      * @example
      *
-     * // dir1 is a directory that contains file1.txt, file2.txt
-     * // dir2 is a directory that contains file3.txt, file4.txt
-     * // dir3 is a directory that contains file5.txt
-     * // dir4 does not exist
-     *
-     * const fileList = ['dir1/file1.txt','dir2/file3.txt','dir3/file5.txt'];
-     * const withMissingFileList = ['file1.txt','file2.txt','file4.txt'];
-     *
-     * // asynchronous function that checks if a file exists
-     * function fileExists(file, callback) {
-     *    fs.access(file, fs.constants.F_OK, (err) => {
-     *        callback(null, !err);
-     *    });
-     * }
-     *
-     * // Using callbacks
-     * async.every(fileList, fileExists, function(err, result) {
-     *     console.log(result);
-     *     // true
-     *     // result is true since every file exists
+     * async.every(['file1','file2','file3'], function(filePath, callback) {
+     *     fs.access(filePath, function(err) {
+     *         callback(null, !err)
+     *     });
+     * }, function(err, result) {
+     *     // if result is true then every file exists
      * });
-     *
-     * async.every(withMissingFileList, fileExists, function(err, result) {
-     *     console.log(result);
-     *     // false
-     *     // result is false since NOT every file exists
-     * });
-     *
-     * // Using Promises
-     * async.every(fileList, fileExists)
-     * .then( result => {
-     *     console.log(result);
-     *     // true
-     *     // result is true since every file exists
-     * }).catch( err => {
-     *     console.log(err);
-     * });
-     *
-     * async.every(withMissingFileList, fileExists)
-     * .then( result => {
-     *     console.log(result);
-     *     // false
-     *     // result is false since NOT every file exists
-     * }).catch( err => {
-     *     console.log(err);
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let result = await async.every(fileList, fileExists);
-     *         console.log(result);
-     *         // true
-     *         // result is true since every file exists
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     * async () => {
-     *     try {
-     *         let result = await async.every(withMissingFileList, fileExists);
-     *         console.log(result);
-     *         // false
-     *         // result is false since NOT every file exists
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
      */
     function every(coll, iteratee, callback) {
         return _createTester(bool => !bool, res => !res)(eachOf$1, coll, iteratee, callback)
@@ -5793,53 +5184,13 @@ module.exports = toComparators
      * @returns {Promise} a promise, if no callback provided
      * @example
      *
-     * // dir1 is a directory that contains file1.txt, file2.txt
-     * // dir2 is a directory that contains file3.txt, file4.txt
-     * // dir3 is a directory that contains file5.txt
-     *
-     * const files = ['dir1/file1.txt','dir2/file3.txt','dir3/file6.txt'];
-     *
-     * // asynchronous function that checks if a file exists
-     * function fileExists(file, callback) {
-     *    fs.access(file, fs.constants.F_OK, (err) => {
-     *        callback(null, !err);
-     *    });
-     * }
-     *
-     * // Using callbacks
-     * async.filter(files, fileExists, function(err, results) {
-     *    if(err) {
-     *        console.log(err);
-     *    } else {
-     *        console.log(results);
-     *        // [ 'dir1/file1.txt', 'dir2/file3.txt' ]
-     *        // results is now an array of the existing files
-     *    }
+     * async.filter(['file1','file2','file3'], function(filePath, callback) {
+     *     fs.access(filePath, function(err) {
+     *         callback(null, !err)
+     *     });
+     * }, function(err, results) {
+     *     // results now equals an array of the existing files
      * });
-     *
-     * // Using Promises
-     * async.filter(files, fileExists)
-     * .then(results => {
-     *     console.log(results);
-     *     // [ 'dir1/file1.txt', 'dir2/file3.txt' ]
-     *     // results is now an array of the existing files
-     * }).catch(err => {
-     *     console.log(err);
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let results = await async.filter(files, fileExists);
-     *         console.log(results);
-     *         // [ 'dir1/file1.txt', 'dir2/file3.txt' ]
-     *         // results is now an array of the existing files
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
      */
     function filter (coll, iteratee, callback) {
         return _filter(eachOf$1, coll, iteratee, callback)
@@ -6016,69 +5367,15 @@ module.exports = toComparators
      * @returns {Promise} a promise, if no callback is passed
      * @example
      *
-     * // dir1 is a directory that contains file1.txt, file2.txt
-     * // dir2 is a directory that contains file3.txt, file4.txt
-     * // dir3 is a directory that contains file5.txt
-     * // dir4 does not exist
-     *
-     * const files = ['dir1/file1.txt','dir2','dir4']
-     *
-     * // asynchronous function that detects file type as none, file, or directory
-     * function detectFile(file, callback) {
-     *     fs.stat(file, function(err, stat) {
-     *         if (err) {
-     *             return callback(null, 'none');
-     *         }
-     *         callback(null, stat.isDirectory() ? 'directory' : 'file');
+     * async.groupBy(['userId1', 'userId2', 'userId3'], function(userId, callback) {
+     *     db.findById(userId, function(err, user) {
+     *         if (err) return callback(err);
+     *         return callback(null, user.age);
      *     });
-     * }
-     *
-     * //Using callbacks
-     * async.groupBy(files, detectFile, function(err, result) {
-     *     if(err) {
-     *         console.log(err);
-     *     } else {
-     *	       console.log(result);
-     *         // {
-     *         //     file: [ 'dir1/file1.txt' ],
-     *         //     none: [ 'dir4' ],
-     *         //     directory: [ 'dir2']
-     *         // }
-     *         // result is object containing the files grouped by type
-     *     }
+     * }, function(err, result) {
+     *     // result is object containing the userIds grouped by age
+     *     // e.g. { 30: ['userId1', 'userId3'], 42: ['userId2']};
      * });
-     *
-     * // Using Promises
-     * async.groupBy(files, detectFile)
-     * .then( result => {
-     *     console.log(result);
-     *     // {
-     *     //     file: [ 'dir1/file1.txt' ],
-     *     //     none: [ 'dir4' ],
-     *     //     directory: [ 'dir2']
-     *     // }
-     *     // result is object containing the files grouped by type
-     * }).catch( err => {
-     *     console.log(err);
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let result = await async.groupBy(files, detectFile);
-     *         console.log(result);
-     *         // {
-     *         //     file: [ 'dir1/file1.txt' ],
-     *         //     none: [ 'dir4' ],
-     *         //     directory: [ 'dir2']
-     *         // }
-     *         // result is object containing the files grouped by type
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
      */
     function groupBy (coll, iteratee, callback) {
         return groupByLimit$1(coll, Infinity, iteratee, callback)
@@ -6099,7 +5396,7 @@ module.exports = toComparators
      * The iteratee should complete with a `key` to group the value under.
      * Invoked with (value, callback).
      * @param {Function} [callback] - A callback which is called when all `iteratee`
-     * functions have finished, or an error occurs. Result is an `Object` whose
+     * functions have finished, or an error occurs. Result is an `Object` whoses
      * properties are arrays of values which returned the corresponding key.
      * @returns {Promise} a promise, if no callback is passed
      */
@@ -6203,110 +5500,20 @@ module.exports = toComparators
      * @returns {Promise} a promise, if no callback is passed
      * @example
      *
-     * // file1.txt is a file that is 1000 bytes in size
-     * // file2.txt is a file that is 2000 bytes in size
-     * // file3.txt is a file that is 3000 bytes in size
-     * // file4.txt does not exist
-     *
-     * const fileMap = {
-     *     f1: 'file1.txt',
-     *     f2: 'file2.txt',
-     *     f3: 'file3.txt'
-     * };
-     *
-     * const withMissingFileMap = {
-     *     f1: 'file1.txt',
-     *     f2: 'file2.txt',
-     *     f3: 'file4.txt'
-     * };
-     *
-     * // asynchronous function that returns the file size in bytes
-     * function getFileSizeInBytes(file, key, callback) {
-     *     fs.stat(file, function(err, stat) {
-     *         if (err) {
-     *             return callback(err);
-     *         }
-     *         callback(null, stat.size);
-     *     });
-     * }
-     *
-     * // Using callbacks
-     * async.mapValues(fileMap, getFileSizeInBytes, function(err, result) {
-     *     if (err) {
-     *         console.log(err);
-     *     } else {
-     *         console.log(result);
-     *         // result is now a map of file size in bytes for each file, e.g.
-     *         // {
-     *         //     f1: 1000,
-     *         //     f2: 2000,
-     *         //     f3: 3000
-     *         // }
-     *     }
-     * });
-     *
-     * // Error handling
-     * async.mapValues(withMissingFileMap, getFileSizeInBytes, function(err, result) {
-     *     if (err) {
-     *         console.log(err);
-     *         // [ Error: ENOENT: no such file or directory ]
-     *     } else {
-     *         console.log(result);
-     *     }
-     * });
-     *
-     * // Using Promises
-     * async.mapValues(fileMap, getFileSizeInBytes)
-     * .then( result => {
-     *     console.log(result);
-     *     // result is now a map of file size in bytes for each file, e.g.
+     * async.mapValues({
+     *     f1: 'file1',
+     *     f2: 'file2',
+     *     f3: 'file3'
+     * }, function (file, key, callback) {
+     *   fs.stat(file, callback);
+     * }, function(err, result) {
+     *     // result is now a map of stats for each file, e.g.
      *     // {
-     *     //     f1: 1000,
-     *     //     f2: 2000,
-     *     //     f3: 3000
+     *     //     f1: [stats for file1],
+     *     //     f2: [stats for file2],
+     *     //     f3: [stats for file3]
      *     // }
-     * }).catch (err => {
-     *     console.log(err);
      * });
-     *
-     * // Error Handling
-     * async.mapValues(withMissingFileMap, getFileSizeInBytes)
-     * .then( result => {
-     *     console.log(result);
-     * }).catch (err => {
-     *     console.log(err);
-     *     // [ Error: ENOENT: no such file or directory ]
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let result = await async.mapValues(fileMap, getFileSizeInBytes);
-     *         console.log(result);
-     *         // result is now a map of file size in bytes for each file, e.g.
-     *         // {
-     *         //     f1: 1000,
-     *         //     f2: 2000,
-     *         //     f3: 3000
-     *         // }
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     * // Error Handling
-     * async () => {
-     *     try {
-     *         let result = await async.mapValues(withMissingFileMap, getFileSizeInBytes);
-     *         console.log(result);
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *         // [ Error: ENOENT: no such file or directory ]
-     *     }
-     * }
-     *
      */
     function mapValues(obj, iteratee, callback) {
         return mapValuesLimit$1(obj, Infinity, iteratee, callback)
@@ -6449,7 +5656,7 @@ module.exports = toComparators
 
     var nextTick = wrap(_defer$1);
 
-    var _parallel = awaitify((eachfn, tasks, callback) => {
+    var parallel = awaitify((eachfn, tasks, callback) => {
         var results = isArrayLike(tasks) ? [] : {};
 
         eachfn(tasks, (task, key, taskCb) => {
@@ -6499,8 +5706,6 @@ module.exports = toComparators
      * @returns {Promise} a promise, if a callback is not passed
      *
      * @example
-     *
-     * //Using Callbacks
      * async.parallel([
      *     function(callback) {
      *         setTimeout(function() {
@@ -6512,9 +5717,10 @@ module.exports = toComparators
      *             callback(null, 'two');
      *         }, 100);
      *     }
-     * ], function(err, results) {
-     *     console.log(results);
-     *     // results is equal to ['one','two'] even though
+     * ],
+     * // optional callback
+     * function(err, results) {
+     *     // the results array will equal ['one','two'] even though
      *     // the second function had a shorter timeout.
      * });
      *
@@ -6531,99 +5737,11 @@ module.exports = toComparators
      *         }, 100);
      *     }
      * }, function(err, results) {
-     *     console.log(results);
-     *     // results is equal to: { one: 1, two: 2 }
+     *     // results is now equals to: {one: 1, two: 2}
      * });
-     *
-     * //Using Promises
-     * async.parallel([
-     *     function(callback) {
-     *         setTimeout(function() {
-     *             callback(null, 'one');
-     *         }, 200);
-     *     },
-     *     function(callback) {
-     *         setTimeout(function() {
-     *             callback(null, 'two');
-     *         }, 100);
-     *     }
-     * ]).then(results => {
-     *     console.log(results);
-     *     // results is equal to ['one','two'] even though
-     *     // the second function had a shorter timeout.
-     * }).catch(err => {
-     *     console.log(err);
-     * });
-     *
-     * // an example using an object instead of an array
-     * async.parallel({
-     *     one: function(callback) {
-     *         setTimeout(function() {
-     *             callback(null, 1);
-     *         }, 200);
-     *     },
-     *     two: function(callback) {
-     *         setTimeout(function() {
-     *             callback(null, 2);
-     *         }, 100);
-     *     }
-     * }).then(results => {
-     *     console.log(results);
-     *     // results is equal to: { one: 1, two: 2 }
-     * }).catch(err => {
-     *     console.log(err);
-     * });
-     *
-     * //Using async/await
-     * async () => {
-     *     try {
-     *         let results = await async.parallel([
-     *             function(callback) {
-     *                 setTimeout(function() {
-     *                     callback(null, 'one');
-     *                 }, 200);
-     *             },
-     *             function(callback) {
-     *                 setTimeout(function() {
-     *                     callback(null, 'two');
-     *                 }, 100);
-     *             }
-     *         ]);
-     *         console.log(results);
-     *         // results is equal to ['one','two'] even though
-     *         // the second function had a shorter timeout.
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     * // an example using an object instead of an array
-     * async () => {
-     *     try {
-     *         let results = await async.parallel({
-     *             one: function(callback) {
-     *                 setTimeout(function() {
-     *                     callback(null, 1);
-     *                 }, 200);
-     *             },
-     *            two: function(callback) {
-     *                 setTimeout(function() {
-     *                     callback(null, 2);
-     *                 }, 100);
-     *            }
-     *         });
-     *         console.log(results);
-     *         // results is equal to: { one: 1, two: 2 }
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
      */
-    function parallel(tasks, callback) {
-        return _parallel(eachOf$1, tasks, callback);
+    function parallel$1(tasks, callback) {
+        return parallel(eachOf$1, tasks, callback);
     }
 
     /**
@@ -6647,7 +5765,7 @@ module.exports = toComparators
      * @returns {Promise} a promise, if a callback is not passed
      */
     function parallelLimit(tasks, limit, callback) {
-        return _parallel(eachOfLimit(limit), tasks, callback);
+        return parallel(eachOfLimit(limit), tasks, callback);
     }
 
     /**
@@ -6678,7 +5796,7 @@ module.exports = toComparators
      * Invoke with `queue.unshift(task, [callback])`.
      * @property {AsyncFunction} pushAsync - the same as `q.push`, except this returns
      * a promise that rejects if an error occurs.
-     * @property {AsyncFunction} unshiftAsync - the same as `q.unshift`, except this returns
+     * @property {AsyncFunction} unshirtAsync - the same as `q.unshift`, except this returns
      * a promise that rejects if an error occurs.
      * @property {Function} remove - remove items from the queue that match a test
      * function.  The test function will be passed an object with a `data` property,
@@ -6717,7 +5835,7 @@ module.exports = toComparators
      * should be pushed to the queue after calling this function. Invoke with `queue.kill()`.
      *
      * @example
-     * const q = async.queue(worker, 2)
+     * const q = aync.queue(worker, 2)
      * q.push(item1)
      * q.push(item2)
      * q.push(item3)
@@ -6940,7 +6058,6 @@ module.exports = toComparators
     function priorityQueue(worker, concurrency) {
         // Start with a normal queue
         var q = queue$1(worker, concurrency);
-        var processingScheduled = false;
 
         q._tasks = new Heap();
 
@@ -6968,13 +6085,7 @@ module.exports = toComparators
                 q._tasks.push(item);
             }
 
-            if (!processingScheduled) {
-                processingScheduled = true;
-                setImmediate$1(() => {
-                    processingScheduled = false;
-                    q.process();
-                });
-            }
+            setImmediate$1(q.process);
         };
 
         // Remove unshift function
@@ -7045,7 +6156,7 @@ module.exports = toComparators
      * @param {AsyncFunction} iteratee - A function applied to each item in the
      * array to produce the next step in the reduction.
      * The `iteratee` should complete with the next state of the reduction.
-     * If the iteratee completes with an error, the reduction is stopped and the
+     * If the iteratee complete with an error, the reduction is stopped and the
      * main `callback` is immediately called with the error.
      * Invoked with (memo, item, callback).
      * @param {Function} [callback] - A callback which is called after all the
@@ -7227,48 +6338,14 @@ module.exports = toComparators
      * @returns {Promise} a promise, if no callback is passed
      * @example
      *
-     * // dir1 is a directory that contains file1.txt, file2.txt
-     * // dir2 is a directory that contains file3.txt, file4.txt
-     * // dir3 is a directory that contains file5.txt
-     *
-     * const fileList = ['dir1/file1.txt','dir2/file3.txt','dir3/file6.txt'];
-     *
-     * // asynchronous function that checks if a file exists
-     * function fileExists(file, callback) {
-     *    fs.access(file, fs.constants.F_OK, (err) => {
-     *        callback(null, !err);
-     *    });
-     * }
-     *
-     * // Using callbacks
-     * async.reject(fileList, fileExists, function(err, results) {
-     *    // [ 'dir3/file6.txt' ]
-     *    // results now equals an array of the non-existing files
+     * async.reject(['file1','file2','file3'], function(filePath, callback) {
+     *     fs.access(filePath, function(err) {
+     *         callback(null, !err)
+     *     });
+     * }, function(err, results) {
+     *     // results now equals an array of missing files
+     *     createFiles(results);
      * });
-     *
-     * // Using Promises
-     * async.reject(fileList, fileExists)
-     * .then( results => {
-     *     console.log(results);
-     *     // [ 'dir3/file6.txt' ]
-     *     // results now equals an array of the non-existing files
-     * }).catch( err => {
-     *     console.log(err);
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let results = await async.reject(fileList, fileExists);
-     *         console.log(results);
-     *         // [ 'dir3/file6.txt' ]
-     *         // results now equals an array of the non-existing files
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
      */
     function reject$1 (coll, iteratee, callback) {
         return reject(eachOf$1, coll, iteratee, callback)
@@ -7561,138 +6638,38 @@ module.exports = toComparators
      * with (err, result).
      * @return {Promise} a promise, if no callback is passed
      * @example
-     *
-     * //Using Callbacks
      * async.series([
      *     function(callback) {
-     *         setTimeout(function() {
-     *             // do some async task
-     *             callback(null, 'one');
-     *         }, 200);
+     *         // do some stuff ...
+     *         callback(null, 'one');
      *     },
      *     function(callback) {
-     *         setTimeout(function() {
-     *             // then do another async task
-     *             callback(null, 'two');
-     *         }, 100);
+     *         // do some more stuff ...
+     *         callback(null, 'two');
      *     }
-     * ], function(err, results) {
-     *     console.log(results);
-     *     // results is equal to ['one','two']
+     * ],
+     * // optional callback
+     * function(err, results) {
+     *     // results is now equal to ['one', 'two']
      * });
      *
-     * // an example using objects instead of arrays
      * async.series({
      *     one: function(callback) {
      *         setTimeout(function() {
-     *             // do some async task
      *             callback(null, 1);
      *         }, 200);
      *     },
-     *     two: function(callback) {
+     *     two: function(callback){
      *         setTimeout(function() {
-     *             // then do another async task
      *             callback(null, 2);
      *         }, 100);
      *     }
      * }, function(err, results) {
-     *     console.log(results);
-     *     // results is equal to: { one: 1, two: 2 }
+     *     // results is now equal to: {one: 1, two: 2}
      * });
-     *
-     * //Using Promises
-     * async.series([
-     *     function(callback) {
-     *         setTimeout(function() {
-     *             callback(null, 'one');
-     *         }, 200);
-     *     },
-     *     function(callback) {
-     *         setTimeout(function() {
-     *             callback(null, 'two');
-     *         }, 100);
-     *     }
-     * ]).then(results => {
-     *     console.log(results);
-     *     // results is equal to ['one','two']
-     * }).catch(err => {
-     *     console.log(err);
-     * });
-     *
-     * // an example using an object instead of an array
-     * async.series({
-     *     one: function(callback) {
-     *         setTimeout(function() {
-     *             // do some async task
-     *             callback(null, 1);
-     *         }, 200);
-     *     },
-     *     two: function(callback) {
-     *         setTimeout(function() {
-     *             // then do another async task
-     *             callback(null, 2);
-     *         }, 100);
-     *     }
-     * }).then(results => {
-     *     console.log(results);
-     *     // results is equal to: { one: 1, two: 2 }
-     * }).catch(err => {
-     *     console.log(err);
-     * });
-     *
-     * //Using async/await
-     * async () => {
-     *     try {
-     *         let results = await async.series([
-     *             function(callback) {
-     *                 setTimeout(function() {
-     *                     // do some async task
-     *                     callback(null, 'one');
-     *                 }, 200);
-     *             },
-     *             function(callback) {
-     *                 setTimeout(function() {
-     *                     // then do another async task
-     *                     callback(null, 'two');
-     *                 }, 100);
-     *             }
-     *         ]);
-     *         console.log(results);
-     *         // results is equal to ['one','two']
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     * // an example using an object instead of an array
-     * async () => {
-     *     try {
-     *         let results = await async.parallel({
-     *             one: function(callback) {
-     *                 setTimeout(function() {
-     *                     // do some async task
-     *                     callback(null, 1);
-     *                 }, 200);
-     *             },
-     *            two: function(callback) {
-     *                 setTimeout(function() {
-     *                     // then do another async task
-     *                     callback(null, 2);
-     *                 }, 100);
-     *            }
-     *         });
-     *         console.log(results);
-     *         // results is equal to: { one: 1, two: 2 }
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
      */
     function series(tasks, callback) {
-        return _parallel(eachOfSeries$1, tasks, callback);
+        return parallel(eachOfSeries$1, tasks, callback);
     }
 
     /**
@@ -7718,79 +6695,13 @@ module.exports = toComparators
      * @returns {Promise} a promise, if no callback provided
      * @example
      *
-     * // dir1 is a directory that contains file1.txt, file2.txt
-     * // dir2 is a directory that contains file3.txt, file4.txt
-     * // dir3 is a directory that contains file5.txt
-     * // dir4 does not exist
-     *
-     * // asynchronous function that checks if a file exists
-     * function fileExists(file, callback) {
-     *    fs.access(file, fs.constants.F_OK, (err) => {
-     *        callback(null, !err);
-     *    });
-     * }
-     *
-     * // Using callbacks
-     * async.some(['dir1/missing.txt','dir2/missing.txt','dir3/file5.txt'], fileExists,
-     *    function(err, result) {
-     *        console.log(result);
-     *        // true
-     *        // result is true since some file in the list exists
-     *    }
-     *);
-     *
-     * async.some(['dir1/missing.txt','dir2/missing.txt','dir4/missing.txt'], fileExists,
-     *    function(err, result) {
-     *        console.log(result);
-     *        // false
-     *        // result is false since none of the files exists
-     *    }
-     *);
-     *
-     * // Using Promises
-     * async.some(['dir1/missing.txt','dir2/missing.txt','dir3/file5.txt'], fileExists)
-     * .then( result => {
-     *     console.log(result);
-     *     // true
-     *     // result is true since some file in the list exists
-     * }).catch( err => {
-     *     console.log(err);
+     * async.some(['file1','file2','file3'], function(filePath, callback) {
+     *     fs.access(filePath, function(err) {
+     *         callback(null, !err)
+     *     });
+     * }, function(err, result) {
+     *     // if result is true then at least one of the files exists
      * });
-     *
-     * async.some(['dir1/missing.txt','dir2/missing.txt','dir4/missing.txt'], fileExists)
-     * .then( result => {
-     *     console.log(result);
-     *     // false
-     *     // result is false since none of the files exists
-     * }).catch( err => {
-     *     console.log(err);
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let result = await async.some(['dir1/missing.txt','dir2/missing.txt','dir3/file5.txt'], fileExists);
-     *         console.log(result);
-     *         // true
-     *         // result is true since some file in the list exists
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
-     * async () => {
-     *     try {
-     *         let result = await async.some(['dir1/missing.txt','dir2/missing.txt','dir4/missing.txt'], fileExists);
-     *         console.log(result);
-     *         // false
-     *         // result is false since none of the files exists
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
      */
     function some(coll, iteratee, callback) {
         return _createTester(Boolean, res => res)(eachOf$1, coll, iteratee, callback)
@@ -7872,133 +6783,31 @@ module.exports = toComparators
      * @returns {Promise} a promise, if no callback passed
      * @example
      *
-     * // bigfile.txt is a file that is 251100 bytes in size
-     * // mediumfile.txt is a file that is 11000 bytes in size
-     * // smallfile.txt is a file that is 121 bytes in size
-     *
-     * // asynchronous function that returns the file size in bytes
-     * function getFileSizeInBytes(file, callback) {
-     *     fs.stat(file, function(err, stat) {
-     *         if (err) {
-     *             return callback(err);
-     *         }
-     *         callback(null, stat.size);
+     * async.sortBy(['file1','file2','file3'], function(file, callback) {
+     *     fs.stat(file, function(err, stats) {
+     *         callback(err, stats.mtime);
      *     });
-     * }
-     *
-     * // Using callbacks
-     * async.sortBy(['mediumfile.txt','smallfile.txt','bigfile.txt'], getFileSizeInBytes,
-     *     function(err, results) {
-     *         if (err) {
-     *             console.log(err);
-     *         } else {
-     *             console.log(results);
-     *             // results is now the original array of files sorted by
-     *             // file size (ascending by default), e.g.
-     *             // [ 'smallfile.txt', 'mediumfile.txt', 'bigfile.txt']
-     *         }
-     *     }
-     * );
+     * }, function(err, results) {
+     *     // results is now the original array of files sorted by
+     *     // modified date
+     * });
      *
      * // By modifying the callback parameter the
      * // sorting order can be influenced:
      *
      * // ascending order
-     * async.sortBy(['mediumfile.txt','smallfile.txt','bigfile.txt'], function(file, callback) {
-     *     getFileSizeInBytes(file, function(getFileSizeErr, fileSize) {
-     *         if (getFileSizeErr) return callback(getFileSizeErr);
-     *         callback(null, fileSize);
-     *     });
-     * }, function(err, results) {
-     *         if (err) {
-     *             console.log(err);
-     *         } else {
-     *             console.log(results);
-     *             // results is now the original array of files sorted by
-     *             // file size (ascending by default), e.g.
-     *             // [ 'smallfile.txt', 'mediumfile.txt', 'bigfile.txt']
-     *         }
-     *     }
-     * );
+     * async.sortBy([1,9,3,5], function(x, callback) {
+     *     callback(null, x);
+     * }, function(err,result) {
+     *     // result callback
+     * });
      *
      * // descending order
-     * async.sortBy(['bigfile.txt','mediumfile.txt','smallfile.txt'], function(file, callback) {
-     *     getFileSizeInBytes(file, function(getFileSizeErr, fileSize) {
-     *         if (getFileSizeErr) {
-     *             return callback(getFileSizeErr);
-     *         }
-     *         callback(null, fileSize * -1);
-     *     });
-     * }, function(err, results) {
-     *         if (err) {
-     *             console.log(err);
-     *         } else {
-     *             console.log(results);
-     *             // results is now the original array of files sorted by
-     *             // file size (ascending by default), e.g.
-     *             // [ 'bigfile.txt', 'mediumfile.txt', 'smallfile.txt']
-     *         }
-     *     }
-     * );
-     *
-     * // Error handling
-     * async.sortBy(['mediumfile.txt','smallfile.txt','missingfile.txt'], getFileSizeInBytes,
-     *     function(err, results) {
-     *         if (err) {
-     *             console.log(err);
-     *             // [ Error: ENOENT: no such file or directory ]
-     *         } else {
-     *             console.log(results);
-     *         }
-     *     }
-     * );
-     *
-     * // Using Promises
-     * async.sortBy(['mediumfile.txt','smallfile.txt','bigfile.txt'], getFileSizeInBytes)
-     * .then( results => {
-     *     console.log(results);
-     *     // results is now the original array of files sorted by
-     *     // file size (ascending by default), e.g.
-     *     // [ 'smallfile.txt', 'mediumfile.txt', 'bigfile.txt']
-     * }).catch( err => {
-     *     console.log(err);
+     * async.sortBy([1,9,3,5], function(x, callback) {
+     *     callback(null, x*-1);    //<- x*-1 instead of x, turns the order around
+     * }, function(err,result) {
+     *     // result callback
      * });
-     *
-     * // Error handling
-     * async.sortBy(['mediumfile.txt','smallfile.txt','missingfile.txt'], getFileSizeInBytes)
-     * .then( results => {
-     *     console.log(results);
-     * }).catch( err => {
-     *     console.log(err);
-     *     // [ Error: ENOENT: no such file or directory ]
-     * });
-     *
-     * // Using async/await
-     * (async () => {
-     *     try {
-     *         let results = await async.sortBy(['bigfile.txt','mediumfile.txt','smallfile.txt'], getFileSizeInBytes);
-     *         console.log(results);
-     *         // results is now the original array of files sorted by
-     *         // file size (ascending by default), e.g.
-     *         // [ 'smallfile.txt', 'mediumfile.txt', 'bigfile.txt']
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * })();
-     *
-     * // Error handling
-     * async () => {
-     *     try {
-     *         let results = await async.sortBy(['missingfile.txt','mediumfile.txt','smallfile.txt'], getFileSizeInBytes);
-     *         console.log(results);
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *         // [ Error: ENOENT: no such file or directory ]
-     *     }
-     * }
-     *
      */
     function sortBy (coll, iteratee, callback) {
         var _iteratee = wrapAsync(iteratee);
@@ -8199,118 +7008,26 @@ module.exports = toComparators
      * @returns {Promise} a promise, if no callback provided
      * @example
      *
-     * // file1.txt is a file that is 1000 bytes in size
-     * // file2.txt is a file that is 2000 bytes in size
-     * // file3.txt is a file that is 3000 bytes in size
-     *
-     * // helper function that returns human-readable size format from bytes
-     * function formatBytes(bytes, decimals = 2) {
-     *   // implementation not included for brevity
-     *   return humanReadbleFilesize;
-     * }
-     *
-     * const fileList = ['file1.txt','file2.txt','file3.txt'];
-     *
-     * // asynchronous function that returns the file size, transformed to human-readable format
-     * // e.g. 1024 bytes = 1KB, 1234 bytes = 1.21 KB, 1048576 bytes = 1MB, etc.
-     * function transformFileSize(acc, value, key, callback) {
-     *     fs.stat(value, function(err, stat) {
-     *         if (err) {
-     *             return callback(err);
-     *         }
-     *         acc[key] = formatBytes(stat.size);
-     *         callback(null);
+     * async.transform([1,2,3], function(acc, item, index, callback) {
+     *     // pointless async:
+     *     process.nextTick(function() {
+     *         acc[index] = item * 2
+     *         callback(null)
      *     });
-     * }
-     *
-     * // Using callbacks
-     * async.transform(fileList, transformFileSize, function(err, result) {
-     *     if(err) {
-     *         console.log(err);
-     *     } else {
-     *         console.log(result);
-     *         // [ '1000 Bytes', '1.95 KB', '2.93 KB' ]
-     *     }
+     * }, function(err, result) {
+     *     // result is now equal to [2, 4, 6]
      * });
-     *
-     * // Using Promises
-     * async.transform(fileList, transformFileSize)
-     * .then(result => {
-     *     console.log(result);
-     *     // [ '1000 Bytes', '1.95 KB', '2.93 KB' ]
-     * }).catch(err => {
-     *     console.log(err);
-     * });
-     *
-     * // Using async/await
-     * (async () => {
-     *     try {
-     *         let result = await async.transform(fileList, transformFileSize);
-     *         console.log(result);
-     *         // [ '1000 Bytes', '1.95 KB', '2.93 KB' ]
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * })();
      *
      * @example
      *
-     * // file1.txt is a file that is 1000 bytes in size
-     * // file2.txt is a file that is 2000 bytes in size
-     * // file3.txt is a file that is 3000 bytes in size
-     *
-     * // helper function that returns human-readable size format from bytes
-     * function formatBytes(bytes, decimals = 2) {
-     *   // implementation not included for brevity
-     *   return humanReadbleFilesize;
-     * }
-     *
-     * const fileMap = { f1: 'file1.txt', f2: 'file2.txt', f3: 'file3.txt' };
-     *
-     * // asynchronous function that returns the file size, transformed to human-readable format
-     * // e.g. 1024 bytes = 1KB, 1234 bytes = 1.21 KB, 1048576 bytes = 1MB, etc.
-     * function transformFileSize(acc, value, key, callback) {
-     *     fs.stat(value, function(err, stat) {
-     *         if (err) {
-     *             return callback(err);
-     *         }
-     *         acc[key] = formatBytes(stat.size);
-     *         callback(null);
-     *     });
-     * }
-     *
-     * // Using callbacks
-     * async.transform(fileMap, transformFileSize, function(err, result) {
-     *     if(err) {
-     *         console.log(err);
-     *     } else {
-     *         console.log(result);
-     *         // { f1: '1000 Bytes', f2: '1.95 KB', f3: '2.93 KB' }
-     *     }
-     * });
-     *
-     * // Using Promises
-     * async.transform(fileMap, transformFileSize)
-     * .then(result => {
-     *     console.log(result);
-     *     // { f1: '1000 Bytes', f2: '1.95 KB', f3: '2.93 KB' }
-     * }).catch(err => {
-     *     console.log(err);
-     * });
-     *
-     * // Using async/await
-     * async () => {
-     *     try {
-     *         let result = await async.transform(fileMap, transformFileSize);
-     *         console.log(result);
-     *         // { f1: '1000 Bytes', f2: '1.95 KB', f3: '2.93 KB' }
-     *     }
-     *     catch (err) {
-     *         console.log(err);
-     *     }
-     * }
-     *
+     * async.transform({a: 1, b: 2, c: 3}, function (obj, val, key, callback) {
+     *     setImmediate(function () {
+     *         obj[key] = val * 2;
+     *         callback();
+     *     })
+     * }, function (err, result) {
+     *     // result is equal to {a: 2, b: 4, c: 6}
+     * })
      */
     function transform (coll, accumulator, iteratee, callback) {
         if (arguments.length <= 3 && typeof accumulator === 'function') {
@@ -8488,7 +7205,7 @@ module.exports = toComparators
      * @example
      * const results = []
      * let finished = false
-     * async.until(function test(cb) {
+     * async.until(function test(page, cb) {
      *     cb(null, finished)
      * }, function iter(next) {
      *     fetchPage(url, (err, body) => {
@@ -8672,7 +7389,7 @@ module.exports = toComparators
         mapValuesSeries,
         memoize,
         nextTick,
-        parallel,
+        parallel: parallel$1,
         parallelLimit,
         priorityQueue,
         queue: queue$1,
@@ -8780,7 +7497,7 @@ module.exports = toComparators
     exports.mapValuesSeries = mapValuesSeries;
     exports.memoize = memoize;
     exports.nextTick = nextTick;
-    exports.parallel = parallel;
+    exports.parallel = parallel$1;
     exports.parallelLimit = parallelLimit;
     exports.priorityQueue = priorityQueue;
     exports.queue = queue$1;
@@ -8846,72 +7563,6 @@ module.exports = toComparators
 
 /***/ }),
 
-/***/ 226:
-/***/ (function(__unusedmodule, exports) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-class BasicCredentialHandler {
-    constructor(username, password) {
-        this.username = username;
-        this.password = password;
-    }
-    prepareRequest(options) {
-        options.headers['Authorization'] =
-            'Basic ' +
-                Buffer.from(this.username + ':' + this.password).toString('base64');
-    }
-    // This handler cannot handle 401
-    canHandleAuthentication(response) {
-        return false;
-    }
-    handleAuthentication(httpClient, requestInfo, objs) {
-        return null;
-    }
-}
-exports.BasicCredentialHandler = BasicCredentialHandler;
-class BearerCredentialHandler {
-    constructor(token) {
-        this.token = token;
-    }
-    // currently implements pre-authorization
-    // TODO: support preAuth = false where it hooks on 401
-    prepareRequest(options) {
-        options.headers['Authorization'] = 'Bearer ' + this.token;
-    }
-    // This handler cannot handle 401
-    canHandleAuthentication(response) {
-        return false;
-    }
-    handleAuthentication(httpClient, requestInfo, objs) {
-        return null;
-    }
-}
-exports.BearerCredentialHandler = BearerCredentialHandler;
-class PersonalAccessTokenCredentialHandler {
-    constructor(token) {
-        this.token = token;
-    }
-    // currently implements pre-authorization
-    // TODO: support preAuth = false where it hooks on 401
-    prepareRequest(options) {
-        options.headers['Authorization'] =
-            'Basic ' + Buffer.from('PAT:' + this.token).toString('base64');
-    }
-    // This handler cannot handle 401
-    canHandleAuthentication(response) {
-        return false;
-    }
-    handleAuthentication(httpClient, requestInfo, objs) {
-        return null;
-    }
-}
-exports.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHandler;
-
-
-/***/ }),
-
 /***/ 259:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -8960,13 +7611,6 @@ const compare = __webpack_require__(874)
 const eq = (a, b, loose) => compare(a, b, loose) === 0
 module.exports = eq
 
-
-/***/ }),
-
-/***/ 304:
-/***/ (function(module) {
-
-module.exports = require("string_decoder");
 
 /***/ }),
 
@@ -9019,7 +7663,7 @@ const AVAILABLE_OS = {
 function getSystem() {
     return __awaiter(this, void 0, void 0, function* () {
         let detectedSystem = yield new Promise((resolve, reject) => {
-            (0, getos_1.default)((error, os) => {
+            getos_1.default((error, os) => {
                 os ? resolve(os) : reject(error || "No OS detected");
             });
         });
@@ -9125,7 +7769,7 @@ function install(version, system) {
             let swiftPath = toolCache.find("swift-macOS", version);
             if (swiftPath === null || swiftPath.trim().length == 0) {
                 core.debug(`No matching installation found`);
-                const pkg = (0, swift_versions_1.swiftPackage)(version, system);
+                const pkg = swift_versions_1.swiftPackage(version, system);
                 const path = yield download(pkg);
                 const extracted = yield unpack(pkg, path, version);
                 swiftPath = extracted;
@@ -9144,7 +7788,7 @@ function install(version, system) {
 exports.install = install;
 function toolchainVersion(requestedVersion) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield (0, get_version_1.getVersion)("xcrun", [
+        return yield get_version_1.getVersion("xcrun", [
             "--toolchain",
             requestedVersion,
             "--run",
@@ -9204,7 +7848,6 @@ const semver = __importStar(__webpack_require__(876));
 const core = __importStar(__webpack_require__(470));
 const os_1 = __webpack_require__(316);
 const VERSIONS_LIST = [
-    ["5.5", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
     ["5.4.3", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
     ["5.4.2", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
     ["5.4.1", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
@@ -9379,10 +8022,10 @@ function install(version, system) {
         let swiftPath = toolCache.find(`swift-${system.name}`, version);
         if (swiftPath === null || swiftPath.trim().length == 0) {
             core.debug(`No matching installation found`);
-            yield (0, gpg_1.setupKeys)();
-            const swiftPkg = (0, swift_versions_1.swiftPackage)(version, system);
+            yield gpg_1.setupKeys();
+            const swiftPkg = swift_versions_1.swiftPackage(version, system);
             let { pkg, signature } = yield download(swiftPkg);
-            yield (0, gpg_1.verify)(signature, pkg);
+            yield gpg_1.verify(signature, pkg);
             swiftPath = yield unpack(pkg, swiftPkg.name, version, system);
         }
         else {
@@ -9470,27 +8113,14 @@ module.exports = require("crypto");
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.issue = exports.issueCommand = void 0;
 const os = __importStar(__webpack_require__(87));
 const utils_1 = __webpack_require__(82);
 /**
@@ -9651,44 +8281,11 @@ module.exports = outside
 
 /***/ }),
 
-/***/ 465:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-const SemVer = __webpack_require__(65)
-const compareBuild = (a, b, loose) => {
-  const versionA = new SemVer(a, loose)
-  const versionB = new SemVer(b, loose)
-  return versionA.compare(versionB) || versionA.compareBuild(versionB)
-}
-module.exports = compareBuild
-
-
-/***/ }),
-
 /***/ 470:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -9698,14 +8295,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIDToken = exports.getState = exports.saveState = exports.group = exports.endGroup = exports.startGroup = exports.info = exports.notice = exports.warning = exports.error = exports.debug = exports.isDebug = exports.setFailed = exports.setCommandEcho = exports.setOutput = exports.getBooleanInput = exports.getMultilineInput = exports.getInput = exports.addPath = exports.setSecret = exports.exportVariable = exports.ExitCode = void 0;
 const command_1 = __webpack_require__(431);
 const file_command_1 = __webpack_require__(102);
 const utils_1 = __webpack_require__(82);
 const os = __importStar(__webpack_require__(87));
 const path = __importStar(__webpack_require__(622));
-const oidc_utils_1 = __webpack_require__(742);
 /**
  * The code to exit an action
  */
@@ -9767,9 +8369,7 @@ function addPath(inputPath) {
 }
 exports.addPath = addPath;
 /**
- * Gets the value of an input.
- * Unless trimWhitespace is set to false in InputOptions, the value is also trimmed.
- * Returns an empty string if the value is not defined.
+ * Gets the value of an input.  The value is also trimmed.
  *
  * @param     name     name of the input to get
  * @param     options  optional. See InputOptions.
@@ -9780,49 +8380,9 @@ function getInput(name, options) {
     if (options && options.required && !val) {
         throw new Error(`Input required and not supplied: ${name}`);
     }
-    if (options && options.trimWhitespace === false) {
-        return val;
-    }
     return val.trim();
 }
 exports.getInput = getInput;
-/**
- * Gets the values of an multiline input.  Each value is also trimmed.
- *
- * @param     name     name of the input to get
- * @param     options  optional. See InputOptions.
- * @returns   string[]
- *
- */
-function getMultilineInput(name, options) {
-    const inputs = getInput(name, options)
-        .split('\n')
-        .filter(x => x !== '');
-    return inputs;
-}
-exports.getMultilineInput = getMultilineInput;
-/**
- * Gets the input value of the boolean type in the YAML 1.2 "core schema" specification.
- * Support boolean input list: `true | True | TRUE | false | False | FALSE` .
- * The return value is also in boolean type.
- * ref: https://yaml.org/spec/1.2/spec.html#id2804923
- *
- * @param     name     name of the input to get
- * @param     options  optional. See InputOptions.
- * @returns   boolean
- */
-function getBooleanInput(name, options) {
-    const trueValue = ['true', 'True', 'TRUE'];
-    const falseValue = ['false', 'False', 'FALSE'];
-    const val = getInput(name, options);
-    if (trueValue.includes(val))
-        return true;
-    if (falseValue.includes(val))
-        return false;
-    throw new TypeError(`Input does not meet YAML 1.2 "Core Schema" specification: ${name}\n` +
-        `Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
-}
-exports.getBooleanInput = getBooleanInput;
 /**
  * Sets the value of an output.
  *
@@ -9878,30 +8438,19 @@ exports.debug = debug;
 /**
  * Adds an error issue
  * @param message error issue message. Errors will be converted to string via toString()
- * @param properties optional properties to add to the annotation.
  */
-function error(message, properties = {}) {
-    command_1.issueCommand('error', utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
+function error(message) {
+    command_1.issue('error', message instanceof Error ? message.toString() : message);
 }
 exports.error = error;
 /**
- * Adds a warning issue
+ * Adds an warning issue
  * @param message warning issue message. Errors will be converted to string via toString()
- * @param properties optional properties to add to the annotation.
  */
-function warning(message, properties = {}) {
-    command_1.issueCommand('warning', utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
+function warning(message) {
+    command_1.issue('warning', message instanceof Error ? message.toString() : message);
 }
 exports.warning = warning;
-/**
- * Adds a notice issue
- * @param message notice issue message. Errors will be converted to string via toString()
- * @param properties optional properties to add to the annotation.
- */
-function notice(message, properties = {}) {
-    command_1.issueCommand('notice', utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
-}
-exports.notice = notice;
 /**
  * Writes info to log with console.log.
  * @param message info message
@@ -9974,12 +8523,6 @@ function getState(name) {
     return process.env[`STATE_${name}`] || '';
 }
 exports.getState = getState;
-function getIDToken(aud) {
-    return __awaiter(this, void 0, void 0, function* () {
-        return yield oidc_utils_1.OidcClient.getIDToken(aud);
-    });
-}
-exports.getIDToken = getIDToken;
 //# sourceMappingURL=core.js.map
 
 /***/ }),
@@ -10136,7 +8679,7 @@ function setupKeys() {
         core.debug("Fetching verification keys");
         let path = yield toolCache.downloadTool("https://swift.org/keys/all-keys.asc");
         core.debug("Importing verification keys");
-        yield (0, exec_1.exec)(`gpg --import "${path}"`);
+        yield exec_1.exec(`gpg --import "${path}"`);
         core.debug("Refreshing keys");
         yield refreshKeys();
     });
@@ -10145,7 +8688,7 @@ exports.setupKeys = setupKeys;
 function verify(signaturePath, packagePath) {
     return __awaiter(this, void 0, void 0, function* () {
         core.debug("Verifying signature");
-        yield (0, exec_1.exec)("gpg", ["--verify", signaturePath, packagePath]);
+        yield exec_1.exec("gpg", ["--verify", signaturePath, packagePath]);
     });
 }
 exports.verify = verify;
@@ -10171,7 +8714,7 @@ function refreshKeys() {
 }
 exports.refreshKeys = refreshKeys;
 function refreshKeysFromServer(server) {
-    return (0, exec_1.exec)(`gpg --keyserver ${server} --refresh-keys Swift`)
+    return exec_1.exec(`gpg --keyserver ${server} --refresh-keys Swift`)
         .then((code) => code === 0)
         .catch((error) => {
         core.warning(`An error occurred when trying to refresh keys from ${server}: ${error}`);
@@ -10198,25 +8741,6 @@ module.exports = gtr
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -10226,11 +8750,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.evaluateVersions = exports.isExplicitVersion = exports.findFromManifest = exports.getManifestFromRepo = exports.findAllVersions = exports.find = exports.cacheFile = exports.cacheDir = exports.extractZip = exports.extractXar = exports.extractTar = exports.extract7z = exports.downloadTool = exports.HTTPError = void 0;
 const core = __importStar(__webpack_require__(470));
 const io = __importStar(__webpack_require__(1));
 const fs = __importStar(__webpack_require__(747));
@@ -10262,10 +8792,9 @@ const userAgent = 'actions/tool-cache';
  * @param url       url of tool to download
  * @param dest      path to download tool
  * @param auth      authorization header
- * @param headers   other headers
  * @returns         path to downloaded tool
  */
-function downloadTool(url, dest, auth, headers) {
+function downloadTool(url, dest, auth) {
     return __awaiter(this, void 0, void 0, function* () {
         dest = dest || path.join(_getTempDirectory(), v4_1.default());
         yield io.mkdirP(path.dirname(dest));
@@ -10276,7 +8805,7 @@ function downloadTool(url, dest, auth, headers) {
         const maxSeconds = _getGlobal('TEST_DOWNLOAD_TOOL_RETRY_MAX_SECONDS', 20);
         const retryHelper = new retry_helper_1.RetryHelper(maxAttempts, minSeconds, maxSeconds);
         return yield retryHelper.execute(() => __awaiter(this, void 0, void 0, function* () {
-            return yield downloadToolAttempt(url, dest || '', auth, headers);
+            return yield downloadToolAttempt(url, dest || '', auth);
         }), (err) => {
             if (err instanceof HTTPError && err.httpStatusCode) {
                 // Don't retry anything less than 500, except 408 Request Timeout and 429 Too Many Requests
@@ -10292,7 +8821,7 @@ function downloadTool(url, dest, auth, headers) {
     });
 }
 exports.downloadTool = downloadTool;
-function downloadToolAttempt(url, dest, auth, headers) {
+function downloadToolAttempt(url, dest, auth) {
     return __awaiter(this, void 0, void 0, function* () {
         if (fs.existsSync(dest)) {
             throw new Error(`Destination file path ${dest} already exists`);
@@ -10301,12 +8830,12 @@ function downloadToolAttempt(url, dest, auth, headers) {
         const http = new httpm.HttpClient(userAgent, [], {
             allowRetries: false
         });
+        let headers;
         if (auth) {
             core.debug('set auth');
-            if (headers === undefined) {
-                headers = {};
-            }
-            headers.authorization = auth;
+            headers = {
+                authorization: auth
+            };
         }
         const response = yield http.get(url, headers);
         if (response.message.statusCode !== 200) {
@@ -10464,7 +8993,6 @@ function extractTar(file, dest, flags = 'xz') {
         if (isGnuTar) {
             // Suppress warnings when using GNU tar to extract archives created by BSD tar
             args.push('--warning=no-unknown-keyword');
-            args.push('--overwrite');
         }
         args.push('-C', destArg, '-f', fileArg);
         yield exec_1.exec(`tar`, args);
@@ -10530,50 +9058,20 @@ function extractZipWin(file, dest) {
         // build the powershell command
         const escapedFile = file.replace(/'/g, "''").replace(/"|\n|\r/g, ''); // double-up single quotes, remove double quotes and newlines
         const escapedDest = dest.replace(/'/g, "''").replace(/"|\n|\r/g, '');
-        const pwshPath = yield io.which('pwsh', false);
-        //To match the file overwrite behavior on nix systems, we use the overwrite = true flag for ExtractToDirectory
-        //and the -Force flag for Expand-Archive as a fallback
-        if (pwshPath) {
-            //attempt to use pwsh with ExtractToDirectory, if this fails attempt Expand-Archive
-            const pwshCommand = [
-                `$ErrorActionPreference = 'Stop' ;`,
-                `try { Add-Type -AssemblyName System.IO.Compression.ZipFile } catch { } ;`,
-                `try { [System.IO.Compression.ZipFile]::ExtractToDirectory('${escapedFile}', '${escapedDest}', $true) }`,
-                `catch { if (($_.Exception.GetType().FullName -eq 'System.Management.Automation.MethodException') -or ($_.Exception.GetType().FullName -eq 'System.Management.Automation.RuntimeException') ){ Expand-Archive -LiteralPath '${escapedFile}' -DestinationPath '${escapedDest}' -Force } else { throw $_ } } ;`
-            ].join(' ');
-            const args = [
-                '-NoLogo',
-                '-NoProfile',
-                '-NonInteractive',
-                '-ExecutionPolicy',
-                'Unrestricted',
-                '-Command',
-                pwshCommand
-            ];
-            core.debug(`Using pwsh at path: ${pwshPath}`);
-            yield exec_1.exec(`"${pwshPath}"`, args);
-        }
-        else {
-            const powershellCommand = [
-                `$ErrorActionPreference = 'Stop' ;`,
-                `try { Add-Type -AssemblyName System.IO.Compression.FileSystem } catch { } ;`,
-                `if ((Get-Command -Name Expand-Archive -Module Microsoft.PowerShell.Archive -ErrorAction Ignore)) { Expand-Archive -LiteralPath '${escapedFile}' -DestinationPath '${escapedDest}' -Force }`,
-                `else {[System.IO.Compression.ZipFile]::ExtractToDirectory('${escapedFile}', '${escapedDest}', $true) }`
-            ].join(' ');
-            const args = [
-                '-NoLogo',
-                '-Sta',
-                '-NoProfile',
-                '-NonInteractive',
-                '-ExecutionPolicy',
-                'Unrestricted',
-                '-Command',
-                powershellCommand
-            ];
-            const powershellPath = yield io.which('powershell', true);
-            core.debug(`Using powershell at path: ${powershellPath}`);
-            yield exec_1.exec(`"${powershellPath}"`, args);
-        }
+        const command = `$ErrorActionPreference = 'Stop' ; try { Add-Type -AssemblyName System.IO.Compression.FileSystem } catch { } ; [System.IO.Compression.ZipFile]::ExtractToDirectory('${escapedFile}', '${escapedDest}')`;
+        // run powershell
+        const powershellPath = yield io.which('powershell', true);
+        const args = [
+            '-NoLogo',
+            '-Sta',
+            '-NoProfile',
+            '-NonInteractive',
+            '-ExecutionPolicy',
+            'Unrestricted',
+            '-Command',
+            command
+        ];
+        yield exec_1.exec(`"${powershellPath}"`, args);
     });
 }
 function extractZipNix(file, dest) {
@@ -10583,7 +9081,6 @@ function extractZipNix(file, dest) {
         if (!core.isDebug()) {
             args.unshift('-q');
         }
-        args.unshift('-o'); //overwrite with -o, otherwise a prompt is shown which freezes the run
         yield exec_1.exec(`"${unzipPath}"`, args, { cwd: dest });
     });
 }
@@ -10666,9 +9163,9 @@ function find(toolName, versionSpec, arch) {
     }
     arch = arch || os.arch();
     // attempt to resolve an explicit version
-    if (!isExplicitVersion(versionSpec)) {
+    if (!_isExplicitVersion(versionSpec)) {
         const localVersions = findAllVersions(toolName, arch);
-        const match = evaluateVersions(localVersions, versionSpec);
+        const match = _evaluateVersions(localVersions, versionSpec);
         versionSpec = match;
     }
     // check for the explicit version in the cache
@@ -10701,7 +9198,7 @@ function findAllVersions(toolName, arch) {
     if (fs.existsSync(toolPath)) {
         const children = fs.readdirSync(toolPath);
         for (const child of children) {
-            if (isExplicitVersion(child)) {
+            if (_isExplicitVersion(child)) {
                 const fullPath = path.join(toolPath, child, arch || '');
                 if (fs.existsSync(fullPath) && fs.existsSync(`${fullPath}.complete`)) {
                     versions.push(child);
@@ -10784,26 +9281,14 @@ function _completeToolPath(tool, version, arch) {
     fs.writeFileSync(markerPath, '');
     core.debug('finished caching tool');
 }
-/**
- * Check if version string is explicit
- *
- * @param versionSpec      version string to check
- */
-function isExplicitVersion(versionSpec) {
+function _isExplicitVersion(versionSpec) {
     const c = semver.clean(versionSpec) || '';
     core.debug(`isExplicit: ${c}`);
     const valid = semver.valid(c) != null;
     core.debug(`explicit? ${valid}`);
     return valid;
 }
-exports.isExplicitVersion = isExplicitVersion;
-/**
- * Get the highest satisfiying semantic version in `versions` which satisfies `versionSpec`
- *
- * @param versions        array of versions to evaluate
- * @param versionSpec     semantic version spec to satisfy
- */
-function evaluateVersions(versions, versionSpec) {
+function _evaluateVersions(versions, versionSpec) {
     let version = '';
     core.debug(`evaluating ${versions.length} versions`);
     versions = versions.sort((a, b) => {
@@ -10828,7 +9313,6 @@ function evaluateVersions(versions, versionSpec) {
     }
     return version;
 }
-exports.evaluateVersions = evaluateVersions;
 /**
  * Gets RUNNER_TOOL_CACHE
  */
@@ -11298,9 +9782,7 @@ class HttpClient {
                 maxSockets: maxSockets,
                 keepAlive: this._keepAlive,
                 proxy: {
-                    ...((proxyUrl.username || proxyUrl.password) && {
-                        proxyAuth: `${proxyUrl.username}:${proxyUrl.password}`
-                    }),
+                    proxyAuth: `${proxyUrl.username}:${proxyUrl.password}`,
                     host: proxyUrl.hostname,
                     port: proxyUrl.port
                 }
@@ -13042,7 +11524,7 @@ module.exports = lt
 /***/ 593:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
-const compareBuild = __webpack_require__(465)
+const compareBuild = __webpack_require__(16)
 const rsort = (list, loose) => list.sort((a, b) => compareBuild(b, a, loose))
 module.exports = rsort
 
@@ -13718,25 +12200,6 @@ module.exports = require("util");
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -13746,9 +12209,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCmdPath = exports.tryGetExecutablePath = exports.isRooted = exports.isDirectory = exports.exists = exports.IS_WINDOWS = exports.unlink = exports.symlink = exports.stat = exports.rmdir = exports.rename = exports.readlink = exports.readdir = exports.mkdir = exports.lstat = exports.copyFile = exports.chmod = void 0;
+const assert_1 = __webpack_require__(357);
 const fs = __importStar(__webpack_require__(747));
 const path = __importStar(__webpack_require__(622));
 _a = fs.promises, exports.chmod = _a.chmod, exports.copyFile = _a.copyFile, exports.lstat = _a.lstat, exports.mkdir = _a.mkdir, exports.readdir = _a.readdir, exports.readlink = _a.readlink, exports.rename = _a.rename, exports.rmdir = _a.rmdir, exports.stat = _a.stat, exports.symlink = _a.symlink, exports.unlink = _a.unlink;
@@ -13791,6 +12261,49 @@ function isRooted(p) {
     return p.startsWith('/');
 }
 exports.isRooted = isRooted;
+/**
+ * Recursively create a directory at `fsPath`.
+ *
+ * This implementation is optimistic, meaning it attempts to create the full
+ * path first, and backs up the path stack from there.
+ *
+ * @param fsPath The path to create
+ * @param maxDepth The maximum recursion depth
+ * @param depth The current recursion depth
+ */
+function mkdirP(fsPath, maxDepth = 1000, depth = 1) {
+    return __awaiter(this, void 0, void 0, function* () {
+        assert_1.ok(fsPath, 'a path argument must be provided');
+        fsPath = path.resolve(fsPath);
+        if (depth >= maxDepth)
+            return exports.mkdir(fsPath);
+        try {
+            yield exports.mkdir(fsPath);
+            return;
+        }
+        catch (err) {
+            switch (err.code) {
+                case 'ENOENT': {
+                    yield mkdirP(path.dirname(fsPath), maxDepth, depth + 1);
+                    yield exports.mkdir(fsPath);
+                    return;
+                }
+                default: {
+                    let stats;
+                    try {
+                        stats = yield exports.stat(fsPath);
+                    }
+                    catch (err2) {
+                        throw err;
+                    }
+                    if (!stats.isDirectory())
+                        throw err;
+                }
+            }
+        }
+    });
+}
+exports.mkdirP = mkdirP;
 /**
  * Best effort attempt to determine whether a file exists and is executable.
  * @param filePath    file path to check
@@ -13887,12 +12400,6 @@ function isUnixExecutable(stats) {
         ((stats.mode & 8) > 0 && stats.gid === process.getgid()) ||
         ((stats.mode & 64) > 0 && stats.uid === process.getuid()));
 }
-// Get the path of cmd.exe in windows
-function getCmdPath() {
-    var _a;
-    return (_a = process.env['COMSPEC']) !== null && _a !== void 0 ? _a : `cmd.exe`;
-}
-exports.getCmdPath = getCmdPath;
 //# sourceMappingURL=io-util.js.map
 
 /***/ }),
@@ -14268,16 +12775,14 @@ function bytesToUuid(buf, offset) {
   var i = offset || 0;
   var bth = byteToHex;
   // join used to fix memory issue caused by concatenation: https://bugs.chromium.org/p/v8/issues/detail?id=3175#c4
-  return ([
-    bth[buf[i++]], bth[buf[i++]],
-    bth[buf[i++]], bth[buf[i++]], '-',
-    bth[buf[i++]], bth[buf[i++]], '-',
-    bth[buf[i++]], bth[buf[i++]], '-',
-    bth[buf[i++]], bth[buf[i++]], '-',
-    bth[buf[i++]], bth[buf[i++]],
-    bth[buf[i++]], bth[buf[i++]],
-    bth[buf[i++]], bth[buf[i++]]
-  ]).join('');
+  return ([bth[buf[i++]], bth[buf[i++]], 
+	bth[buf[i++]], bth[buf[i++]], '-',
+	bth[buf[i++]], bth[buf[i++]], '-',
+	bth[buf[i++]], bth[buf[i++]], '-',
+	bth[buf[i++]], bth[buf[i++]], '-',
+	bth[buf[i++]], bth[buf[i++]],
+	bth[buf[i++]], bth[buf[i++]],
+	bth[buf[i++]], bth[buf[i++]]]).join('');
 }
 
 module.exports = bytesToUuid;
@@ -14313,90 +12818,6 @@ const minSatisfying = (versions, range, options) => {
 }
 module.exports = minSatisfying
 
-
-/***/ }),
-
-/***/ 742:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.OidcClient = void 0;
-const http_client_1 = __webpack_require__(539);
-const auth_1 = __webpack_require__(226);
-const core_1 = __webpack_require__(470);
-class OidcClient {
-    static createHttpClient(allowRetry = true, maxRetry = 10) {
-        const requestOptions = {
-            allowRetries: allowRetry,
-            maxRetries: maxRetry
-        };
-        return new http_client_1.HttpClient('actions/oidc-client', [new auth_1.BearerCredentialHandler(OidcClient.getRequestToken())], requestOptions);
-    }
-    static getRequestToken() {
-        const token = process.env['ACTIONS_ID_TOKEN_REQUEST_TOKEN'];
-        if (!token) {
-            throw new Error('Unable to get ACTIONS_ID_TOKEN_REQUEST_TOKEN env variable');
-        }
-        return token;
-    }
-    static getIDTokenUrl() {
-        const runtimeUrl = process.env['ACTIONS_ID_TOKEN_REQUEST_URL'];
-        if (!runtimeUrl) {
-            throw new Error('Unable to get ACTIONS_ID_TOKEN_REQUEST_URL env variable');
-        }
-        return runtimeUrl;
-    }
-    static getCall(id_token_url) {
-        var _a;
-        return __awaiter(this, void 0, void 0, function* () {
-            const httpclient = OidcClient.createHttpClient();
-            const res = yield httpclient
-                .getJson(id_token_url)
-                .catch(error => {
-                throw new Error(`Failed to get ID Token. \n 
-        Error Code : ${error.statusCode}\n 
-        Error Message: ${error.result.message}`);
-            });
-            const id_token = (_a = res.result) === null || _a === void 0 ? void 0 : _a.value;
-            if (!id_token) {
-                throw new Error('Response json body do not have ID Token field');
-            }
-            return id_token;
-        });
-    }
-    static getIDToken(audience) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                // New ID Token is requested from action service
-                let id_token_url = OidcClient.getIDTokenUrl();
-                if (audience) {
-                    const encodedAudience = encodeURIComponent(audience);
-                    id_token_url = `${id_token_url}&audience=${encodedAudience}`;
-                }
-                core_1.debug(`ID token url is ${id_token_url}`);
-                const id_token = yield OidcClient.getCall(id_token_url);
-                core_1.setSecret(id_token);
-                return id_token;
-            }
-            catch (error) {
-                throw new Error(`Error message: ${error.message}`);
-            }
-        });
-    }
-}
-exports.OidcClient = OidcClient;
-//# sourceMappingURL=oidc-utils.js.map
 
 /***/ }),
 
@@ -14550,7 +12971,7 @@ function getVersion(command = "swift", args = ["--version"]) {
                 },
             },
         };
-        yield (0, exec_1.exec)(command, args, options);
+        yield exec_1.exec(command, args, options);
         if (error) {
             throw new Error(error);
         }
@@ -14647,6 +13068,13 @@ function releasefile (os, file, cb) {
   cb(null, os)
 }
 
+
+/***/ }),
+
+/***/ 818:
+/***/ (function(module) {
+
+module.exports = require("tls");
 
 /***/ }),
 
@@ -14819,7 +13247,7 @@ module.exports = {
   compare: __webpack_require__(874),
   rcompare: __webpack_require__(630),
   compareLoose: __webpack_require__(283),
-  compareBuild: __webpack_require__(465),
+  compareBuild: __webpack_require__(16),
   sort: __webpack_require__(120),
   rsort: __webpack_require__(593),
   gt: __webpack_require__(486),
@@ -15229,25 +13657,6 @@ createToken('GTE0PRE', '^\\s*>=\\s*0\.0\.0-0\\s*$')
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -15257,8 +13666,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RetryHelper = void 0;
 const core = __importStar(__webpack_require__(470));
 /**
  * Internal class for retries
@@ -15319,25 +13734,6 @@ exports.RetryHelper = RetryHelper;
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -15347,9 +13743,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getExecOutput = exports.exec = void 0;
-const string_decoder_1 = __webpack_require__(304);
 const tr = __importStar(__webpack_require__(9));
 /**
  * Exec a command.
@@ -15375,51 +13776,6 @@ function exec(commandLine, args, options) {
     });
 }
 exports.exec = exec;
-/**
- * Exec a command and get the output.
- * Output will be streamed to the live console.
- * Returns promise with the exit code and collected stdout and stderr
- *
- * @param     commandLine           command to execute (can include additional args). Must be correctly escaped.
- * @param     args                  optional arguments for tool. Escaping is handled by the lib.
- * @param     options               optional exec options.  See ExecOptions
- * @returns   Promise<ExecOutput>   exit code, stdout, and stderr
- */
-function getExecOutput(commandLine, args, options) {
-    var _a, _b;
-    return __awaiter(this, void 0, void 0, function* () {
-        let stdout = '';
-        let stderr = '';
-        //Using string decoder covers the case where a mult-byte character is split
-        const stdoutDecoder = new string_decoder_1.StringDecoder('utf8');
-        const stderrDecoder = new string_decoder_1.StringDecoder('utf8');
-        const originalStdoutListener = (_a = options === null || options === void 0 ? void 0 : options.listeners) === null || _a === void 0 ? void 0 : _a.stdout;
-        const originalStdErrListener = (_b = options === null || options === void 0 ? void 0 : options.listeners) === null || _b === void 0 ? void 0 : _b.stderr;
-        const stdErrListener = (data) => {
-            stderr += stderrDecoder.write(data);
-            if (originalStdErrListener) {
-                originalStdErrListener(data);
-            }
-        };
-        const stdOutListener = (data) => {
-            stdout += stdoutDecoder.write(data);
-            if (originalStdoutListener) {
-                originalStdoutListener(data);
-            }
-        };
-        const listeners = Object.assign(Object.assign({}, options === null || options === void 0 ? void 0 : options.listeners), { stdout: stdOutListener, stderr: stdErrListener });
-        const exitCode = yield exec(commandLine, args, Object.assign(Object.assign({}, options), { listeners }));
-        //flush any remaining characters
-        stdout += stdoutDecoder.end();
-        stderr += stderrDecoder.end();
-        return {
-            exitCode,
-            stdout,
-            stderr
-        };
-    });
-}
-exports.getExecOutput = getExecOutput;
 //# sourceMappingURL=exec.js.map
 
 /***/ }),

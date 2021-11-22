@@ -28,7 +28,7 @@ After the environment is configured you can run swift commands using the standar
 ```yaml
 - uses: fwal/setup-swift@v1
 - name: Get swift version
-  run: swift --version # Swift 5.4.3
+  run: swift --version # Swift 5.5
 ```
 
 A specific Swift version can be set using the `swift-version` input:
@@ -68,11 +68,11 @@ For example, Swift is available as version `5.1` but this will be interpreted as
 In other words specifying...
 - `"5.1.0"` will resolve to version `5.1`
 - `"5.1"` will resolve to latest patch version (aka `5.1.1`)
-- `"5"` will resolve to latest minor and patch version (aka `5.4.3`)
+- `"5"` will resolve to latest minor and patch version (aka `5.5`)
 
 ### Caveats
 
-YAML interprets eg. `5.0` as a float, this action will then interpret that as `5` which will result in eg. Swift 5.4.3 being resolved. Quote your inputs! Thus:
+YAML interprets eg. `5.0` as a float, this action will then interpret that as `5` which will result in eg. Swift 5.5 being resolved. Quote your inputs! Thus:
 
 ```
 - uses: fwal/setup-swift@v1

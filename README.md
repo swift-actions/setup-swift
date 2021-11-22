@@ -7,7 +7,7 @@
     <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Ubuntu-lightgray" alt="Supports macOS and Ubuntu" />
   </a>
   <a href="https://swift.org">
-    <img src="https://img.shields.io/badge/Swift-5.4.3-F05138?logo=swift&logoColor=white" alt="Swift 5.4.3" />
+    <img src="https://img.shields.io/badge/Swift-5.5-F05138?logo=swift&logoColor=white" alt="Swift 5.5" />
   </a>
   <a href="https://github.com/fwal/setup-swift/releases/latest">
     <img src="https://img.shields.io/github/v/release/fwal/setup-swift?sort=semver" alt="Latest release" />

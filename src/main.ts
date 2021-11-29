@@ -26,7 +26,7 @@ async function run() {
     if (current === version) {
       core.setOutput("version", version);
     } else {
-      core.error("Failed to setup requested swift version");
+      core.error(`Failed to setup requested swift version. requestd: ${version}, actual: ${current}`);
     }
   } catch (error) {
     let dump: String;

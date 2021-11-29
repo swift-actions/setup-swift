@@ -13725,7 +13725,7 @@ function getVersion(command = "swift", args = ["--version"]) {
 }
 exports.getVersion = getVersion;
 function versionFromString(subject) {
-    const match = subject.match(/Apple\ Swift\ version (?<version>[0-9]+\.[0-9+]+(\.[0-9]+)?)/) || {
+    const match = subject.match(/Swift\ version (?<version>[0-9]+\.[0-9+]+(\.[0-9]+)?)/) || {
         groups: { version: null },
     };
     if (!match.groups || !match.groups.version) {

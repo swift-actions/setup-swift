@@ -29,7 +29,7 @@ export async function getVersion(
 
 export function versionFromString(subject: string): string | null {
   const match = subject.match(
-    /Apple\ Swift\ version (?<version>[0-9]+\.[0-9+]+(\.[0-9]+)?)/
+    /Swift\ version (?<version>[0-9]+\.[0-9+]+(\.[0-9]+)?)/
   ) || {
     groups: { version: null },
   };

@@ -22,4 +22,11 @@ Target: x86_64-apple-macosx11.0`
     );
     expect(version).toBe("5.5");
   });
+
+  it("identifies version from swift version on linux", async () => {
+    const version = versionFromString(
+      "Swift version 5.5.1 (swift-5.5.1-RELEASE)"
+    );
+    expect(version).toBe("5.5.1");
+  });
 });

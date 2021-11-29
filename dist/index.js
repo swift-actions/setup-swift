@@ -2751,7 +2751,7 @@ function run() {
                 core.setOutput("version", version);
             }
             else {
-                core.error("Failed to setup requested swift version");
+                core.error(`Failed to setup requested swift version. requestd: ${version}, actual: ${current}`);
             }
         }
         catch (error) {
@@ -13725,7 +13725,7 @@ function getVersion(command = "swift", args = ["--version"]) {
 }
 exports.getVersion = getVersion;
 function versionFromString(subject) {
-    const match = subject.match(/Apple\ Swift\ version (?<version>[0-9]+\.[0-9+]+(\.[0-9]+)?)/) || {
+    const match = subject.match(/Swift\ version (?<version>[0-9]+\.[0-9+]+(\.[0-9]+)?)/) || {
         groups: { version: null },
     };
     if (!match.groups || !match.groups.version) {

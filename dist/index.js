@@ -2751,7 +2751,7 @@ function run() {
                 core.setOutput("version", version);
             }
             else {
-                core.error("Failed to setup requested swift version");
+                core.error(`Failed to setup requested swift version. requestd: ${version}, actual: ${current}`);
             }
         }
         catch (error) {

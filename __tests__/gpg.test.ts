@@ -16,13 +16,31 @@ describe("gpg", () => {
     expect(mockExec).toBeCalledTimes(1);
   });
 
-  it("uses the next keyserver in the pool if the previous fails", async () => {
-    const failingServers = 3;
-    let testedServers = 0;
+  // NOTE: Currently disabled as the pool only contains one server
+  // it("uses the next keyserver in the pool if the previous fails", async () => {
+  //   const failingServers = 3;
+  //   let testedServers = 0;
+
+  //   mockExec.mockImplementation(() => {
+  //     testedServers++;
+  //     if (testedServers >= failingServers) {
+  //       return Promise.resolve(0);
+  //     } else {
+  //       return Promise.resolve(1);
+  //     }
+  //   });
+
+  //   await refreshKeys();
+  //   expect(mockExec).toBeCalledTimes(3);
+  // });
+
+  it("makes a second attempt if the keyserver fails", async () => {
+    const attempts = 2;
+    let tests = 0;
 
     mockExec.mockImplementation(() => {
-      testedServers++;
-      if (testedServers >= failingServers) {
+      tests++;
+      if (tests >= attempts) {
         return Promise.resolve(0);
       } else {
         return Promise.resolve(1);
@@ -30,7 +48,7 @@ describe("gpg", () => {
     });
 
     await refreshKeys();
-    expect(mockExec).toBeCalledTimes(3);
+    expect(mockExec).toBeCalledTimes(2);
   });
 
   it("throws an error if all servers in the pool fails", async () => {

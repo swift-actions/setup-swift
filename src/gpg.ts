@@ -21,13 +21,7 @@ export async function verify(signaturePath: string, packagePath: string) {
 }
 
 export async function refreshKeys() {
-  const pool = [
-    "hkp://pool.sks-keyservers.net",
-    "ha.pool.sks-keyservers.net",
-    "keyserver.ubuntu.com",
-    "hkp://keyserver.ubuntu.com",
-    "pgp.mit.edu",
-  ];
+  const pool = ["hkp://keyserver.ubuntu.com"];
 
   for (const server of pool) {
     core.debug(`Refreshing keys from ${server}`);

@@ -8973,17 +8973,17 @@ function verify(signaturePath, packagePath) {
 exports.verify = verify;
 function refreshKeys() {
     return __awaiter(this, void 0, void 0, function* () {
-        const pool = [
-            "hkp://pool.sks-keyservers.net",
-            "ha.pool.sks-keyservers.net",
-            "keyserver.ubuntu.com",
-            "hkp://keyserver.ubuntu.com",
-            "pgp.mit.edu",
-        ];
+        const pool = ["hkp://keyserver.ubuntu.com"];
         for (const server of pool) {
             core.debug(`Refreshing keys from ${server}`);
+            // 1st try...
             if (yield refreshKeysFromServer(server)) {
-                core.debug(`Refresh successful`);
+                core.debug(`Refresh successful on first attempt`);
+                return;
+            }
+            // 2nd try...
+            if (yield refreshKeysFromServer(server)) {
+                core.debug(`Refresh successful on second attempt`);
                 return;
             }
             core.debug(`Refresh failed`);

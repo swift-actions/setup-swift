@@ -25,8 +25,15 @@ export async function refreshKeys() {
 
   for (const server of pool) {
     core.debug(`Refreshing keys from ${server}`);
+    // 1st try...
     if (await refreshKeysFromServer(server)) {
-      core.debug(`Refresh successful`);
+      core.debug(`Refresh successful on first attempt`);
+      return;
+    }
+
+    // 2nd try...
+    if (await refreshKeysFromServer(server)) {
+      core.debug(`Refresh successful on second attempt`);
       return;
     }
     core.debug(`Refresh failed`);

@@ -7,6 +7,7 @@ on:
 
 jobs:
   update-release-draft:
+    name: Update Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,5 +31,5 @@ jobs:
       - name: Commit 
         uses: EndBug/add-and-commit@v8
         with:
-          push: origin master --force
+          push: origin main --force
       

@@ -8,7 +8,6 @@ jobs:
   v1:
     name: "v1: Swift ${{ matrix.swift }} on ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
-    continue-on-error: true
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
@@ -18,11 +17,11 @@ jobs:
       with:
         swift-version: ${{ matrix.swift }}
     - name: Swift version
+      if: always()
       run: swift --version | grep ${{ matrix.swift }} || exit 1
   main:
     name: "main: Swift ${{ matrix.swift }} on ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
-    continue-on-error: true
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
@@ -32,4 +31,5 @@ jobs:
       with:
         swift-version: ${{ matrix.swift }}
     - name: Swift version
+      if: always()
       run: swift --version | grep ${{ matrix.swift }} || exit 1

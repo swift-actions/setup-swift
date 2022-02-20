@@ -19,7 +19,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Set version
-        run: npm version "${{ steps.release_draft.outputs.name }}" --allow-same-version true --git-tag-version false
+        run: npm version ${{ steps.release_draft.outputs.name }} --allow-same-version true --git-tag-version false
 
       - name: Install Dependencies
         run: npm install

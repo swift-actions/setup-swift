@@ -29,7 +29,7 @@ jobs:
         run: npm run all
 
       - name: Commit 
-        uses: EndBug/add-and-commit@v8
+        uses: EndBug/add-and-commit@v9
         with:
           push: origin main --force
       

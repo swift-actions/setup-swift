@@ -39,7 +39,7 @@ async function run() {
     }
 
     core.setFailed(
-      `Unexpected error, unable to continue. Please report at https://github.com/fwal/setup-swift/issues${EOL}${dump}`
+      `Unexpected error, unable to continue. Please report at https://github.com/swift-actions/setup-swift/issues${EOL}${dump}`
     );
   }
 }

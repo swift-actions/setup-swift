@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/fwal/setup-swift.git"
+    "url": "git+https://github.com/swift-actions/setup-swift.git"
   },
   "keywords": [
     "github",
@@ -27,9 +27,9 @@
   "author": "Frederik Wallner",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/fwal/setup-swift/issues"
+    "url": "https://github.com/swift-actions/setup-swift/issues"
   },
-  "homepage": "https://github.com/fwal/setup-swift#readme",
+  "homepage": "https://github.com/swift-actions/setup-swift#readme",
   "dependencies": {
     "@actions/core": "^1.7.0",
     "@actions/exec": "^1.1.1",

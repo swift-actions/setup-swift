@@ -29,7 +29,9 @@ async function run() {
     if (current === version) {
       core.setOutput("version", version);
     } else {
-      core.error("Failed to setup requested swift version");
+      core.error(
+        `Failed to setup requested swift version. requestd: ${version}, actual: ${current}`
+      );
     }
   } catch (error) {
     let dump: String;
@@ -40,7 +42,7 @@ async function run() {
     }
 
     core.setFailed(
-      `Unexpected error, unable to continue. Please report at https://github.com/fwal/setup-swift/issues${EOL}${dump}`
+      `Unexpected error, unable to continue. Please report at https://github.com/swift-actions/setup-swift/issues${EOL}${dump}`
     );
   }
 }

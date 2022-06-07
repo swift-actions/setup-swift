@@ -7,9 +7,29 @@ on:
 
 jobs:
   update-release-draft:
-    name: Update Release Draft
+    name: Update Release
     runs-on: ubuntu-latest
     steps:
-      - uses: release-drafter/release-drafter@v5
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Update Release Draft
+        id: release_draft
+        uses: release-drafter/release-drafter@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Set version
+        run: npm version ${{ steps.release_draft.outputs.name }} --allow-same-version true --git-tag-version false
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run all
+
+      - name: Commit 
+        uses: EndBug/add-and-commit@v9
+        with:
+          push: origin main --force
+      

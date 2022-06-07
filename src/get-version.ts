@@ -20,11 +20,17 @@ export async function getVersion(
 
   await exec(command, args, options);
 
-  if (error) {
-    throw new Error(error);
+  if (!output && error) {
+    throw new Error("Error getting swift version " + error);
   }
 
-  const match = output.match(/(?<version>[0-9]+\.[0-9+]+(\.[0-9]+)?)/) || {
+  return versionFromString(output);
+}
+
+export function versionFromString(subject: string): string | null {
+  const match = subject.match(
+    /Swift\ version (?<version>[0-9]+\.[0-9+]+(\.[0-9]+)?)/
+  ) || {
     groups: { version: null },
   };
 

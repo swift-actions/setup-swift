@@ -29,7 +29,7 @@ export interface VsRequirement {
 
 /// Setup different version and component requirement
 /// based on swift versions if required
-function vsRequirement({ version }: Package): VsRequirement {
+export function vsRequirement({ version }: Package): VsRequirement {
   const recVersion = "10.0.17763";
   const currentVersion = os.release();
   const useVersion = semver.gte(currentVersion, recVersion)
@@ -73,11 +73,11 @@ export async function setupVsTools(pkg: Package) {
   /// https://github.com/microsoft/vswhere/wiki/Find-MSBuild
   /// get visual studio properties
   const vswhereExe = await getVsWherePath();
-  const requirement = vsRequirement(pkg);
+  const req = vsRequirement(pkg);
   const vsWhereExec =
     `-products * ` +
     `-format json -utf8 ` +
-    `-latest -version "${requirement.version}"`;
+    `-latest -version "${req.version}"`;
 
   let payload = "";
   const options: ExecOptions = {};
@@ -94,17 +94,16 @@ export async function setupVsTools(pkg: Package) {
   await exec(`"${vswhereExe}" ${vsWhereExec}`, [], options);
   let vs: VisualStudio = JSON.parse(payload)[0];
   if (!vs.installationPath) {
-    core.setFailed(
-      `Unable to find any visual studio installation for version: ${requirement.version}.`
+    throw new Error(
+      `Unable to find any visual studio installation for version: ${req.version}.`
     );
-    return;
   }
 
   /// https://docs.microsoft.com/en-us/visualstudio/install/use-command-line-parameters-to-install-visual-studio?view=vs-2022
   /// install required visual studio components
   const vsInstallerExec =
     `modify --installPath "${vs.installationPath}"` +
-    requirement.components.reduce(
+    req.components.reduce(
       (previous, current) => `${previous} --add "${current}"`,
       ""
     ) +
@@ -116,10 +115,9 @@ export async function setupVsTools(pkg: Package) {
     []
   );
   if (code != 0) {
-    core.setFailed(
+    throw new Error(
       `Visual Studio installer failed to install required components with exit code: ${code}.`
     );
-    return;
   }
 
   await setupSupportFiles(pkg, vs.installationPath);
@@ -128,7 +126,7 @@ export async function setupVsTools(pkg: Package) {
 /// Get vswhere and vs_installer paths
 /// Borrowed from setup-msbuild action: https://github.com/microsoft/setup-msbuild
 /// From source file: https://github.com/microsoft/setup-msbuild/blob/master/src/main.ts
-async function getVsWherePath() {
+export async function getVsWherePath() {
   // check to see if we are using a specific path for vswhere
   let vswhereToolExe = "";
   // Env variable for self-hosted runner to provide custom path
@@ -155,8 +153,7 @@ async function getVsWherePath() {
   }
 
   if (!fs.existsSync(vswhereToolExe)) {
-    core.setFailed("Action requires the path to where vswhere.exe exists");
-    return;
+    throw new Error("Action requires the path to where vswhere.exe exists");
   }
 
   return vswhereToolExe;

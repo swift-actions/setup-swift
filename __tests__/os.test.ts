@@ -19,6 +19,13 @@ describe("os resolver", () => {
     expect(mac.os).toBe(os.OS.MacOS);
     expect(mac.version).toBe("latest");
     expect(mac.name).toBe("macOS");
+
+    setSystem({ os: "win32", dist: "Windows", release: "latest" });
+
+    let windows = await os.getSystem();
+    expect(windows.os).toBe(os.OS.Windows);
+    expect(windows.version).toBe("latest");
+    expect(windows.name).toBe("Windows");
   });
 
   it("throws an error if the os is not supported", async () => {

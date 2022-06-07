@@ -2347,8 +2347,7 @@ function install(version, system) {
         const swiftLibPath = path.join(systemDrive, "Library");
         const swiftInstallPath = path.join(swiftLibPath, "Developer", "Toolchains", "unknown-Asserts-development.xctoolchain", "usr\\bin");
         if (code != 0 || !fs.existsSync(swiftInstallPath)) {
-            core.setFailed(`Swift installer failed with exit code: ${code}`);
-            return;
+            throw new Error(`Swift installer failed with exit code: ${code}`);
         }
         core.addPath(swiftInstallPath);
         const additionalPaths = [
@@ -7625,7 +7624,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setupVsTools = void 0;
+exports.getVsWherePath = exports.setupVsTools = exports.vsRequirement = void 0;
 const os = __importStar(__webpack_require__(87));
 const fs = __importStar(__webpack_require__(747));
 const path = __importStar(__webpack_require__(622));
@@ -7649,6 +7648,7 @@ function vsRequirement({ version }) {
         ],
     };
 }
+exports.vsRequirement = vsRequirement;
 /// Do swift version based additional support files setup
 function setupSupportFiles({ version }, vsInstallPath) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -7675,10 +7675,10 @@ function setupVsTools(pkg) {
         /// https://github.com/microsoft/vswhere/wiki/Find-MSBuild
         /// get visual studio properties
         const vswhereExe = yield getVsWherePath();
-        const requirement = vsRequirement(pkg);
+        const req = vsRequirement(pkg);
         const vsWhereExec = `-products * ` +
             `-format json -utf8 ` +
-            `-latest -version "${requirement.version}"`;
+            `-latest -version "${req.version}"`;
         let payload = "";
         const options = {};
         options.listeners = {
@@ -7693,19 +7693,17 @@ function setupVsTools(pkg) {
         yield exec_1.exec(`"${vswhereExe}" ${vsWhereExec}`, [], options);
         let vs = JSON.parse(payload)[0];
         if (!vs.installationPath) {
-            core.setFailed(`Unable to find any visual studio installation for version: ${requirement.version}.`);
-            return;
+            throw new Error(`Unable to find any visual studio installation for version: ${req.version}.`);
         }
         /// https://docs.microsoft.com/en-us/visualstudio/install/use-command-line-parameters-to-install-visual-studio?view=vs-2022
         /// install required visual studio components
         const vsInstallerExec = `modify --installPath "${vs.installationPath}"` +
-            requirement.components.reduce((previous, current) => `${previous} --add "${current}"`, "") +
+            req.components.reduce((previous, current) => `${previous} --add "${current}"`, "") +
             ` --quiet`;
         // install required visual studio components
         const code = yield exec_1.exec(`"${vs.properties.setupEngineFilePath}" ${vsInstallerExec}`, []);
         if (code != 0) {
-            core.setFailed(`Visual Studio installer failed to install required components with exit code: ${code}.`);
-            return;
+            throw new Error(`Visual Studio installer failed to install required components with exit code: ${code}.`);
         }
         yield setupSupportFiles(pkg, vs.installationPath);
     });
@@ -7739,12 +7737,12 @@ function getVsWherePath() {
             }
         }
         if (!fs.existsSync(vswhereToolExe)) {
-            core.setFailed("Action requires the path to where vswhere.exe exists");
-            return;
+            throw new Error("Action requires the path to where vswhere.exe exists");
         }
         return vswhereToolExe;
     });
 }
+exports.getVsWherePath = getVsWherePath;
 
 
 /***/ }),
@@ -7852,7 +7850,7 @@ var OS;
 const AVAILABLE_OS = {
     macOS: ["latest", "11.0", "10.15"],
     Ubuntu: ["latest", "20.04", "18.04", "16.04"],
-    Windows: ["latest", "2022", "2019"],
+    Windows: ["latest", "10"],
 };
 function getSystem() {
     return __awaiter(this, void 0, void 0, function* () {

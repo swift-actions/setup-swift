@@ -61,8 +61,7 @@ export async function install(version: string, system: System) {
   );
 
   if (code != 0 || !fs.existsSync(swiftInstallPath)) {
-    core.setFailed(`Swift installer failed with exit code: ${code}`);
-    return;
+    throw new Error(`Swift installer failed with exit code: ${code}`);
   }
 
   core.addPath(swiftInstallPath);

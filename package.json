@@ -42,7 +42,7 @@
     "@types/getos": "^3.0.1",
     "@types/jest": "^27.5.0",
     "@types/node": "^17.0.32",
-    "@types/semver": "^7.3.9",
+    "@types/semver": "^7.3.10",
     "@zeit/ncc": "^0.22.3",
     "jest": "^26.6.3",
     "prettier": "^2.6.2",

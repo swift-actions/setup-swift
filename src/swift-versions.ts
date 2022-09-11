@@ -3,20 +3,20 @@ import * as core from "@actions/core";
 import { System, OS } from "./os";
 
 const VERSIONS_LIST: [string, OS[]][] = [
-  ["5.6.1", [OS.MacOS, OS.Ubuntu]],
-  ["5.6", [OS.MacOS, OS.Ubuntu]],
-  ["5.5.3", [OS.MacOS, OS.Ubuntu]],
-  ["5.5.2", [OS.MacOS, OS.Ubuntu]],
-  ["5.5.1", [OS.MacOS, OS.Ubuntu]],
-  ["5.5", [OS.MacOS, OS.Ubuntu]],
-  ["5.4.3", [OS.MacOS, OS.Ubuntu]],
-  ["5.4.2", [OS.MacOS, OS.Ubuntu]],
-  ["5.4.1", [OS.MacOS, OS.Ubuntu]],
-  ["5.4", [OS.MacOS, OS.Ubuntu]],
-  ["5.3.3", [OS.MacOS, OS.Ubuntu]],
-  ["5.3.2", [OS.MacOS, OS.Ubuntu]],
-  ["5.3.1", [OS.MacOS, OS.Ubuntu]],
-  ["5.3", [OS.MacOS, OS.Ubuntu]],
+  ["5.6.1", OS.all()],
+  ["5.6", OS.all()],
+  ["5.5.3", OS.all()],
+  ["5.5.2", OS.all()],
+  ["5.5.1", OS.all()],
+  ["5.5", OS.all()],
+  ["5.4.3", OS.all()],
+  ["5.4.2", OS.all()],
+  ["5.4.1", OS.all()],
+  ["5.4", OS.all()],
+  ["5.3.3", OS.all()],
+  ["5.3.2", OS.all()],
+  ["5.3.1", OS.all()],
+  ["5.3", OS.all()],
   ["5.2.5", [OS.Ubuntu]],
   ["5.2.4", [OS.MacOS, OS.Ubuntu]],
   ["5.2.3", [OS.Ubuntu]],
@@ -68,6 +68,7 @@ function notEmpty<T>(value: T | null | undefined): value is T {
 export interface Package {
   url: string;
   name: string;
+  version: string;
 }
 
 export function swiftPackage(version: string, system: System): Package {
@@ -86,6 +87,11 @@ export function swiftPackage(version: string, system: System): Package {
       archiveName = `swift-${version}-RELEASE-ubuntu${system.version}`;
       archiveFile = `${archiveName}.tar.gz`;
       break;
+    case OS.Windows:
+      platform = "windows10";
+      archiveName = `swift-${version}-RELEASE-windows10.exe`;
+      archiveFile = archiveName;
+      break;
     default:
       throw new Error("Cannot create download URL for an unsupported platform");
   }
@@ -93,6 +99,7 @@ export function swiftPackage(version: string, system: System): Package {
   return {
     url: `https://swift.org/builds/swift-${version}-release/${platform}/swift-${version}-RELEASE/${archiveFile}`,
     name: archiveName,
+    version: version,
   };
 }
 

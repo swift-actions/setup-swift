@@ -4,7 +4,7 @@
     <img src="https://img.shields.io/badge/GitHub-Action-blue?logo=github" alt="GitHub Action" />
   </a>
   <a href="https://help.github.com/en/actions/automating-your-workflow-with-github-actions/virtual-environments-for-github-hosted-runners#supported-runners-and-hardware-resources">
-    <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Ubuntu-lightgray" alt="Supports macOS and Ubuntu" />
+    <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Ubuntu%20%7C%20Windows-lightgray" alt="Supports macOS, Ubuntu & Windows" />
   </a>
   <a href="https://swift.org">
     <img src="https://img.shields.io/badge/Swift-5.6.3-F05138?logo=swift&logoColor=white" alt="Swift 5.6.3" />

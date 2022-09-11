@@ -1,4 +1,5 @@
 import os from "os";
+import * as path from "path";
 import * as vs from "../src/visual-studio";
 import { swiftPackage } from "../src/swift-versions";
 import { OS, System } from "../src/os";
@@ -70,16 +71,21 @@ describe("visual studio resolver", () => {
   });
 
   it("finds vswhere path from environment value", async () => {
-    const vswherePath = "C:\\bin\\";
-    const vswhereExe = "C:\\bin\\vswhere.exe";
+    const vswherePath = path.join("C:", "bin");
+    const vswhereExe = path.join(vswherePath, "vswhere.exe");
     process.env.VSWHERE_PATH = vswherePath;
     expect(await vs.getVsWherePath()).toBe(vswhereExe);
   });
 
   it("finds vswhere path from ProgramFiles environment value", async () => {
-    const vswhereExe =
-      "C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\vswhere.exe";
-    process.env["ProgramFiles(x86)"] = "C:\\Program Files (x86)";
+    const vswhereExe = path.join(
+      "C:",
+      "Program Files (x86)",
+      "Microsoft Visual Studio",
+      "Installer",
+      "vswhere.exe"
+    );
+    process.env["ProgramFiles(x86)"] = path.join("C:", "Program Files (x86)");
     expect(await vs.getVsWherePath()).toBe(vswhereExe);
   });
 });

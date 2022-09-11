@@ -146,7 +146,9 @@ export async function getVsWherePath() {
       // fall back to VS-installed path
       vswhereToolExe = path.join(
         process.env["ProgramFiles(x86)"] as string,
-        "Microsoft Visual Studio\\Installer\\vswhere.exe"
+        "Microsoft Visual Studio",
+        "Installer",
+        "vswhere.exe"
       );
       core.debug(`Trying Visual Studio-installed path: ${vswhereToolExe}`);
     }

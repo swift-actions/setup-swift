@@ -57,7 +57,8 @@ export async function install(version: string, system: System) {
     "Developer",
     "Toolchains",
     "unknown-Asserts-development.xctoolchain",
-    "usr\\bin"
+    "usr",
+    "bin"
   );
 
   if (code != 0 || !fs.existsSync(swiftInstallPath)) {
@@ -67,8 +68,8 @@ export async function install(version: string, system: System) {
   core.addPath(swiftInstallPath);
 
   const additionalPaths = [
-    path.join(swiftLibPath, "Swift-development\\bin"),
-    path.join(swiftLibPath, "icu-67\\usr\\bin"),
+    path.join(swiftLibPath, "Swift-development", "bin"),
+    path.join(swiftLibPath, "icu-67", "usr", "bin"),
   ];
   additionalPaths.forEach((value, index, array) => core.addPath(value));
 

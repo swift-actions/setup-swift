@@ -3,11 +3,19 @@ import getos from "getos";
 export enum OS {
   MacOS,
   Ubuntu,
+  Windows,
+}
+
+export namespace OS {
+  export function all(): OS[] {
+    return [OS.MacOS, OS.Ubuntu, OS.Windows];
+  }
 }
 
 const AVAILABLE_OS: { [platform: string]: string[] } = {
   macOS: ["latest", "11.0", "10.15"],
   Ubuntu: ["latest", "20.04", "18.04", "16.04"],
+  Windows: ["latest", "10"],
 };
 
 export interface System {
@@ -40,6 +48,9 @@ export async function getSystem(): Promise<System> {
         version: detectedSystem.release,
         name: "Ubuntu",
       };
+      break;
+    case "win32":
+      system = { os: OS.Windows, version: "latest", name: "Windows" };
       break;
     default:
       throw new Error(`"${detectedSystem.os}" is not a supported platform`);

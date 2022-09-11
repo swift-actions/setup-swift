@@ -4,6 +4,7 @@ import * as system from "./os";
 import * as versions from "./swift-versions";
 import * as macos from "./macos-install";
 import * as linux from "./linux-install";
+import * as windows from "./windows-install";
 import { getVersion } from "./get-version";
 
 async function run() {
@@ -20,6 +21,8 @@ async function run() {
       case system.OS.Ubuntu:
         await linux.install(version, platform);
         break;
+      case system.OS.Windows:
+        await windows.install(version, platform);
     }
 
     const current = await getVersion();

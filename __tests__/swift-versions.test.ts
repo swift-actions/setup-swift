@@ -3,6 +3,7 @@ import * as versions from "../src/swift-versions";
 
 const macOS: System = { os: OS.MacOS, version: "latest", name: "macOS" };
 const ubuntu: System = { os: OS.Ubuntu, version: "latest", name: "Ubuntu" };
+const windows: System = { os: OS.Windows, version: "latest", name: "Windows" };
 
 describe("swift version resolver", () => {
   it("identifies X.X.X versions", async () => {
@@ -27,7 +28,7 @@ describe("swift version resolver", () => {
 
   it("identifies X versions", async () => {
     const version = await versions.verify("5", macOS);
-    expect(version).toBe("5.6.1");
+    expect(version).toBe("5.6.3");
   });
 
   it("identifies versions based on system", async () => {
@@ -39,11 +40,18 @@ describe("swift version resolver", () => {
   });
 
   it("throws an error if the version isn't available for the system", async () => {
-    expect.assertions(1);
+    expect.assertions(2);
+
     try {
       await versions.verify("5.0.3", macOS);
     } catch (e) {
       expect(e).toEqual(new Error('Version "5.0.3" is not available'));
+    }
+
+    try {
+      await versions.verify("5.2", windows);
+    } catch (e) {
+      expect(e).toEqual(new Error('Version "5.2" is not available'));
     }
   });
 

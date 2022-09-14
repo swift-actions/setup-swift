@@ -62,13 +62,13 @@ steps:
 
 This project uses strict semantic versioning to determine what version of Swift to configure. This differs slightly from the official convention used by Swift.
 
-For example, Swift is available as version `5.1` but this will be interpreted as a version _range_ of `5.1.X` where `X` is the latest patch version available for that major and minor version.
+For example, Swift is available as version `5.1` but using this as value for `swift-version` will be interpreted as a version _range_ of `5.1.X` where `X` is the latest patch version available for that major and minor version.
 
 
 In other words specifying...
 - `"5.1.0"` will resolve to version `5.1`
 - `"5.1"` will resolve to latest patch version (aka `5.1.1`)
-- `"5"` will resolve to latest minor and patch version (aka `5.5`)
+- `"5"` will resolve to latest minor and patch version (aka `5.7`)
 
 ### Caveats
 
@@ -87,6 +87,18 @@ Not:
   with:
     swift-version: 5.0
 ```
+
+## Keeping the action up-to-date
+
+You have two options for keeping this action up-to-date: either you define a specific version (like `v1.17.0`) or use the major version tag (like `v1`).
+
+### Specific version
+
+We recommend using the specific version tag together with [Dependabot](https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/about-dependabot-version-updates) to keep the action up-to-date. That way you will automatically get notifed when the action updates and you can read the changelog directly in the PR opened by dependabot.
+
+### Major version tag
+
+If you don't plan on keeping tabs on updates or don't want to use Dependabot but still would like to always use the latest version, you can use the main version tag.
 
 ## Legal
 Uses MIT license. 

@@ -25,6 +25,10 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         swift: ["5.7"]
         include:
+        - os: macos-12
+          swift: "5.7"
+        - os: ubuntu-22.04
+          swift: "5.7"
         - os: windows-latest
           swift: "5.6.3"
     steps:

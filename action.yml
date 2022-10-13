@@ -10,7 +10,7 @@ outputs:
   version:
     description: The full Swift version that was configured
 runs:
-  using: node12
+  using: node16
   main: dist/index.js
 branding:
   icon: 'command'  

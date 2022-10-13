@@ -4,6 +4,10 @@
   "description": "Set up GitHub Actions workflow with Swift support",
   "private": true,
   "main": "lib/main.js",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
   "scripts": {
     "build": "tsc",
     "pack": "ncc build",

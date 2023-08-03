@@ -1,11 +1,11 @@
 import * as os from "os";
 import * as path from "path";
-import { exec } from "@actions/exec";
 import * as core from "@actions/core";
 import * as toolCache from "@actions/tool-cache";
 import { System } from "./os";
 import { swiftPackage, Package } from "./swift-versions";
 import { setupKeys, verify } from "./gpg";
+import { tryCleanup } from "./io";
 
 export async function install(version: string, system: System) {
   if (os.platform() !== "linux") {
@@ -50,6 +50,7 @@ async function download({ url, name }: Package) {
   return { pkg, signature, name };
 }
 
+/** Extracts the package, cleaning up the original path and intermediate files. */
 async function unpack(
   packagePath: string,
   packageName: string,
@@ -58,12 +59,14 @@ async function unpack(
 ) {
   core.debug("Extracting package");
   let extractPath = await toolCache.extractTar(packagePath);
+  await tryCleanup(packagePath, "package archive");
   core.debug("Package extracted");
   let cachedPath = await toolCache.cacheDir(
     path.join(extractPath, packageName),
     `swift-${system.name}`,
     version
   );
+  await tryCleanup(extractPath, "extracted package");
   core.debug("Package cached");
   return cachedPath;
 }

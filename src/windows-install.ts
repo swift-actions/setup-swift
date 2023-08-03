@@ -8,6 +8,7 @@ import { System } from "./os";
 import { swiftPackage, Package } from "./swift-versions";
 import { setupKeys, verify } from "./gpg";
 import { setupVsTools } from "./visual-studio";
+import { tryCleanup } from "./io";
 
 export async function install(version: string, system: System) {
   if (os.platform() !== "win32") {
@@ -32,6 +33,7 @@ export async function install(version: string, system: System) {
       `swift-${system.name}`,
       version
     );
+    await tryCleanup(exe, `installer`);
 
     swiftPath = path.join(exePath, swiftPkg.name);
   } else {

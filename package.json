@@ -1,6 +1,6 @@
 {
   "name": "setup-swift",
-  "version": "1.24.0",
+  "version": "1.25.0",
   "description": "Set up GitHub Actions workflow with Swift support",
   "private": true,
   "main": "lib/main.js",

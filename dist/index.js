@@ -147,63 +147,6 @@ function refreshKeysFromServer(server) {
 
 /***/ }),
 
-/***/ 1915:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.tryCleanup = void 0;
-const core = __importStar(__nccwpck_require__(2186));
-const promises_1 = __nccwpck_require__(3292);
-/** Try to clean up the specified path,  */
-function tryCleanup(path, displayName) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            yield (0, promises_1.rm)(path, { force: true, maxRetries: 3, recursive: true });
-        }
-        catch (e) {
-            core.debug(`Failed to clean up ${displayName}, continuing. Error: ${e}`);
-        }
-    });
-}
-exports.tryCleanup = tryCleanup;
-
-
-/***/ }),
-
 /***/ 7419:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -249,7 +192,6 @@ const core = __importStar(__nccwpck_require__(2186));
 const toolCache = __importStar(__nccwpck_require__(7784));
 const swift_versions_1 = __nccwpck_require__(8263);
 const gpg_1 = __nccwpck_require__(9060);
-const io_1 = __nccwpck_require__(1915);
 function install(version, system) {
     return __awaiter(this, void 0, void 0, function* () {
         if (os.platform() !== "linux") {
@@ -286,15 +228,12 @@ function download({ url, name }) {
         return { pkg, signature, name };
     });
 }
-/** Extracts the package, cleaning up the original path and intermediate files. */
 function unpack(packagePath, packageName, version, system) {
     return __awaiter(this, void 0, void 0, function* () {
         core.debug("Extracting package");
         let extractPath = yield toolCache.extractTar(packagePath);
-        yield (0, io_1.tryCleanup)(packagePath, "package archive");
         core.debug("Package extracted");
         let cachedPath = yield toolCache.cacheDir(path.join(extractPath, packageName), `swift-${system.name}`, version);
-        yield (0, io_1.tryCleanup)(extractPath, "extracted package");
         core.debug("Package cached");
         return cachedPath;
     });
@@ -347,7 +286,6 @@ const toolCache = __importStar(__nccwpck_require__(7784));
 const path = __importStar(__nccwpck_require__(1017));
 const swift_versions_1 = __nccwpck_require__(8263);
 const get_version_1 = __nccwpck_require__(951);
-const io_1 = __nccwpck_require__(1915);
 function install(version, system) {
     return __awaiter(this, void 0, void 0, function* () {
         const toolchainName = `swift ${version}`;
@@ -390,17 +328,13 @@ function download({ url }) {
         return toolCache.downloadTool(url);
     });
 }
-/** Extracts the package, cleaning up the original path and intermediate files. */
 function unpack({ name }, packagePath, version) {
     return __awaiter(this, void 0, void 0, function* () {
         core.debug("Extracting package");
         const unpackedPath = yield toolCache.extractXar(packagePath);
-        yield (0, io_1.tryCleanup)(packagePath, `package from ${packagePath}`);
         const extractedPath = yield toolCache.extractTar(path.join(unpackedPath, `${name}-package.pkg`, "Payload"));
-        yield (0, io_1.tryCleanup)(unpackedPath, `package from ${unpackedPath}`);
         core.debug("Package extracted");
         const cachedPath = yield toolCache.cacheDir(extractedPath, "swift-macOS", version);
-        yield (0, io_1.tryCleanup)(extractedPath, `extracted package from ${extractedPath}`);
         core.debug("Package cached");
         return cachedPath;
     });
@@ -952,7 +886,6 @@ const exec_1 = __nccwpck_require__(1514);
 const swift_versions_1 = __nccwpck_require__(8263);
 const gpg_1 = __nccwpck_require__(9060);
 const visual_studio_1 = __nccwpck_require__(5219);
-const io_1 = __nccwpck_require__(1915);
 function install(version, system) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
@@ -968,7 +901,6 @@ function install(version, system) {
             let { exe, signature } = yield download(swiftPkg);
             yield (0, gpg_1.verify)(signature, exe);
             const exePath = yield toolCache.cacheFile(exe, swiftPkg.name, `swift-${system.name}`, version);
-            yield (0, io_1.tryCleanup)(exe, `installer`);
             swiftPath = path.join(exePath, swiftPkg.name);
         }
         else {
@@ -17858,14 +17790,6 @@ module.exports = require("events");
 
 "use strict";
 module.exports = require("fs");
-
-/***/ }),
-
-/***/ 3292:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("fs/promises");
 
 /***/ }),
 

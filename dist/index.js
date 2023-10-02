@@ -606,6 +606,8 @@ const semver = __importStar(__nccwpck_require__(1383));
 const core = __importStar(__nccwpck_require__(2186));
 const os_1 = __nccwpck_require__(1855);
 const VERSIONS_LIST = [
+    ["5.9", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["5.8.1", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
     ["5.8", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
     ["5.7.3", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
     ["5.7.2", [os_1.OS.MacOS, os_1.OS.Ubuntu]],

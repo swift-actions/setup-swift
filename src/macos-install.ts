@@ -1,11 +1,10 @@
 import * as core from "@actions/core";
 import * as toolCache from "@actions/tool-cache";
-import * as io from "@actions/io";
 import * as path from "path";
-import { exec } from "@actions/exec";
 import { System } from "./os";
 import { swiftPackage, Package } from "./swift-versions";
 import { getVersion } from "./get-version";
+import { tryCleanup } from "./io";
 
 export async function install(version: string, system: System) {
   const toolchainName = `swift ${version}`;
@@ -52,18 +51,22 @@ async function download({ url }: Package) {
   return toolCache.downloadTool(url);
 }
 
+/** Extracts the package, cleaning up the original path and intermediate files. */
 async function unpack({ name }: Package, packagePath: string, version: string) {
   core.debug("Extracting package");
   const unpackedPath = await toolCache.extractXar(packagePath);
+  await tryCleanup(packagePath, `package from ${packagePath}`);
   const extractedPath = await toolCache.extractTar(
     path.join(unpackedPath, `${name}-package.pkg`, "Payload")
   );
+  await tryCleanup(unpackedPath, `package from ${unpackedPath}`);
   core.debug("Package extracted");
   const cachedPath = await toolCache.cacheDir(
     extractedPath,
     "swift-macOS",
     version
   );
+  await tryCleanup(extractedPath, `extracted package from ${extractedPath}`);
   core.debug("Package cached");
   return cachedPath;
 }

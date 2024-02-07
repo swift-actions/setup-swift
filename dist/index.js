@@ -2,42 +2,31 @@
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 951:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.versionFromString = exports.getVersion = void 0;
 const exec_1 = __nccwpck_require__(1514);
-function getVersion(command = "swift", args = ["--version"]) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let output = "";
-        let error = "";
-        const options = {
-            listeners: {
-                stdout: (data) => {
-                    output += data.toString();
-                },
-                stderr: (data) => {
-                    error += data.toString();
-                },
+async function getVersion(command = "swift", args = ["--version"]) {
+    let output = "";
+    let error = "";
+    const options = {
+        listeners: {
+            stdout: (data) => {
+                output += data.toString();
             },
-        };
-        yield (0, exec_1.exec)(command, args, options);
-        if (!output && error) {
-            throw new Error("Error getting swift version " + error);
-        }
-        return versionFromString(output);
-    });
+            stderr: (data) => {
+                error += data.toString();
+            },
+        },
+    };
+    await (0, exec_1.exec)(command, args, options);
+    if (!output && error) {
+        throw new Error("Error getting swift version " + error);
+    }
+    return versionFromString(output);
 }
 exports.getVersion = getVersion;
 function versionFromString(subject) {
@@ -82,57 +71,42 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.refreshKeys = exports.verify = exports.setupKeys = void 0;
 const exec_1 = __nccwpck_require__(1514);
 const core = __importStar(__nccwpck_require__(2186));
 const toolCache = __importStar(__nccwpck_require__(7784));
-function setupKeys() {
-    return __awaiter(this, void 0, void 0, function* () {
-        core.debug("Fetching verification keys");
-        let path = yield toolCache.downloadTool("https://swift.org/keys/all-keys.asc");
-        core.debug("Importing verification keys");
-        yield (0, exec_1.exec)(`gpg --import "${path}"`);
-        core.debug("Refreshing keys");
-        yield refreshKeys();
-    });
+async function setupKeys() {
+    core.debug("Fetching verification keys");
+    let path = await toolCache.downloadTool("https://swift.org/keys/all-keys.asc");
+    core.debug("Importing verification keys");
+    await (0, exec_1.exec)(`gpg --import "${path}"`);
+    core.debug("Refreshing keys");
+    await refreshKeys();
 }
 exports.setupKeys = setupKeys;
-function verify(signaturePath, packagePath) {
-    return __awaiter(this, void 0, void 0, function* () {
-        core.debug("Verifying signature");
-        yield (0, exec_1.exec)("gpg", ["--verify", signaturePath, packagePath]);
-    });
+async function verify(signaturePath, packagePath) {
+    core.debug("Verifying signature");
+    await (0, exec_1.exec)("gpg", ["--verify", signaturePath, packagePath]);
 }
 exports.verify = verify;
-function refreshKeys() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const pool = ["hkp://keyserver.ubuntu.com"];
-        for (const server of pool) {
-            core.debug(`Refreshing keys from ${server}`);
-            // 1st try...
-            if (yield refreshKeysFromServer(server)) {
-                core.debug(`Refresh successful on first attempt`);
-                return;
-            }
-            // 2nd try...
-            if (yield refreshKeysFromServer(server)) {
-                core.debug(`Refresh successful on second attempt`);
-                return;
-            }
-            core.debug(`Refresh failed`);
+async function refreshKeys() {
+    const pool = ["hkp://keyserver.ubuntu.com"];
+    for (const server of pool) {
+        core.debug(`Refreshing keys from ${server}`);
+        // 1st try...
+        if (await refreshKeysFromServer(server)) {
+            core.debug(`Refresh successful on first attempt`);
+            return;
         }
-        throw new Error("Failed to refresh keys from any server in the pool.");
-    });
+        // 2nd try...
+        if (await refreshKeysFromServer(server)) {
+            core.debug(`Refresh successful on second attempt`);
+            return;
+        }
+        core.debug(`Refresh failed`);
+    }
+    throw new Error("Failed to refresh keys from any server in the pool.");
 }
 exports.refreshKeys = refreshKeys;
 function refreshKeysFromServer(server) {
@@ -175,15 +149,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.install = void 0;
 const os = __importStar(__nccwpck_require__(2037));
@@ -192,51 +157,45 @@ const core = __importStar(__nccwpck_require__(2186));
 const toolCache = __importStar(__nccwpck_require__(7784));
 const swift_versions_1 = __nccwpck_require__(8263);
 const gpg_1 = __nccwpck_require__(9060);
-function install(version, system) {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (os.platform() !== "linux") {
-            core.error("Trying to run linux installer on non-linux os");
-            return;
-        }
-        let swiftPath = toolCache.find(`swift-${system.name}`, version);
-        if (swiftPath === null || swiftPath.trim().length == 0) {
-            core.debug(`No matching installation found`);
-            yield (0, gpg_1.setupKeys)();
-            const swiftPkg = (0, swift_versions_1.swiftPackage)(version, system);
-            let { pkg, signature } = yield download(swiftPkg);
-            yield (0, gpg_1.verify)(signature, pkg);
-            swiftPath = yield unpack(pkg, swiftPkg.name, version, system);
-        }
-        else {
-            core.debug("Matching installation found");
-        }
-        core.debug("Adding swift to path");
-        let binPath = path.join(swiftPath, "/usr/bin");
-        core.addPath(binPath);
-        core.debug("Swift installed");
-    });
+async function install(version, system) {
+    if (os.platform() !== "linux") {
+        core.error("Trying to run linux installer on non-linux os");
+        return;
+    }
+    let swiftPath = toolCache.find(`swift-${system.name}`, version);
+    if (swiftPath === null || swiftPath.trim().length == 0) {
+        core.debug(`No matching installation found`);
+        await (0, gpg_1.setupKeys)();
+        const swiftPkg = (0, swift_versions_1.swiftPackage)(version, system);
+        let { pkg, signature } = await download(swiftPkg);
+        await (0, gpg_1.verify)(signature, pkg);
+        swiftPath = await unpack(pkg, swiftPkg.name, version, system);
+    }
+    else {
+        core.debug("Matching installation found");
+    }
+    core.debug("Adding swift to path");
+    let binPath = path.join(swiftPath, "/usr/bin");
+    core.addPath(binPath);
+    core.debug("Swift installed");
 }
 exports.install = install;
-function download({ url, name }) {
-    return __awaiter(this, void 0, void 0, function* () {
-        core.debug("Downloading swift for linux");
-        let [pkg, signature] = yield Promise.all([
-            toolCache.downloadTool(url),
-            toolCache.downloadTool(`${url}.sig`),
-        ]);
-        core.debug("Swift download complete");
-        return { pkg, signature, name };
-    });
+async function download({ url, name }) {
+    core.debug("Downloading swift for linux");
+    let [pkg, signature] = await Promise.all([
+        toolCache.downloadTool(url),
+        toolCache.downloadTool(`${url}.sig`),
+    ]);
+    core.debug("Swift download complete");
+    return { pkg, signature, name };
 }
-function unpack(packagePath, packageName, version, system) {
-    return __awaiter(this, void 0, void 0, function* () {
-        core.debug("Extracting package");
-        let extractPath = yield toolCache.extractTar(packagePath);
-        core.debug("Package extracted");
-        let cachedPath = yield toolCache.cacheDir(path.join(extractPath, packageName), `swift-${system.name}`, version);
-        core.debug("Package cached");
-        return cachedPath;
-    });
+async function unpack(packagePath, packageName, version, system) {
+    core.debug("Extracting package");
+    let extractPath = await toolCache.extractTar(packagePath);
+    core.debug("Package extracted");
+    let cachedPath = await toolCache.cacheDir(path.join(extractPath, packageName), `swift-${system.name}`, version);
+    core.debug("Package cached");
+    return cachedPath;
 }
 
 
@@ -270,15 +229,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.install = void 0;
 const core = __importStar(__nccwpck_require__(2186));
@@ -286,58 +236,50 @@ const toolCache = __importStar(__nccwpck_require__(7784));
 const path = __importStar(__nccwpck_require__(1017));
 const swift_versions_1 = __nccwpck_require__(8263);
 const get_version_1 = __nccwpck_require__(951);
-function install(version, system) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const toolchainName = `swift ${version}`;
-        const toolchain = yield toolchainVersion(toolchainName);
-        if (toolchain !== version) {
-            let swiftPath = toolCache.find("swift-macOS", version);
-            if (swiftPath === null || swiftPath.trim().length == 0) {
-                core.debug(`No matching installation found`);
-                const pkg = (0, swift_versions_1.swiftPackage)(version, system);
-                const path = yield download(pkg);
-                const extracted = yield unpack(pkg, path, version);
-                swiftPath = extracted;
-            }
-            else {
-                core.debug("Matching installation found");
-            }
-            core.debug("Adding swift to path");
-            let binPath = path.join(swiftPath, "/usr/bin");
-            core.addPath(binPath);
-            core.debug("Swift installed");
+async function install(version, system) {
+    const toolchainName = `swift ${version}`;
+    const toolchain = await toolchainVersion(toolchainName);
+    if (toolchain !== version) {
+        let swiftPath = toolCache.find("swift-macOS", version);
+        if (swiftPath === null || swiftPath.trim().length == 0) {
+            core.debug(`No matching installation found`);
+            const pkg = (0, swift_versions_1.swiftPackage)(version, system);
+            const path = await download(pkg);
+            const extracted = await unpack(pkg, path, version);
+            swiftPath = extracted;
         }
-        core.exportVariable("TOOLCHAINS", toolchainName);
-    });
+        else {
+            core.debug("Matching installation found");
+        }
+        core.debug("Adding swift to path");
+        let binPath = path.join(swiftPath, "/usr/bin");
+        core.addPath(binPath);
+        core.debug("Swift installed");
+    }
+    core.exportVariable("TOOLCHAINS", toolchainName);
 }
 exports.install = install;
-function toolchainVersion(requestedVersion) {
-    return __awaiter(this, void 0, void 0, function* () {
-        return yield (0, get_version_1.getVersion)("xcrun", [
-            "--toolchain",
-            requestedVersion,
-            "--run",
-            "swift",
-            "--version",
-        ]);
-    });
+async function toolchainVersion(requestedVersion) {
+    return await (0, get_version_1.getVersion)("xcrun", [
+        "--toolchain",
+        requestedVersion,
+        "--run",
+        "swift",
+        "--version",
+    ]);
 }
-function download({ url }) {
-    return __awaiter(this, void 0, void 0, function* () {
-        core.debug("Downloading swift for macOS");
-        return toolCache.downloadTool(url);
-    });
+async function download({ url }) {
+    core.debug("Downloading swift for macOS");
+    return toolCache.downloadTool(url);
 }
-function unpack({ name }, packagePath, version) {
-    return __awaiter(this, void 0, void 0, function* () {
-        core.debug("Extracting package");
-        const unpackedPath = yield toolCache.extractXar(packagePath);
-        const extractedPath = yield toolCache.extractTar(path.join(unpackedPath, `${name}-package.pkg`, "Payload"));
-        core.debug("Package extracted");
-        const cachedPath = yield toolCache.cacheDir(extractedPath, "swift-macOS", version);
-        core.debug("Package cached");
-        return cachedPath;
-    });
+async function unpack({ name }, packagePath, version) {
+    core.debug("Extracting package");
+    const unpackedPath = await toolCache.extractXar(packagePath);
+    const extractedPath = await toolCache.extractTar(path.join(unpackedPath, `${name}-package.pkg`, "Payload"));
+    core.debug("Package extracted");
+    const cachedPath = await toolCache.cacheDir(extractedPath, "swift-macOS", version);
+    core.debug("Package cached");
+    return cachedPath;
 }
 
 
@@ -371,15 +313,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const os_1 = __nccwpck_require__(2037);
 const core = __importStar(__nccwpck_require__(2186));
@@ -389,41 +322,39 @@ const macos = __importStar(__nccwpck_require__(4713));
 const linux = __importStar(__nccwpck_require__(7419));
 const windows = __importStar(__nccwpck_require__(6414));
 const get_version_1 = __nccwpck_require__(951);
-function run() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const requestedVersion = core.getInput("swift-version", { required: true });
-            let platform = yield system.getSystem();
-            let version = versions.verify(requestedVersion, platform);
-            switch (platform.os) {
-                case system.OS.MacOS:
-                    yield macos.install(version, platform);
-                    break;
-                case system.OS.Ubuntu:
-                    yield linux.install(version, platform);
-                    break;
-                case system.OS.Windows:
-                    yield windows.install(version, platform);
-            }
-            const current = yield (0, get_version_1.getVersion)();
-            if (current === version) {
-                core.setOutput("version", version);
-            }
-            else {
-                core.error(`Failed to setup requested swift version. requestd: ${version}, actual: ${current}`);
-            }
+async function run() {
+    try {
+        const requestedVersion = core.getInput("swift-version", { required: true });
+        let platform = await system.getSystem();
+        let version = versions.verify(requestedVersion, platform);
+        switch (platform.os) {
+            case system.OS.MacOS:
+                await macos.install(version, platform);
+                break;
+            case system.OS.Ubuntu:
+                await linux.install(version, platform);
+                break;
+            case system.OS.Windows:
+                await windows.install(version, platform);
         }
-        catch (error) {
-            let dump;
-            if (error instanceof Error) {
-                dump = `${error.message}${os_1.EOL}Stacktrace:${os_1.EOL}${error.stack}`;
-            }
-            else {
-                dump = `${error}`;
-            }
-            core.setFailed(`Unexpected error, unable to continue. Please report at https://github.com/swift-actions/setup-swift/issues${os_1.EOL}${dump}`);
+        const current = await (0, get_version_1.getVersion)();
+        if (current === version) {
+            core.setOutput("version", version);
         }
-    });
+        else {
+            core.error(`Failed to setup requested swift version. requestd: ${version}, actual: ${current}`);
+        }
+    }
+    catch (error) {
+        let dump;
+        if (error instanceof Error) {
+            dump = `${error.message}${os_1.EOL}Stacktrace:${os_1.EOL}${error.stack}`;
+        }
+        else {
+            dump = `${error}`;
+        }
+        core.setFailed(`Unexpected error, unable to continue. Please report at https://github.com/swift-actions/setup-swift/issues${os_1.EOL}${dump}`);
+    }
 }
 run();
 
@@ -435,15 +366,6 @@ run();
 
 "use strict";
 
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -455,51 +377,49 @@ var OS;
     OS[OS["MacOS"] = 0] = "MacOS";
     OS[OS["Ubuntu"] = 1] = "Ubuntu";
     OS[OS["Windows"] = 2] = "Windows";
-})(OS = exports.OS || (exports.OS = {}));
+})(OS || (exports.OS = OS = {}));
 (function (OS) {
     function all() {
         return [OS.MacOS, OS.Ubuntu, OS.Windows];
     }
     OS.all = all;
-})(OS = exports.OS || (exports.OS = {}));
+})(OS || (exports.OS = OS = {}));
 const AVAILABLE_OS = {
     macOS: ["latest", "12.0", "11.0", "10.15"],
     Ubuntu: ["latest", "22.04", "20.04", "18.04", "16.04"],
     Windows: ["latest", "10"],
 };
-function getSystem() {
-    return __awaiter(this, void 0, void 0, function* () {
-        let detectedSystem = yield new Promise((resolve, reject) => {
-            (0, getos_1.default)((error, os) => {
-                os ? resolve(os) : reject(error || "No OS detected");
-            });
+async function getSystem() {
+    let detectedSystem = await new Promise((resolve, reject) => {
+        (0, getos_1.default)((error, os) => {
+            os ? resolve(os) : reject(error || "No OS detected");
         });
-        let system;
-        switch (detectedSystem.os) {
-            case "darwin":
-                system = { os: OS.MacOS, version: "latest", name: "macOS" };
-                break;
-            case "linux":
-                if (detectedSystem.dist !== "Ubuntu") {
-                    throw new Error(`"${detectedSystem.dist}" is not a supported linux distribution`);
-                }
-                system = {
-                    os: OS.Ubuntu,
-                    version: detectedSystem.release,
-                    name: "Ubuntu",
-                };
-                break;
-            case "win32":
-                system = { os: OS.Windows, version: "latest", name: "Windows" };
-                break;
-            default:
-                throw new Error(`"${detectedSystem.os}" is not a supported platform`);
-        }
-        if (!AVAILABLE_OS[system.name].includes(system.version)) {
-            throw new Error(`Version "${system.version}" of ${system.name} is not supported`);
-        }
-        return system;
     });
+    let system;
+    switch (detectedSystem.os) {
+        case "darwin":
+            system = { os: OS.MacOS, version: "latest", name: "macOS" };
+            break;
+        case "linux":
+            if (detectedSystem.dist !== "Ubuntu") {
+                throw new Error(`"${detectedSystem.dist}" is not a supported linux distribution`);
+            }
+            system = {
+                os: OS.Ubuntu,
+                version: detectedSystem.release,
+                name: "Ubuntu",
+            };
+            break;
+        case "win32":
+            system = { os: OS.Windows, version: "latest", name: "Windows" };
+            break;
+        default:
+            throw new Error(`"${detectedSystem.os}" is not a supported platform`);
+    }
+    if (!AVAILABLE_OS[system.name].includes(system.version)) {
+        throw new Error(`Version "${system.version}" of ${system.name} is not supported`);
+    }
+    return system;
 }
 exports.getSystem = getSystem;
 
@@ -707,15 +627,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getVsWherePath = exports.setupVsTools = exports.vsRequirement = void 0;
 const os = __importStar(__nccwpck_require__(2037));
@@ -743,97 +654,91 @@ function vsRequirement({ version }) {
 }
 exports.vsRequirement = vsRequirement;
 /// Do swift version based additional support files setup
-function setupSupportFiles({ version }, vsInstallPath) {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (semver.lt(version, "5.4.2")) {
-            /// https://docs.microsoft.com/en-us/cpp/build/building-on-the-command-line?view=msvc-170
-            const nativeToolsScriptx86 = path.join(vsInstallPath, "VC\\Auxiliary\\Build\\vcvars32.bat");
-            const copyCommands = [
-                'copy /Y %SDKROOT%\\usr\\share\\ucrt.modulemap "%UniversalCRTSdkDir%\\Include\\%UCRTVersion%\\ucrt\\module.modulemap"',
-                'copy /Y %SDKROOT%\\usr\\share\\visualc.modulemap "%VCToolsInstallDir%\\include\\module.modulemap"',
-                'copy /Y %SDKROOT%\\usr\\share\\visualc.apinotes "%VCToolsInstallDir%\\include\\visualc.apinotes"',
-                'copy /Y %SDKROOT%\\usr\\share\\winsdk.modulemap "%UniversalCRTSdkDir%\\Include\\%UCRTVersion%\\um\\module.modulemap"',
-            ].join("&&");
-            let code = yield (0, exec_1.exec)("cmd /k", [nativeToolsScriptx86], {
-                failOnStdErr: true,
-                input: Buffer.from(copyCommands, "utf8"),
-            });
-            core.info(`Ran command for swift and exited with code: ${code}`);
-        }
-    });
+async function setupSupportFiles({ version }, vsInstallPath) {
+    if (semver.lt(version, "5.4.2")) {
+        /// https://docs.microsoft.com/en-us/cpp/build/building-on-the-command-line?view=msvc-170
+        const nativeToolsScriptx86 = path.join(vsInstallPath, "VC\\Auxiliary\\Build\\vcvars32.bat");
+        const copyCommands = [
+            'copy /Y %SDKROOT%\\usr\\share\\ucrt.modulemap "%UniversalCRTSdkDir%\\Include\\%UCRTVersion%\\ucrt\\module.modulemap"',
+            'copy /Y %SDKROOT%\\usr\\share\\visualc.modulemap "%VCToolsInstallDir%\\include\\module.modulemap"',
+            'copy /Y %SDKROOT%\\usr\\share\\visualc.apinotes "%VCToolsInstallDir%\\include\\visualc.apinotes"',
+            'copy /Y %SDKROOT%\\usr\\share\\winsdk.modulemap "%UniversalCRTSdkDir%\\Include\\%UCRTVersion%\\um\\module.modulemap"',
+        ].join("&&");
+        let code = await (0, exec_1.exec)("cmd /k", [nativeToolsScriptx86], {
+            failOnStdErr: true,
+            input: Buffer.from(copyCommands, "utf8"),
+        });
+        core.info(`Ran command for swift and exited with code: ${code}`);
+    }
 }
 /// set up required visual studio tools for swift on windows
-function setupVsTools(pkg) {
-    return __awaiter(this, void 0, void 0, function* () {
-        /// https://github.com/microsoft/vswhere/wiki/Find-MSBuild
-        /// get visual studio properties
-        const vswhereExe = yield getVsWherePath();
-        const req = vsRequirement(pkg);
-        const vsWhereExec = `-products * ` +
-            `-format json -utf8 ` +
-            `-latest -version "${req.version}"`;
-        let payload = "";
-        const options = {};
-        options.listeners = {
-            stdout: (data) => {
-                payload = payload.concat(data.toString("utf-8"));
-            },
-            stderr: (data) => {
-                core.error(data.toString());
-            },
-        };
-        // execute the find putting the result of the command in the options vsInstallPath
-        yield (0, exec_1.exec)(`"${vswhereExe}" ${vsWhereExec}`, [], options);
-        let vs = JSON.parse(payload)[0];
-        if (!vs.installationPath) {
-            throw new Error(`Unable to find any visual studio installation for version: ${req.version}.`);
-        }
-        /// https://docs.microsoft.com/en-us/visualstudio/install/use-command-line-parameters-to-install-visual-studio?view=vs-2022
-        /// install required visual studio components
-        const vsInstallerExec = `modify --installPath "${vs.installationPath}"` +
-            req.components.reduce((previous, current) => `${previous} --add "${current}"`, "") +
-            ` --quiet`;
-        // install required visual studio components
-        const code = yield (0, exec_1.exec)(`"${vs.properties.setupEngineFilePath}" ${vsInstallerExec}`, []);
-        if (code != 0) {
-            throw new Error(`Visual Studio installer failed to install required components with exit code: ${code}.`);
-        }
-        yield setupSupportFiles(pkg, vs.installationPath);
-    });
+async function setupVsTools(pkg) {
+    /// https://github.com/microsoft/vswhere/wiki/Find-MSBuild
+    /// get visual studio properties
+    const vswhereExe = await getVsWherePath();
+    const req = vsRequirement(pkg);
+    const vsWhereExec = `-products * ` +
+        `-format json -utf8 ` +
+        `-latest -version "${req.version}"`;
+    let payload = "";
+    const options = {};
+    options.listeners = {
+        stdout: (data) => {
+            payload = payload.concat(data.toString("utf-8"));
+        },
+        stderr: (data) => {
+            core.error(data.toString());
+        },
+    };
+    // execute the find putting the result of the command in the options vsInstallPath
+    await (0, exec_1.exec)(`"${vswhereExe}" ${vsWhereExec}`, [], options);
+    let vs = JSON.parse(payload)[0];
+    if (!vs.installationPath) {
+        throw new Error(`Unable to find any visual studio installation for version: ${req.version}.`);
+    }
+    /// https://docs.microsoft.com/en-us/visualstudio/install/use-command-line-parameters-to-install-visual-studio?view=vs-2022
+    /// install required visual studio components
+    const vsInstallerExec = `modify --installPath "${vs.installationPath}"` +
+        req.components.reduce((previous, current) => `${previous} --add "${current}"`, "") +
+        ` --quiet`;
+    // install required visual studio components
+    const code = await (0, exec_1.exec)(`"${vs.properties.setupEngineFilePath}" ${vsInstallerExec}`, []);
+    if (code != 0) {
+        throw new Error(`Visual Studio installer failed to install required components with exit code: ${code}.`);
+    }
+    await setupSupportFiles(pkg, vs.installationPath);
 }
 exports.setupVsTools = setupVsTools;
 /// Get vswhere and vs_installer paths
 /// Borrowed from setup-msbuild action: https://github.com/microsoft/setup-msbuild
 /// From source file: https://github.com/microsoft/setup-msbuild/blob/master/src/main.ts
-function getVsWherePath() {
-    return __awaiter(this, void 0, void 0, function* () {
-        // check to see if we are using a specific path for vswhere
-        let vswhereToolExe = "";
-        // Env variable for self-hosted runner to provide custom path
-        const VSWHERE_PATH = process.env.VSWHERE_PATH;
-        if (VSWHERE_PATH) {
-            // specified a path for vswhere, use it
-            core.debug(`Using given vswhere-path: ${VSWHERE_PATH}`);
-            vswhereToolExe = path.join(VSWHERE_PATH, "vswhere.exe");
+async function getVsWherePath() {
+    // check to see if we are using a specific path for vswhere
+    let vswhereToolExe = "";
+    // Env variable for self-hosted runner to provide custom path
+    const VSWHERE_PATH = process.env.VSWHERE_PATH;
+    if (VSWHERE_PATH) {
+        // specified a path for vswhere, use it
+        core.debug(`Using given vswhere-path: ${VSWHERE_PATH}`);
+        vswhereToolExe = path.join(VSWHERE_PATH, "vswhere.exe");
+    }
+    else {
+        // check in PATH to see if it is there
+        try {
+            const vsWhereInPath = await io.which("vswhere", true);
+            core.debug(`Found tool in PATH: ${vsWhereInPath}`);
+            vswhereToolExe = vsWhereInPath;
         }
-        else {
-            // check in PATH to see if it is there
-            try {
-                const vsWhereInPath = yield io.which("vswhere", true);
-                core.debug(`Found tool in PATH: ${vsWhereInPath}`);
-                vswhereToolExe = vsWhereInPath;
-            }
-            catch (_a) {
-                // fall back to VS-installed path
-                vswhereToolExe = path.join(process.env["ProgramFiles(x86)"], "Microsoft Visual Studio", "Installer", "vswhere.exe");
-                core.debug(`Trying Visual Studio-installed path: ${vswhereToolExe}`);
-            }
+        catch {
+            // fall back to VS-installed path
+            vswhereToolExe = path.join(process.env["ProgramFiles(x86)"], "Microsoft Visual Studio", "Installer", "vswhere.exe");
+            core.debug(`Trying Visual Studio-installed path: ${vswhereToolExe}`);
         }
-        if (!fs.existsSync(vswhereToolExe)) {
-            throw new Error("Action requires the path to where vswhere.exe exists");
-        }
-        return vswhereToolExe;
-    });
+    }
+    if (!fs.existsSync(vswhereToolExe)) {
+        throw new Error("Action requires the path to where vswhere.exe exists");
+    }
+    return vswhereToolExe;
 }
 exports.getVsWherePath = getVsWherePath;
 
@@ -868,15 +773,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.install = void 0;
 const os = __importStar(__nccwpck_require__(2037));
@@ -888,64 +784,59 @@ const exec_1 = __nccwpck_require__(1514);
 const swift_versions_1 = __nccwpck_require__(8263);
 const gpg_1 = __nccwpck_require__(9060);
 const visual_studio_1 = __nccwpck_require__(5219);
-function install(version, system) {
-    var _a;
-    return __awaiter(this, void 0, void 0, function* () {
-        if (os.platform() !== "win32") {
-            core.error("Trying to run windows installer on non-windows os");
-            return;
-        }
-        const swiftPkg = (0, swift_versions_1.swiftPackage)(version, system);
-        let swiftPath = toolCache.find(`swift-${system.name}`, version);
-        if (swiftPath === null || swiftPath.trim().length == 0) {
-            core.debug(`No cached installer found`);
-            yield (0, gpg_1.setupKeys)();
-            let { exe, signature } = yield download(swiftPkg);
-            yield (0, gpg_1.verify)(signature, exe);
-            const exePath = yield toolCache.cacheFile(exe, swiftPkg.name, `swift-${system.name}`, version);
-            swiftPath = path.join(exePath, swiftPkg.name);
-        }
-        else {
-            core.debug("Cached installer found");
-        }
-        core.debug("Running installer");
-        const options = {};
-        options.listeners = {
-            stdout: (data) => {
-                core.info(data.toString());
-            },
-            stderr: (data) => {
-                core.error(data.toString());
-            },
-        };
-        let code = yield (0, exec_1.exec)(`"${swiftPath}" -q`, []);
-        const systemDrive = (_a = process.env.SystemDrive) !== null && _a !== void 0 ? _a : "C:";
-        const swiftLibPath = path.join(systemDrive, "Library");
-        const swiftInstallPath = path.join(swiftLibPath, "Developer", "Toolchains", "unknown-Asserts-development.xctoolchain", "usr", "bin");
-        if (code != 0 || !fs.existsSync(swiftInstallPath)) {
-            throw new Error(`Swift installer failed with exit code: ${code}`);
-        }
-        core.addPath(swiftInstallPath);
-        const additionalPaths = [
-            path.join(swiftLibPath, "Swift-development", "bin"),
-            path.join(swiftLibPath, "icu-67", "usr", "bin"),
-        ];
-        additionalPaths.forEach((value, index, array) => core.addPath(value));
-        core.debug(`Swift installed at "${swiftInstallPath}"`);
-        yield (0, visual_studio_1.setupVsTools)(swiftPkg);
-    });
+async function install(version, system) {
+    if (os.platform() !== "win32") {
+        core.error("Trying to run windows installer on non-windows os");
+        return;
+    }
+    const swiftPkg = (0, swift_versions_1.swiftPackage)(version, system);
+    let swiftPath = toolCache.find(`swift-${system.name}`, version);
+    if (swiftPath === null || swiftPath.trim().length == 0) {
+        core.debug(`No cached installer found`);
+        await (0, gpg_1.setupKeys)();
+        let { exe, signature } = await download(swiftPkg);
+        await (0, gpg_1.verify)(signature, exe);
+        const exePath = await toolCache.cacheFile(exe, swiftPkg.name, `swift-${system.name}`, version);
+        swiftPath = path.join(exePath, swiftPkg.name);
+    }
+    else {
+        core.debug("Cached installer found");
+    }
+    core.debug("Running installer");
+    const options = {};
+    options.listeners = {
+        stdout: (data) => {
+            core.info(data.toString());
+        },
+        stderr: (data) => {
+            core.error(data.toString());
+        },
+    };
+    let code = await (0, exec_1.exec)(`"${swiftPath}" -q`, []);
+    const systemDrive = process.env.SystemDrive ?? "C:";
+    const swiftLibPath = path.join(systemDrive, "Library");
+    const swiftInstallPath = path.join(swiftLibPath, "Developer", "Toolchains", "unknown-Asserts-development.xctoolchain", "usr", "bin");
+    if (code != 0 || !fs.existsSync(swiftInstallPath)) {
+        throw new Error(`Swift installer failed with exit code: ${code}`);
+    }
+    core.addPath(swiftInstallPath);
+    const additionalPaths = [
+        path.join(swiftLibPath, "Swift-development", "bin"),
+        path.join(swiftLibPath, "icu-67", "usr", "bin"),
+    ];
+    additionalPaths.forEach((value, index, array) => core.addPath(value));
+    core.debug(`Swift installed at "${swiftInstallPath}"`);
+    await (0, visual_studio_1.setupVsTools)(swiftPkg);
 }
 exports.install = install;
-function download({ url, name }) {
-    return __awaiter(this, void 0, void 0, function* () {
-        core.debug("Downloading Swift for windows");
-        let [exe, signature] = yield Promise.all([
-            toolCache.downloadTool(url),
-            toolCache.downloadTool(`${url}.sig`),
-        ]);
-        core.debug("Swift download complete");
-        return { exe, signature, name };
-    });
+async function download({ url, name }) {
+    core.debug("Downloading Swift for windows");
+    let [exe, signature] = await Promise.all([
+        toolCache.downloadTool(url),
+        toolCache.downloadTool(`${url}.sig`),
+    ]);
+    core.debug("Swift download complete");
+    return { exe, signature, name };
 }
 
 
@@ -14970,35 +14861,43 @@ const coerce = (version, options) => {
 
   let match = null
   if (!options.rtl) {
-    match = version.match(re[t.COERCE])
+    match = version.match(options.includePrerelease ? re[t.COERCEFULL] : re[t.COERCE])
   } else {
     // Find the right-most coercible string that does not share
     // a terminus with a more left-ward coercible string.
     // Eg, '1.2.3.4' wants to coerce '2.3.4', not '3.4' or '4'
+    // With includePrerelease option set, '1.2.3.4-rc' wants to coerce '2.3.4-rc', not '2.3.4'
     //
     // Walk through the string checking with a /g regexp
     // Manually set the index so as to pick up overlapping matches.
     // Stop when we get a match that ends at the string end, since no
     // coercible string can be more right-ward without the same terminus.
+    const coerceRtlRegex = options.includePrerelease ? re[t.COERCERTLFULL] : re[t.COERCERTL]
     let next
-    while ((next = re[t.COERCERTL].exec(version)) &&
+    while ((next = coerceRtlRegex.exec(version)) &&
         (!match || match.index + match[0].length !== version.length)
     ) {
       if (!match ||
             next.index + next[0].length !== match.index + match[0].length) {
         match = next
       }
-      re[t.COERCERTL].lastIndex = next.index + next[1].length + next[2].length
+      coerceRtlRegex.lastIndex = next.index + next[1].length + next[2].length
     }
     // leave it in a clean state
-    re[t.COERCERTL].lastIndex = -1
+    coerceRtlRegex.lastIndex = -1
   }
 
   if (match === null) {
     return null
   }
 
-  return parse(`${match[2]}.${match[3] || '0'}.${match[4] || '0'}`, options)
+  const major = match[2]
+  const minor = match[3] || '0'
+  const patch = match[4] || '0'
+  const prerelease = options.includePrerelease && match[5] ? `-${match[5]}` : ''
+  const build = options.includePrerelease && match[6] ? `+${match[6]}` : ''
+
+  return parse(`${major}.${minor}.${patch}${prerelease}${build}`, options)
 }
 module.exports = coerce
 
@@ -15690,12 +15589,17 @@ createToken('XRANGELOOSE', `^${src[t.GTLT]}\\s*${src[t.XRANGEPLAINLOOSE]}$`)
 
 // Coercion.
 // Extract anything that could conceivably be a part of a valid semver
-createToken('COERCE', `${'(^|[^\\d])' +
+createToken('COERCEPLAIN', `${'(^|[^\\d])' +
               '(\\d{1,'}${MAX_SAFE_COMPONENT_LENGTH}})` +
               `(?:\\.(\\d{1,${MAX_SAFE_COMPONENT_LENGTH}}))?` +
-              `(?:\\.(\\d{1,${MAX_SAFE_COMPONENT_LENGTH}}))?` +
+              `(?:\\.(\\d{1,${MAX_SAFE_COMPONENT_LENGTH}}))?`)
+createToken('COERCE', `${src[t.COERCEPLAIN]}(?:$|[^\\d])`)
+createToken('COERCEFULL', src[t.COERCEPLAIN] +
+              `(?:${src[t.PRERELEASE]})?` +
+              `(?:${src[t.BUILD]})?` +
               `(?:$|[^\\d])`)
 createToken('COERCERTL', src[t.COERCE], true)
+createToken('COERCERTLFULL', src[t.COERCEFULL], true)
 
 // Tilde ranges.
 // Meaning is "reasonably at or greater than"

@@ -5,8 +5,8 @@
   "private": true,
   "main": "lib/main.js",
   "engines": {
-    "node": ">=16.0.0",
-    "npm": ">=8.0.0"
+    "node": ">=20",
+    "npm": ">=10"
   },
   "scripts": {
     "build": "tsc",
@@ -45,7 +45,7 @@
   "devDependencies": {
     "@types/getos": "^3.0.1",
     "@types/jest": "^27.5.0",
-    "@types/node": "^18.15.11",
+    "@types/node": "^20.11.16",
     "@types/semver": "^7.5.3",
     "@vercel/ncc": "^0.36.1",
     "jest": "^26.6.3",

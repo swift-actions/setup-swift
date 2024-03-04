@@ -4,8 +4,9 @@ author: Frederik Wallner
 inputs:
   swift-version: 
     description: Swift version to configure
-    required: true
-    default: '5.9.2'
+  swift-version-file:
+    description: File containing the Swift version
+    default: ".swift-version"
 outputs:
   version:
     description: The full Swift version that was configured

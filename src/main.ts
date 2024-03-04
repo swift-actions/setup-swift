@@ -1,15 +1,17 @@
 import { EOL } from "os";
 import * as core from "@actions/core";
+
 import * as system from "./os";
 import * as versions from "./swift-versions";
 import * as macos from "./macos-install";
 import * as linux from "./linux-install";
 import * as windows from "./windows-install";
 import { getVersion } from "./get-version";
+import { getRequestedVersion } from "./get-requested-version";
 
 async function run() {
   try {
-    const requestedVersion = core.getInput("swift-version", { required: true });
+    const requestedVersion = await getRequestedVersion();
 
     let platform = await system.getSystem();
     let version = versions.verify(requestedVersion, platform);

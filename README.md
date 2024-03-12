@@ -7,7 +7,7 @@
     <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Ubuntu%20%7C%20Windows-lightgray" alt="Supports macOS, Ubuntu & Windows" />
   </a>
   <a href="https://swift.org">
-    <img src="https://img.shields.io/badge/Swift-5.9.2-F05138?logo=swift&logoColor=white" alt="Swift 5.9.2" />
+    <img src="https://img.shields.io/badge/Swift-5.10-F05138?logo=swift&logoColor=white" alt="Swift 5.10" />
   </a>
   <a href="https://github.com/swift-actions/setup-swift/releases/latest">
     <img src="https://img.shields.io/github/v/release/swift-actions/setup-swift?sort=semver" alt="Latest release" />
@@ -28,7 +28,7 @@ After the environment is configured you can run swift commands using the standar
 ```yaml
 - uses: swift-actions/setup-swift@v1
 - name: Get swift version
-  run: swift --version # Swift 5.9.2
+  run: swift --version # Swift 5.10
 ```
 
 A specific Swift version can be set using the `swift-version` input:
@@ -68,7 +68,7 @@ For example, Swift is available as version `5.1` but using this as value for `sw
 In other words specifying...
 - `"5.1.0"` will resolve to version `5.1`
 - `"5.1"` will resolve to latest patch version (aka `5.1.1`)
-- `"5"` will resolve to latest minor and patch version (aka `5.9.2`)
+- `"5"` will resolve to latest minor and patch version (aka `5.10`)
 
 ### Caveats
 

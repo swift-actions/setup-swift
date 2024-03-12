@@ -13,6 +13,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+
       - name: Update Release Draft
         id: release_draft
         uses: release-drafter/release-drafter@v5

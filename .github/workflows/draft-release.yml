@@ -20,7 +20,7 @@ jobs:
 
       - name: Update Release Draft
         id: release_draft
-        uses: release-drafter/release-drafter@v5
+        uses: release-drafter/release-drafter@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           

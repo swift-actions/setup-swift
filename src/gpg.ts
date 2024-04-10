@@ -5,7 +5,7 @@ import * as toolCache from "@actions/tool-cache";
 export async function setupKeys() {
   core.debug("Fetching verification keys");
   let path = await toolCache.downloadTool(
-    "https://swift.org/keys/all-keys.asc"
+    "https://www.swift.org/keys/all-keys.asc"
   );
 
   core.debug("Importing verification keys");

@@ -13,8 +13,8 @@ export namespace OS {
 }
 
 const AVAILABLE_OS: { [platform: string]: string[] } = {
-  macOS: ["latest", "12.0", "11.0", "10.15"],
-  Ubuntu: ["latest", "22.04", "20.04", "18.04", "16.04"],
+  macOS: ["latest", "14", "13", "12", "11"],
+  Ubuntu: ["latest", "24.04", "22.04", "20.04"],
   Windows: ["latest", "10"],
 };
 

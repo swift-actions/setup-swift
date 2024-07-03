@@ -23,8 +23,10 @@ export async function install(version: string, system: System) {
 
     await setupKeys();
 
-    let { exe } = await download(swiftPkg);
-    await verify(exe);
+    const { exe } = await download(swiftPkg);
+
+    // FIXME: It seems like Swift.org does not provide GPG signatures for Windows all builds.
+    //await verify(exe);
 
     const exePath = await toolCache.cacheFile(
       exe,
@@ -71,7 +73,7 @@ export async function install(version: string, system: System) {
     path.join(swiftLibPath, "Swift-development", "bin"),
     path.join(swiftLibPath, "icu-67", "usr", "bin"),
   ];
-  additionalPaths.forEach((value, index, array) => core.addPath(value));
+  additionalPaths.forEach((value) => core.addPath(value));
 
   core.debug(`Swift installed at "${swiftInstallPath}"`);
   await setupVsTools(swiftPkg);
@@ -80,9 +82,7 @@ export async function install(version: string, system: System) {
 async function download({ url, name }: Package) {
   core.debug("Downloading Swift for windows");
 
-  let [exe] = await Promise.all([
-    toolCache.downloadTool(url),
-  ]);
+  const exe = await toolCache.downloadTool(url);
 
   core.debug("Swift download complete");
   return { exe, name };

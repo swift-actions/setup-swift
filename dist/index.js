@@ -385,8 +385,8 @@ var OS;
     OS.all = all;
 })(OS || (exports.OS = OS = {}));
 const AVAILABLE_OS = {
-    macOS: ["latest", "12.0", "11.0", "10.15"],
-    Ubuntu: ["latest", "22.04", "20.04", "18.04", "16.04"],
+    macOS: ["latest", "14", "13", "12", "11"],
+    Ubuntu: ["latest", "24.04", "22.04", "20.04"],
     Windows: ["latest", "10"],
 };
 async function getSystem() {
@@ -460,6 +460,7 @@ const semver = __importStar(__nccwpck_require__(1383));
 const core = __importStar(__nccwpck_require__(2186));
 const os_1 = __nccwpck_require__(1855);
 const VERSIONS_LIST = [
+    ["5.10.1", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
     ["5.10", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
     ["5.9.2", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
     ["5.9.1", [os_1.OS.MacOS, os_1.OS.Ubuntu]],

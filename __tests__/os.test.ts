@@ -6,11 +6,11 @@ const setSystem = require("getos").__setSystem;
 
 describe("os resolver", () => {
   it("finds matching system and version", async () => {
-    setSystem({ os: "linux", dist: "Ubuntu", release: "18.04" });
+    setSystem({ os: "linux", dist: "Ubuntu", release: "22.04" });
 
     let ubuntu = await os.getSystem();
     expect(ubuntu.os).toBe(os.OS.Ubuntu);
-    expect(ubuntu.version).toBe("18.04");
+    expect(ubuntu.version).toBe("22.04");
     expect(ubuntu.name).toBe("Ubuntu");
 
     setSystem({ os: "darwin", dist: "macOS", release: "latest" });

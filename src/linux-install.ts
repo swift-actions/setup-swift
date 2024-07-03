@@ -23,7 +23,7 @@ export async function install(version: string, system: System) {
     const swiftPkg = swiftPackage(version, system);
     const { pkg, signature } = await download(swiftPkg);
 
-    await verify(pkg, signature);
+    await verify(signature, pkg);
 
     swiftPath = await unpack(pkg, swiftPkg.name, version, system);
   } else {

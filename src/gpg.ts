@@ -16,7 +16,7 @@ export async function setupKeys() {
 }
 
 export async function verify(...paths: string[]) {
-  core.debug("Verifying signature");
+  core.debug(`Verifying signature using ${paths.length} files`);
   await exec("gpg", ["--verify", ...paths]);
 }
 

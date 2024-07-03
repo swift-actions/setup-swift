@@ -23,8 +23,8 @@ export async function install(version: string, system: System) {
 
     await setupKeys();
 
-    let { exe, signature } = await download(swiftPkg);
-    await verify(signature, exe);
+    let { exe } = await download(swiftPkg);
+    await verify(exe);
 
     const exePath = await toolCache.cacheFile(
       exe,
@@ -80,11 +80,11 @@ export async function install(version: string, system: System) {
 async function download({ url, name }: Package) {
   core.debug("Downloading Swift for windows");
 
-  let [exe, signature] = await Promise.all([
+  let [exe] = await Promise.all([
     toolCache.downloadTool(url),
     toolCache.downloadTool(`${url}.sig`),
   ]);
 
   core.debug("Swift download complete");
-  return { exe, signature, name };
+  return { exe, name };
 }

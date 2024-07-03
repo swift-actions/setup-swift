@@ -82,7 +82,6 @@ async function download({ url, name }: Package) {
 
   let [exe] = await Promise.all([
     toolCache.downloadTool(url),
-    toolCache.downloadTool(`${url}.sig`),
   ]);
 
   core.debug("Swift download complete");

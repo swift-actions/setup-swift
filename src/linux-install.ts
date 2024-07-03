@@ -21,7 +21,7 @@ export async function install(version: string, system: System) {
     await setupKeys();
 
     const swiftPkg = swiftPackage(version, system);
-    let { pkg, signature } = await download(swiftPkg);
+    const { pkg, signature } = await download(swiftPkg);
 
     await verify(signature, pkg);
 

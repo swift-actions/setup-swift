@@ -15,9 +15,9 @@ export async function setupKeys() {
   await refreshKeys();
 }
 
-export async function verify(signaturePath: string, packagePath: string) {
-  core.debug("Verifying signature");
-  await exec("gpg", ["--verify", signaturePath, packagePath]);
+export async function verify(...paths: string[]) {
+  core.debug(`Verifying signature using ${paths.length} files`);
+  await exec("gpg", ["--verify", ...paths]);
 }
 
 export async function refreshKeys() {

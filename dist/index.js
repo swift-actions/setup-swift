@@ -1,6 +1,20 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 209:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+function getArch() {
+    return process.arch;
+}
+exports["default"] = getArch;
+
+
+/***/ }),
+
 /***/ 951:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
@@ -372,6 +386,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getSystem = exports.OS = void 0;
 const getos_1 = __importDefault(__nccwpck_require__(6068));
+const arch_1 = __importDefault(__nccwpck_require__(209));
 var OS;
 (function (OS) {
     OS[OS["MacOS"] = 0] = "MacOS";
@@ -395,23 +410,41 @@ async function getSystem() {
             os ? resolve(os) : reject(error || "No OS detected");
         });
     });
+    const arch = (0, arch_1.default)();
     let system;
     switch (detectedSystem.os) {
         case "darwin":
-            system = { os: OS.MacOS, version: "latest", name: "macOS" };
+            system = {
+                os: OS.MacOS,
+                version: "latest",
+                name: "macOS",
+                arch,
+            };
             break;
         case "linux":
             if (detectedSystem.dist !== "Ubuntu") {
-                throw new Error(`"${detectedSystem.dist}" is not a supported linux distribution`);
+                throw new Error(`"${detectedSystem.dist}" is not a supported Linux distribution`);
+            }
+            if (arch !== "x64" && arch !== "arm64") {
+                throw new Error(`${arch} is not a supported architecture for Linux`);
             }
             system = {
                 os: OS.Ubuntu,
                 version: detectedSystem.release,
                 name: "Ubuntu",
+                arch,
             };
             break;
         case "win32":
-            system = { os: OS.Windows, version: "latest", name: "Windows" };
+            if (arch !== "x64") {
+                throw new Error(`${arch} is not a supported architecture for Windows`);
+            }
+            system = {
+                os: OS.Windows,
+                version: "latest",
+                name: "Windows",
+                arch,
+            };
             break;
         default:
             throw new Error(`"${detectedSystem.os}" is not a supported platform`);
@@ -542,7 +575,11 @@ function swiftPackage(version, system) {
             break;
         case os_1.OS.Ubuntu:
             platform = `ubuntu${system.version.replace(/\D/g, "")}`;
+            if (system.arch === "arm64")
+                platform += "-aarch64";
             archiveName = `swift-${version}-RELEASE-ubuntu${system.version}`;
+            if (system.arch === "arm64")
+                archiveName += "-aarch64";
             archiveFile = `${archiveName}.tar.gz`;
             break;
         case os_1.OS.Windows:

@@ -1,6 +1,14 @@
 import * as os from "../src/os";
+import getArch from "../src/arch";
 
 jest.mock("getos");
+
+jest.mock("../src/arch", () => {
+  return {
+    __esModule: true,
+    default: jest.fn(() => "x64"),
+  };
+});
 
 const setSystem = require("getos").__setSystem;
 

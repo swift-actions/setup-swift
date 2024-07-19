@@ -1,4 +1,5 @@
 import getos from "getos";
+import getArch from "./arch";
 
 export enum OS {
   MacOS,
@@ -22,6 +23,7 @@ export interface System {
   os: OS;
   version: string;
   name: string;
+  arch: string;
 }
 
 export async function getSystem(): Promise<System> {
@@ -30,27 +32,45 @@ export async function getSystem(): Promise<System> {
       os ? resolve(os) : reject(error || "No OS detected");
     });
   });
+  const arch = getArch();
 
   let system: System;
 
   switch (detectedSystem.os) {
     case "darwin":
-      system = { os: OS.MacOS, version: "latest", name: "macOS" };
+      system = {
+        os: OS.MacOS,
+        version: "latest",
+        name: "macOS",
+        arch,
+      };
       break;
     case "linux":
       if (detectedSystem.dist !== "Ubuntu") {
         throw new Error(
-          `"${detectedSystem.dist}" is not a supported linux distribution`
+          `"${detectedSystem.dist}" is not a supported Linux distribution`
         );
+      }
+      if (arch !== "x64" && arch !== "arm64") {
+        throw new Error(`${arch} is not a supported architecture for Linux`);
       }
       system = {
         os: OS.Ubuntu,
         version: detectedSystem.release,
         name: "Ubuntu",
+        arch,
       };
       break;
     case "win32":
-      system = { os: OS.Windows, version: "latest", name: "Windows" };
+      if (arch !== "x64") {
+        throw new Error(`${arch} is not a supported architecture for Windows`);
+      }
+      system = {
+        os: OS.Windows,
+        version: "latest",
+        name: "Windows",
+        arch,
+      };
       break;
     default:
       throw new Error(`"${detectedSystem.os}" is not a supported platform`);

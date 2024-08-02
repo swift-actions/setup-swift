@@ -74,48 +74,6 @@ const AVAILABLE_VERSIONS: [semver.SemVer, OS[]][] = VERSIONS_LIST.map(
   }
 );
 
-function notEmpty<T>(value: T | null | undefined): value is T {
-  return value !== null && value !== undefined;
-}
-
-export interface Package {
-  url: string;
-  name: string;
-  version: string;
-}
-
-export function swiftPackage(version: string, system: System): Package {
-  let platform: string;
-  let archiveFile: string;
-  let archiveName: string;
-
-  switch (system.os) {
-    case OS.MacOS:
-      platform = "xcode";
-      archiveName = `swift-${version}-RELEASE-osx`;
-      archiveFile = `${archiveName}.pkg`;
-      break;
-    case OS.Ubuntu:
-      platform = `ubuntu${system.version.replace(/\D/g, "")}`;
-      archiveName = `swift-${version}-RELEASE-ubuntu${system.version}`;
-      archiveFile = `${archiveName}.tar.gz`;
-      break;
-    case OS.Windows:
-      platform = "windows10";
-      archiveName = `swift-${version}-RELEASE-windows10.exe`;
-      archiveFile = archiveName;
-      break;
-    default:
-      throw new Error("Cannot create download URL for an unsupported platform");
-  }
-
-  return {
-    url: `https://swift.org/builds/swift-${version}-release/${platform}/swift-${version}-RELEASE/${archiveFile}`,
-    name: archiveName,
-    version: version,
-  };
-}
-
 export function verify(version: string, system: System) {
   let range = semver.validRange(version);
   if (range === null) {

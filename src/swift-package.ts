@@ -16,7 +16,7 @@ export async function getPackage(
     let version = verify(requestedVersion, system);
     return makeStablePackage(version, system);
   } catch {
-    const resolver = new SnapshotResolver(null);
+    const resolver = new SnapshotResolver();
     const snapshot = await resolver.execute(requestedVersion, system);
     return makeSnapshotPackage(snapshot, system);
   }

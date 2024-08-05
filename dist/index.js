@@ -43,6 +43,45 @@ exports.versionFromString = versionFromString;
 
 /***/ }),
 
+/***/ 4072:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DefaultGitHubClient = void 0;
+class DefaultGitHubClient {
+    githubToken;
+    constructor(githubToken = null) {
+        this.githubToken =
+            githubToken || process.env.API_GITHUB_ACCESS_TOKEN || null;
+    }
+    hasApiToken() {
+        return this.githubToken != null && this.githubToken != "";
+    }
+    async getTags(page, limit) {
+        const url = `https://api.github.com/repos/apple/swift/tags?per_page=${limit}&page=${page}`;
+        return await this.get(url);
+    }
+    async get(url) {
+        let headers = {};
+        if (this.githubToken) {
+            headers = {
+                Authorization: `Bearer ${this.githubToken}`,
+            };
+        }
+        const response = await fetch(url, {
+            headers: headers,
+        });
+        const json = await response.json();
+        return json;
+    }
+}
+exports.DefaultGitHubClient = DefaultGitHubClient;
+
+
+/***/ }),
+
 /***/ 9060:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -426,18 +465,18 @@ exports.getSystem = getSystem;
 /***/ }),
 
 /***/ 8212:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SnapshotResolver = void 0;
+const github_client_1 = __nccwpck_require__(4072);
 class SnapshotResolver {
-    githubToken;
+    githubClient;
     limit = 100;
-    constructor(githubToken) {
-        this.githubToken =
-            githubToken || process.env.API_GITHUB_ACCESS_TOKEN || null;
+    constructor(githubClient = new github_client_1.DefaultGitHubClient()) {
+        this.githubClient = githubClient;
     }
     async execute(version, platform) {
         const snapshot = await this.getSnapshot(version);
@@ -461,7 +500,7 @@ class SnapshotResolver {
         return { branch, date };
     }
     async fetchSnapshot(targetBranch) {
-        let page = 0;
+        let page = 1;
         while (true) {
             const tags = await this.getTags(page);
             for (const tag of tags) {
@@ -477,7 +516,7 @@ class SnapshotResolver {
         }
     }
     parseSnapshot(tag) {
-        const matches = tag.name.match(/swift(?:-(\d+)\\.(\d+))?-DEVELOPMENT-SNAPSHOT-(\d{4}-\d{2}-\d{2})/);
+        const matches = tag.name.match(/swift(?:-(\d+)\.(\d+))?-DEVELOPMENT-SNAPSHOT-(\d{4}-\d{2}-\d{2})/);
         if (!matches) {
             return null;
         }
@@ -489,17 +528,20 @@ class SnapshotResolver {
         return { branch: "main", date: matches[3] };
     }
     async getTags(page) {
-        const url = `https://api.github.com/repos/apple/swift/tags?per_page=${this.limit}&page=${page}`;
-        let headers = {};
-        if (this.githubToken) {
-            headers = {
-                Authorization: `Bearer ${this.githubToken}`,
-            };
+        let json = await this.githubClient.getTags(page, this.limit);
+        if (!Array.isArray(json)) {
+            // try second time after 5s if response not an array of tags
+            await new Promise((r) => setTimeout(r, 5000));
+            json = await this.githubClient.getTags(page, this.limit);
         }
-        const response = await fetch(url, {
-            headers: headers,
-        });
-        const json = await response.json();
+        if (!Array.isArray(json)) {
+            // fail if couldn't get from second try
+            let errorMessage = "Failed to retrive snapshot tags. Please, try again later" +
+                (this.githubClient.hasApiToken()
+                    ? "."
+                    : ", or specify GitHub API token in your project settings to avoid limits.");
+            throw new Error(errorMessage);
+        }
         const tags = json.map((e) => {
             return { name: e.name };
         });
@@ -527,7 +569,7 @@ async function getPackage(requestedVersion, system) {
         return makeStablePackage(version, system);
     }
     catch {
-        const resolver = new snapshot_resolver_1.SnapshotResolver(null);
+        const resolver = new snapshot_resolver_1.SnapshotResolver();
         const snapshot = await resolver.execute(requestedVersion, system);
         return makeSnapshotPackage(snapshot, system);
     }

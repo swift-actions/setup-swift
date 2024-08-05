@@ -1,3 +1,4 @@
+import { DefaultGitHubClient, GitHubClient } from "./github-client";
 import { System } from "./os";
 
 export type Tag = {
@@ -10,12 +11,11 @@ export type Snapshot = {
 };
 
 export class SnapshotResolver {
-  private githubToken: string | null;
+  private githubClient: GitHubClient;
   private limit: number = 100;
 
-  constructor(githubToken: string | null) {
-    this.githubToken =
-      githubToken || process.env.API_GITHUB_ACCESS_TOKEN || null;
+  constructor(githubClient: GitHubClient = new DefaultGitHubClient()) {
+    this.githubClient = githubClient;
   }
 
   async execute(version: string, platform: System): Promise<Snapshot> {
@@ -44,7 +44,7 @@ export class SnapshotResolver {
   }
 
   private async fetchSnapshot(targetBranch: string): Promise<Snapshot | null> {
-    let page = 0;
+    let page = 1;
     while (true) {
       const tags = await this.getTags(page);
       for (const tag of tags) {
@@ -62,7 +62,7 @@ export class SnapshotResolver {
 
   private parseSnapshot(tag: Tag): Snapshot | null {
     const matches = tag.name.match(
-      /swift(?:-(\d+)\\.(\d+))?-DEVELOPMENT-SNAPSHOT-(\d{4}-\d{2}-\d{2})/
+      /swift(?:-(\d+)\.(\d+))?-DEVELOPMENT-SNAPSHOT-(\d{4}-\d{2}-\d{2})/
     );
     if (!matches) {
       return null;
@@ -76,17 +76,21 @@ export class SnapshotResolver {
   }
 
   private async getTags(page: number): Promise<Tag[]> {
-    const url = `https://api.github.com/repos/apple/swift/tags?per_page=${this.limit}&page=${page}`;
-    let headers = {};
-    if (this.githubToken) {
-      headers = {
-        Authorization: `Bearer ${this.githubToken}`,
-      };
+    let json = await this.githubClient.getTags(page, this.limit);
+    if (!Array.isArray(json)) {
+      // try second time after 5s if response not an array of tags
+      await new Promise((r) => setTimeout(r, 5000));
+      json = await this.githubClient.getTags(page, this.limit);
     }
-    const response = await fetch(url, {
-      headers: headers,
-    });
-    const json: any = await response.json();
+    if (!Array.isArray(json)) {
+      // fail if couldn't get from second try
+      let errorMessage =
+        "Failed to retrive snapshot tags. Please, try again later" +
+        (this.githubClient.hasApiToken()
+          ? "."
+          : ", or specify GitHub API token in your project settings to avoid limits.");
+      throw new Error(errorMessage);
+    }
     const tags: Tag[] = json.map((e: any) => {
       return { name: e.name };
     });

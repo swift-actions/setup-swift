@@ -536,10 +536,11 @@ class SnapshotResolver {
         }
         if (!Array.isArray(json)) {
             // fail if couldn't get from second try
-            let errorMessage = "Failed to retrive snapshot tags. Please, try again later" +
-                (this.githubClient.hasApiToken()
-                    ? "."
-                    : ", or specify GitHub API token in your project settings to avoid limits.");
+            let errorMessage = "Failed to retrive snapshot tags. Please, try again later.";
+            if (!this.githubClient.hasApiToken()) {
+                errorMessage +=
+                    " To avoid limits specify `API_GITHUB_ACCESS_TOKEN` in your project settings.";
+            }
             throw new Error(errorMessage);
         }
         const tags = json.map((e) => {

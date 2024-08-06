@@ -1,36 +1,33 @@
 import { EOL } from "os";
 import * as core from "@actions/core";
-import * as system from "./os";
-import * as versions from "./swift-versions";
-import * as macos from "./macos-install";
-import * as linux from "./linux-install";
-import * as windows from "./windows-install";
 import { getVersion } from "./get-version";
+import { OS, getSystem } from "./os";
+import { install as macos_install } from "./macos-install";
+import { install as linux_install } from "./linux-install";
+import { install as windows_install } from "./windows-install";
+import { getPackage } from "./swift-package";
 
 async function run() {
   try {
     const requestedVersion = core.getInput("swift-version", { required: true });
-
-    let platform = await system.getSystem();
-    let version = versions.verify(requestedVersion, platform);
-
-    switch (platform.os) {
-      case system.OS.MacOS:
-        await macos.install(version, platform);
+    let system = await getSystem();
+    const pkg = await getPackage(requestedVersion, system);
+    switch (system.os) {
+      case OS.MacOS:
+        await macos_install(pkg);
         break;
-      case system.OS.Ubuntu:
-        await linux.install(version, platform);
+      case OS.Ubuntu:
+        await linux_install(pkg, system);
         break;
-      case system.OS.Windows:
-        await windows.install(version, platform);
+      case OS.Windows:
+        await windows_install(pkg, system);
     }
-
     const current = await getVersion();
-    if (current === version) {
-      core.setOutput("version", version);
+    if (current === pkg.version) {
+      core.setOutput("version", pkg.version);
     } else {
       core.error(
-        `Failed to setup requested swift version. requestd: ${version}, actual: ${current}`
+        `Failed to setup requested swift version. requested: ${pkg.version}, actual: ${current}`
       );
     }
   } catch (error) {
@@ -40,7 +37,6 @@ async function run() {
     } else {
       dump = `${error}`;
     }
-
     core.setFailed(
       `Unexpected error, unable to continue. Please report at https://github.com/swift-actions/setup-swift/issues${EOL}${dump}`
     );

@@ -3,6 +3,8 @@ import { SnapshotResolver } from "../src/snapshot-resolver";
 import { readFileSync } from "fs";
 
 class MockGitHubClient implements GitHubClient {
+  retryTimeout: number = 0;
+
   hasApiToken(): boolean {
     return true;
   }

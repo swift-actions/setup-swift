@@ -66,8 +66,7 @@ To request development snapshots, use one of these options:
 swift-version: "main-snapshot-2024-08-01"
 ```
 
-Or you can omit date to lookup for latest available snapshot (note that you may run into GitHub API limits, 
-which can be avoided if you specify API Token in your project settings)
+Or you can omit date to lookup for latest available snapshot 
 
 ```yaml
 swift-version: "main-snapshot"
@@ -83,6 +82,13 @@ If date is ommited, it will lookup for the latest snapshot
 
 ```yaml
 swift-version: "5.7-snapshot"
+```
+
+Note that you may run into GitHub API limits, which can be avoided if you pass API token via environment variable
+
+```yaml
+env:
+    GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## Note about versions

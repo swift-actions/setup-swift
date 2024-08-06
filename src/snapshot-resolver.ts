@@ -1,3 +1,4 @@
+import { warning } from "@actions/core";
 import { DefaultGitHubClient, GitHubClient } from "./github-client";
 import { System } from "./os";
 
@@ -77,20 +78,10 @@ export class SnapshotResolver {
 
   private async getTags(page: number): Promise<Tag[]> {
     let json = await this.githubClient.getTags(page, this.limit);
-    if (!Array.isArray(json)) {
-      // try second time after 5s if response not an array of tags
-      await new Promise((r) => setTimeout(r, 5000));
-      json = await this.githubClient.getTags(page, this.limit);
-    }
-    if (!Array.isArray(json)) {
-      // fail if couldn't get from second try
-      let errorMessage =
-        "Failed to retrive snapshot tags. Please, try again later.";
-      if (!this.githubClient.hasApiToken()) {
-        errorMessage +=
-          " To avoid limits specify `API_GITHUB_ACCESS_TOKEN` in your project settings.";
-      }
-      throw new Error(errorMessage);
+    if (!this.githubClient.hasApiToken()) {
+      warning(
+        "To avoid hitting limits specify env variable `GH_TOKEN` in your workflow."
+      );
     }
     const tags: Tag[] = json.map((e: any) => {
       return { name: e.name };

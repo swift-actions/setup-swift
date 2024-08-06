@@ -51,21 +51,21 @@ exports.versionFromString = versionFromString;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DefaultGitHubClient = void 0;
 class DefaultGitHubClient {
+    retryTimeout = 5000;
     githubToken;
     constructor(githubToken = null) {
-        this.githubToken =
-            githubToken || process.env.API_GITHUB_ACCESS_TOKEN || null;
+        this.githubToken = githubToken || process.env.GH_TOKEN || null;
     }
     hasApiToken() {
         return this.githubToken != null && this.githubToken != "";
     }
     async getTags(page, limit) {
-        const url = `https://api.github.com/repos/apple/swift/tags?per_page=${limit}&page=${page}`;
+        const url = `https://api.github.com/repos/swiftlang/swift/tags?per_page=${limit}&page=${page}`;
         return await this.get(url);
     }
     async get(url) {
         let headers = {};
-        if (this.githubToken) {
+        if (this.hasApiToken()) {
             headers = {
                 Authorization: `Bearer ${this.githubToken}`,
             };
@@ -471,6 +471,7 @@ exports.getSystem = getSystem;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SnapshotResolver = void 0;
+const core_1 = __nccwpck_require__(2186);
 const github_client_1 = __nccwpck_require__(4072);
 class SnapshotResolver {
     githubClient;
@@ -529,19 +530,8 @@ class SnapshotResolver {
     }
     async getTags(page) {
         let json = await this.githubClient.getTags(page, this.limit);
-        if (!Array.isArray(json)) {
-            // try second time after 5s if response not an array of tags
-            await new Promise((r) => setTimeout(r, 5000));
-            json = await this.githubClient.getTags(page, this.limit);
-        }
-        if (!Array.isArray(json)) {
-            // fail if couldn't get from second try
-            let errorMessage = "Failed to retrive snapshot tags. Please, try again later.";
-            if (!this.githubClient.hasApiToken()) {
-                errorMessage +=
-                    " To avoid limits specify `API_GITHUB_ACCESS_TOKEN` in your project settings.";
-            }
-            throw new Error(errorMessage);
+        if (!this.githubClient.hasApiToken()) {
+            (0, core_1.warning)("To avoid hitting limits specify env variable `GH_TOKEN` in your workflow.");
         }
         const tags = json.map((e) => {
             return { name: e.name };

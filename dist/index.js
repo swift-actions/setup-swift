@@ -73,18 +73,22 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.refreshKeys = exports.verify = exports.setupKeys = void 0;
+const os = __importStar(__nccwpck_require__(2037));
 const exec_1 = __nccwpck_require__(1514);
 const core = __importStar(__nccwpck_require__(2186));
 const toolCache = __importStar(__nccwpck_require__(7784));
 async function setupKeys() {
     core.debug("Fetching verification keys");
     let path = await toolCache.downloadTool("https://www.swift.org/keys/all-keys.asc");
-    const fileTypeModule = await __nccwpck_require__.e(/* import() */ 502).then(__nccwpck_require__.bind(__nccwpck_require__, 502));
-    const fileType = await fileTypeModule.fileTypeFromFile(path);
-    if (fileType && fileType.mime == "application/gzip") {
-        core.info("Server responded with gzipped data, uncompressing");
-        await (0, exec_1.exec)(`mv "${path}" "${path}.gz"`);
-        await (0, exec_1.exec)(`gunzip "${path}.gz`);
+    // Workaround for https://github.com/swift-actions/setup-swift/issues/591
+    if (os.platform() !== "win32") {
+        const fileTypeModule = await __nccwpck_require__.e(/* import() */ 502).then(__nccwpck_require__.bind(__nccwpck_require__, 502));
+        const fileType = await fileTypeModule.fileTypeFromFile(path);
+        if (fileType && fileType.mime === "application/gzip") {
+            core.info("Server responded with gzipped data, uncompressing");
+            await (0, exec_1.exec)(`mv "${path}" "${path}.gz"`);
+            await (0, exec_1.exec)(`gunzip "${path}.gz`);
+        }
     }
     core.debug("Importing verification keys");
     await (0, exec_1.exec)(`gpg --import "${path}"`);

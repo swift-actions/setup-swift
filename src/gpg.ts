@@ -8,6 +8,7 @@ export async function setupKeys() {
     "https://www.swift.org/keys/all-keys.asc"
   );
 
+  // Workaround for https://github.com/swift-actions/setup-swift/issues/591
   const fileTypeModule = await import("file-type");
   const fileType = await fileTypeModule.fileTypeFromFile(path);
 

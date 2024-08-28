@@ -11,7 +11,7 @@ export async function setupKeys() {
   const fileTypeModule = await import("file-type");
   const fileType = await fileTypeModule.fileTypeFromFile(path);
 
-  if (fileType && fileType.mime == "application/gzip") {
+  if (fileType && fileType.mime === "application/gzip") {
     core.info("Server responded with gzipped data, uncompressing");
     await exec(`mv "${path}" "${path}.gz"`);
     await exec(`gunzip "${path}.gz`);

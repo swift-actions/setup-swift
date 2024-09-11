@@ -1,37 +1,27 @@
+import * as github from "@actions/github";
+
 export interface GitHubClient {
-  retryTimeout: number;
   hasApiToken(): boolean;
   getTags(page: number, limit: number): Promise<any>;
 }
 
 export class DefaultGitHubClient implements GitHubClient {
-  retryTimeout: number = 5000;
-  private githubToken: string | null;
-
-  constructor(githubToken: string | null = null) {
-    this.githubToken = githubToken || process.env.GH_TOKEN || null;
-  }
-
   hasApiToken(): boolean {
-    return this.githubToken != null && this.githubToken != "";
+    return this.token() != "";
   }
 
   async getTags(page: number, limit: number): Promise<any> {
-    const url = `https://api.github.com/repos/swiftlang/swift/tags?per_page=${limit}&page=${page}`;
-    return await this.get(url);
+    const octokit = github.getOctokit(this.token())
+    const response = await octokit.rest.repos.listTags({
+      owner: "swiftlang",
+      repo: "swift",
+      per_page: limit,
+      page: page,
+    });
+    return response.data;
   }
 
-  private async get(url: string): Promise<any> {
-    let headers = {};
-    if (this.hasApiToken()) {
-      headers = {
-        Authorization: `Bearer ${this.githubToken}`,
-      };
-    }
-    const response = await fetch(url, {
-      headers: headers,
-    });
-    const json: any = await response.json();
-    return json;
+  private token(): string {
+    return process.env.GH_TOKEN || "";
   }
 }

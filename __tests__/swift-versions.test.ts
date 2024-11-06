@@ -28,7 +28,12 @@ describe("swift version resolver", () => {
 
   it("identifies X versions", async () => {
     const version = await versions.verify("5", macOS);
-    expect(version).toBe("5.10.1");
+    expect(version).toBe("5.11");
+  });
+
+  it("identifies X versions", async () => {
+    const version = await versions.verify("6", macOS);
+    expect(version).toBe("6.0.2");
   });
 
   it("identifies versions based on system", async () => {

@@ -8,6 +8,14 @@ export async function setupKeys() {
     "https://swift.org/keys/all-keys.asc"
   );
 
+  const fileTypeModule = await import("file-type");
+  const fileType = await fileTypeModule.fileTypeFromFile(path);
+  if (fileType && fileType.mime == "application/gzip") {
+    core.info("Server responded with gzipped data, uncompressing");
+    await exec(`mv "${path}" "${path}.gz"`);
+    await exec(`gunzip "${path}.gz`);
+  }
+
   core.debug("Importing verification keys");
   await exec(`gpg --import "${path}"`);
 

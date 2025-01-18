@@ -5,17 +5,16 @@ import * as toolCache from "@actions/tool-cache";
 import * as path from "path";
 import { ExecOptions, exec } from "@actions/exec";
 import { System } from "./os";
-import { swiftPackage, Package } from "./swift-versions";
+import { Package } from "./swift-package";
 import { setupKeys, verify } from "./gpg";
 import { setupVsTools } from "./visual-studio";
 
-export async function install(version: string, system: System) {
+export async function install(swiftPkg: Package, system: System) {
   if (os.platform() !== "win32") {
     core.error("Trying to run windows installer on non-windows os");
     return;
   }
-
-  const swiftPkg = swiftPackage(version, system);
+  const version = swiftPkg.version;
   let swiftPath = toolCache.find(`swift-${system.name}`, version);
 
   if (swiftPath === null || swiftPath.trim().length == 0) {

@@ -1,9 +1,26 @@
 import { OS, System } from "../src/os";
 import * as versions from "../src/swift-versions";
 
-const macOS: System = { os: OS.MacOS, version: "latest", name: "macOS" };
-const ubuntu: System = { os: OS.Ubuntu, version: "latest", name: "Ubuntu" };
-const windows: System = { os: OS.Windows, version: "latest", name: "Windows" };
+const macOS: System = {
+  os: OS.MacOS,
+  version: "latest",
+  name: "macOS",
+  arch: "arm64",
+};
+
+const ubuntu: System = {
+  os: OS.Ubuntu,
+  version: "latest",
+  name: "Ubuntu",
+  arch: "x64",
+};
+
+const windows: System = {
+  os: OS.Windows,
+  version: "latest",
+  name: "Windows",
+  arch: "x64",
+};
 
 describe("swift version resolver", () => {
   it("identifies X.X.X versions", async () => {

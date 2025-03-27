@@ -1,3 +1,4 @@
+import * as os from "os";
 import { exec } from "@actions/exec";
 import * as core from "@actions/core";
 import * as toolCache from "@actions/tool-cache";
@@ -5,8 +6,20 @@ import * as toolCache from "@actions/tool-cache";
 export async function setupKeys() {
   core.debug("Fetching verification keys");
   let path = await toolCache.downloadTool(
-    "https://swift.org/keys/all-keys.asc"
+    "https://www.swift.org/keys/all-keys.asc"
   );
+
+  // Workaround for https://github.com/swift-actions/setup-swift/issues/591
+  if (os.platform() !== "win32") {
+    const fileTypeModule = await import("file-type");
+    const fileType = await fileTypeModule.fileTypeFromFile(path);
+
+    if (fileType && fileType.mime === "application/gzip") {
+      core.info("Server responded with gzipped data, uncompressing");
+      await exec(`mv "${path}" "${path}.gz"`);
+      await exec(`gunzip "${path}.gz`);
+    }
+  }
 
   core.debug("Importing verification keys");
   await exec(`gpg --import "${path}"`);

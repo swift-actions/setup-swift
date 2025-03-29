@@ -5,7 +5,7 @@ import * as semver from "semver";
 import * as io from "@actions/io";
 import * as core from "@actions/core";
 import { ExecOptions, exec } from "@actions/exec";
-import { Package } from "./swift-versions";
+import { Package } from "./swift-package";
 
 export interface VisualStudio {
   installationPath: string;

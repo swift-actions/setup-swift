@@ -5,7 +5,7 @@ inputs:
   swift-version: 
     description: Swift version to configure
     required: true
-    default: '5.10'
+    default: '6.1.0'
 outputs:
   version:
     description: The full Swift version that was configured

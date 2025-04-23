@@ -11,8 +11,19 @@ async function swiftly(...args: string[]) {
  */
 export async function installSwift(version: string) {
   info("Initializing Swiftly");
-  await swiftly("init", "--skip-install", "--verbose", "--assume-yes");
+  await swiftly(
+    "init",
+    "--skip-install",
+    "--quiet-shell-followup",
+    "--assume-yes",
+  );
 
   info(`Installing Swift ${version}`);
-  await swiftly("install", "--use", version, "--verbose", "--assume-yes");
+  await swiftly(
+    "install",
+    "--use",
+    version,
+    "--quiet-shell-followup",
+    "--assume-yes",
+  );
 }

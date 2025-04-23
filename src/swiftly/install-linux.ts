@@ -1,3 +1,4 @@
+import { machine } from "os";
 import { addPath, debug, info } from "@actions/core";
 import { downloadTool, find, extractTar, cacheDir } from "@actions/tool-cache";
 import { verify } from "../core/gpg";
@@ -20,8 +21,8 @@ export async function setupLinux() {
 async function download() {
   info("Downloading Swiftly");
 
-  const arch = process.arch;
-  const url = `https://download.swift.org/swiftly/linux/swiftly-1.0.0-${arch}.tar.gz`;
+  const m = machine();
+  const url = `https://download.swift.org/swiftly/linux/swiftly-1.0.0-${m}.tar.gz`;
 
   debug(`Downloading Swiftly from ${url}`);
 

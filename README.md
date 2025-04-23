@@ -16,6 +16,9 @@
 
 [GitHub Action](https://github.com/features/actions) that will setup a [Swift](https://swift.org) environment with a specific version. Works on both Ubuntu and macOS runners.
 
+> [!IMPORTANT]
+> 3.0 is coming, powered by Swiftly 🚀 - follow progress on https://github.com/swift-actions/setup-swift/pull/710
+
 ## Usage
 
 To run the action with the latest swift version available, simply add the action as a step in your workflow:

@@ -16,7 +16,7 @@ async function run() {
       case "darwin":
         throw Error("Not implemented yet on macOS");
       case "linux":
-        await setupLinux();
+        await setupLinux({ skipVerifySignature: true });
         break;
       case "win32":
         throw Error("Not implemented yet on Windows");

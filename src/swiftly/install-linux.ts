@@ -3,14 +3,19 @@ import { addPath, debug, info } from "@actions/core";
 import { downloadTool, find, extractTar, cacheDir } from "@actions/tool-cache";
 import { verify } from "../core/gpg";
 
+interface Options {
+  /** Skip signature verification */
+  skipVerifySignature?: boolean;
+}
+
 /**
  * Setup Swiftly on Linux
  */
-export async function setupLinux() {
+export async function setupLinux(options: Options) {
   let path = find("swiftly", "1.0.0");
 
   if (!path) {
-    path = await download();
+    path = await download(options);
   } else {
     debug("Found cached Swiftly");
   }
@@ -18,7 +23,7 @@ export async function setupLinux() {
   addPath(path);
 }
 
-async function download() {
+async function download({ skipVerifySignature = false }: Options = {}) {
   info("Downloading Swiftly");
 
   const m = machine();
@@ -31,7 +36,11 @@ async function download() {
     downloadTool(`${url}.sig`),
   ]);
 
-  await verify(signature, pkg);
+  if (skipVerifySignature) {
+    info("Skipping signature verification");
+  } else {
+    await verify(signature, pkg);
+  }
 
   const extracted = await extractTar(pkg);
   debug(`Extracted Swiftly to ${extracted}`);

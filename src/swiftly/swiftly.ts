@@ -2,7 +2,7 @@ import { info } from "@actions/core";
 import { cmd } from "../core";
 
 async function swiftly(...args: string[]) {
-  return await cmd("swiftly", args);
+  return await cmd("swiftly", ...args);
 }
 
 /**

@@ -3,24 +3,24 @@ name: Tests
 on:
   push:
     branches:
-    - main
+      - main
   pull_request:
     branches:
-    - main
+      - main
 
 jobs:
   unit-test:
     name: Unit tests
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup Node
-      uses: actions/setup-node@v4
-      with:
-        node-version-file: '.nvmrc'
-    - run: npm install
-    - run: npm run format-check
-    - run: npm test
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+      - run: yarn
+      - run: npm run format-check
+      - run: npm test
   integration-test:
     name: Integrate Swift ${{ matrix.swift }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -29,18 +29,18 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         swift: ["6.1.0"]
         include:
-        - os: windows-latest
-          swift: "5.6.3"
+          - os: windows-latest
+            swift: "5.6.3"
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup Node
-      uses: actions/setup-node@v4
-      with:
-        node-version-file: '.nvmrc'
-    - run: npm install
-    - run: npm run build && npm run pack-source-map
-    - uses: ./
-      with:
-        swift-version: ${{ matrix.swift }}
-    - name: Swift version
-      run: swift --version | grep ${{ matrix.swift }} || exit 1
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+      - run: npm install
+      - run: npm run build && npm run pack-source-map
+      - uses: ./
+        with:
+          swift-version: ${{ matrix.swift }}
+      - name: Swift version
+        run: swift --version | grep ${{ matrix.swift }} || exit 1

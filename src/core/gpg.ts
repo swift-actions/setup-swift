@@ -5,7 +5,7 @@ import * as toolCache from "@actions/tool-cache";
 export async function setupKeys() {
   core.debug("Fetching verification keys");
   let path = await toolCache.downloadTool(
-    "https://swift.org/keys/all-keys.asc"
+    "https://swift.org/keys/all-keys.asc",
   );
 
   core.debug("Importing verification keys");
@@ -47,7 +47,7 @@ function refreshKeysFromServer(server: string): Promise<boolean> {
     .then((code) => code === 0)
     .catch((error) => {
       core.warning(
-        `An error occurred when trying to refresh keys from ${server}: ${error}`
+        `An error occurred when trying to refresh keys from ${server}: ${error}`,
       );
       return false;
     });

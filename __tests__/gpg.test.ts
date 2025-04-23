@@ -1,5 +1,5 @@
 import * as exec from "@actions/exec";
-import { setupKeys, verify, refreshKeys } from "../src/gpg";
+import { refreshKeys } from "../src/core";
 
 jest.mock("@actions/exec");
 
@@ -58,7 +58,7 @@ describe("gpg", () => {
       await refreshKeys();
     } catch (e) {
       expect(e).toEqual(
-        new Error("Failed to refresh keys from any server in the pool.")
+        new Error("Failed to refresh keys from any server in the pool."),
       );
     }
   });

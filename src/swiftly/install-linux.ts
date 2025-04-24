@@ -2,6 +2,7 @@ import { machine } from "os";
 import { addPath, debug, info } from "@actions/core";
 import { downloadTool, find, extractTar, cacheDir } from "@actions/tool-cache";
 import { verify } from "../core/gpg";
+import { cmd } from "../core";
 
 interface Options {
   /** Skip signature verification */
@@ -12,6 +13,8 @@ interface Options {
  * Setup Swiftly on Linux
  */
 export async function setupLinux(options: Options) {
+  await prerequisites();
+
   let path = find("swiftly", "1.0.0");
 
   if (!path) {
@@ -49,4 +52,9 @@ async function download({ skipVerifySignature = false }: Options = {}) {
   debug(`Cached Swiftly to ${cached}`);
 
   return cached;
+}
+
+async function prerequisites() {
+  await cmd("sudo", "apt-get", "update");
+  await cmd("sudo", "apt-get", "install", "-y", "libcurl4-openssl-dev");
 }

@@ -24,6 +24,10 @@ export async function setupLinux(options: Options) {
   }
 
   addPath(path);
+
+  debug(`Added Swiftly to PATH: ${path}`);
+  debug(`SWIFTLY_HOME_DIR: ${process.env.SWIFTLY_HOME_DIR}`);
+  debug(`SWIFTLY_BIN_DIR: ${process.env.SWIFTLY_BIN_DIR}`);
 }
 
 async function download({ skipVerifySignature = false }: Options = {}) {

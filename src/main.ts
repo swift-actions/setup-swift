@@ -3,6 +3,7 @@ import { getOS } from "./core";
 import { installSwift, setupLinux } from "./swiftly";
 import { currentVersion } from "./swift";
 import { error, getInput, setFailed, setOutput } from "@actions/core";
+import { coerce, eq } from "semver";
 
 /**
  * Main entry point for the action
@@ -25,7 +26,11 @@ async function run() {
     await installSwift(version);
 
     const current = await currentVersion();
-    if (current === version) {
+
+    const requested = coerce(version);
+    const actual = coerce(current);
+
+    if (requested && actual && eq(requested, actual)) {
       setOutput("version", version);
     } else {
       error(

@@ -19,11 +19,5 @@ export async function installSwift(version: string) {
   );
 
   info(`Installing Swift ${version}`);
-  await swiftly(
-    "install",
-    "--use",
-    version,
-    "--quiet-shell-followup",
-    "--assume-yes",
-  );
+  await swiftly("install", "--use", version, "--assume-yes");
 }

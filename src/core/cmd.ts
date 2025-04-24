@@ -1,4 +1,4 @@
-import { debug } from "@actions/core";
+import { debug, error } from "@actions/core";
 import { exec } from "@actions/exec";
 
 /**
@@ -8,29 +8,30 @@ import { exec } from "@actions/exec";
  * @returns Output of the command
  */
 export async function cmd(command: string, ...args: string[]) {
-  let output = "";
-  let error = "";
+  let stdout = "";
+  let stderr = "";
 
   const options = {
     listeners: {
       stdout: (data: Buffer) => {
-        output += data.toString();
+        stdout += data.toString();
       },
       stderr: (data: Buffer) => {
-        error += data.toString();
+        stderr += data.toString();
       },
     },
   };
 
   debug(`Running command: ${command} ${args.join(" ")}`);
 
-  await exec(command, args, options);
+  const code = await exec(command, args, options);
 
-  if (!output && error) {
+  if (code !== 0) {
+    error(`Command failed with code ${code}`);
     throw new Error("Error running command " + error);
   }
 
-  debug(`Command output: ${output}`);
+  debug(`Command output: ${stdout}`);
 
-  return output;
+  return stdout;
 }

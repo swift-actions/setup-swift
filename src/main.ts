@@ -2,7 +2,7 @@ import { EOL } from "os";
 import { equalVersions, getOS } from "./core";
 import { installSwift, setupLinux } from "./swiftly";
 import { currentVersion } from "./swift";
-import { error, getInput, setFailed, setOutput } from "@actions/core";
+import { error, getInput, info, setFailed, setOutput } from "@actions/core";
 import { coerce, eq } from "semver";
 
 /**
@@ -12,6 +12,14 @@ async function run() {
   try {
     const version = getInput("swift-version", { required: true });
     const os = await getOS();
+
+    // First check if the requested version is already installed
+    let current = await currentVersion().catch(() => null);
+    if (equalVersions(version, current)) {
+      info(`Swift ${version} is already installed`);
+      setOutput("version", version);
+      return;
+    }
 
     // Setup Swiftly on the runner
     switch (os) {

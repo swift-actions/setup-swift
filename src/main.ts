@@ -1,5 +1,5 @@
 import { EOL } from "os";
-import { getOS } from "./core";
+import { equalVersions, getOS } from "./core";
 import { installSwift, setupLinux } from "./swiftly";
 import { currentVersion } from "./swift";
 import { error, getInput, setFailed, setOutput } from "@actions/core";
@@ -13,6 +13,7 @@ async function run() {
     const version = getInput("swift-version", { required: true });
     const os = await getOS();
 
+    // Setup Swiftly on the runner
     switch (os) {
       case "darwin":
         throw Error("Not implemented yet on macOS");
@@ -23,18 +24,16 @@ async function run() {
         throw Error("Not implemented yet on Windows");
     }
 
+    // Install the requested version
     await installSwift(version);
 
-    const current = await currentVersion();
-
-    const requested = coerce(version);
-    const actual = coerce(current);
-
-    if (requested && actual && eq(requested, actual)) {
+    // Verify the requested version is now installed
+    current = await currentVersion();
+    if (equalVersions(version, current)) {
       setOutput("version", version);
     } else {
       error(
-        `Failed to setup requested swift version. requestd: ${version}, actual: ${current}`,
+        `Failed to setup requested Swift version. requested: ${version}, actual: ${current}`,
       );
     }
   } catch (error) {

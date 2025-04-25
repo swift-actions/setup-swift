@@ -20,6 +20,9 @@ export async function installSwift(version: string) {
 
   info(`Installing Swift ${version}`);
   await swiftly("install", version, "--assume-yes");
+
+  info(`Using Swift ${version}`);
   const location = swiftly("use", version, "--print-location");
+
   debug(`Swiftly installed Swift to ${location}`);
 }

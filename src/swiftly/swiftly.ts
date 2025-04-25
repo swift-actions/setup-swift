@@ -18,9 +18,8 @@ export async function installSwift(version: string) {
     "--assume-yes",
   );
 
-  debug(`SWIFTLY_HOME_DIR: ${process.env.SWIFTLY_HOME_DIR}`);
-  debug(`SWIFTLY_BIN_DIR: ${process.env.SWIFTLY_BIN_DIR}`);
-
   info(`Installing Swift ${version}`);
-  await swiftly("install", "--use", version, "--assume-yes");
+  await swiftly("install", version, "--assume-yes");
+  const location = swiftly("use", version, "--print-location");
+  debug(`Swiftly installed Swift to ${location}`);
 }

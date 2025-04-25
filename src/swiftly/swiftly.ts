@@ -1,4 +1,4 @@
-import { info } from "@actions/core";
+import { debug, info } from "@actions/core";
 import { cmd } from "../core";
 
 async function swiftly(...args: string[]) {
@@ -17,6 +17,9 @@ export async function installSwift(version: string) {
     "--quiet-shell-followup",
     "--assume-yes",
   );
+
+  debug(`SWIFTLY_HOME_DIR: ${process.env.SWIFTLY_HOME_DIR}`);
+  debug(`SWIFTLY_BIN_DIR: ${process.env.SWIFTLY_BIN_DIR}`);
 
   info(`Installing Swift ${version}`);
   await swiftly("install", "--use", version, "--assume-yes");

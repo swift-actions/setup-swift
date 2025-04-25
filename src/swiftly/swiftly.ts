@@ -36,6 +36,7 @@ export async function installSwift(version: string) {
     "--skip-install",
     "--quiet-shell-followup",
     "--assume-yes",
+    "-–no-modify-profile",
   );
 
   info(`Installing Swift ${version}`);

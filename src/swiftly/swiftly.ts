@@ -1,4 +1,4 @@
-import { debug, info } from "@actions/core";
+import { addPath, debug, info } from "@actions/core";
 import { cmd } from "../core";
 
 async function swiftly(...args: string[]) {
@@ -21,6 +21,8 @@ export async function installSwift(version: string) {
   info(`Installing Swift ${version}`);
   await swiftly("install", "--use", version, "--assume-yes");
 
-  const location = swiftly("use", "--print-location");
+  const location = await swiftly("use", "--print-location");
   debug(`Swiftly installed Swift to ${location}`);
+
+  addPath(location);
 }

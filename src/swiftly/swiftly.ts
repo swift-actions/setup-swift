@@ -1,21 +1,21 @@
 import { addPath, debug, exportVariable, info } from "@actions/core";
 import { cmd } from "../core";
 import { mkdtempSync } from "fs";
-import path from "path";
-
+import { join } from "path";
+import { tmpdir } from "os";
 
 async function swiftly(...args: string[]) {
   return await cmd("swiftly", ...args);
 }
 
 function setupPaths() {
-  const tmpPath = mkdtempSync(`swiftly`);
+  const tmpPath = mkdtempSync(join(tmpdir(), "swiftly-"));
 
-  const homeDir = process.env.SWIFTLY_HOME_DIR || path.join(tmpPath, "home") ;
-  const binDir = process.env.SWIFTLY_BIN_DIR || path.join(tmpPath, "bin");
+  const homeDir = process.env.SWIFTLY_HOME_DIR || join(tmpPath, "home");
+  const binDir = process.env.SWIFTLY_BIN_DIR || join(tmpPath, "bin");
 
-  exportVariable('SWIFTLY_HOME_DIR', homeDir);
-  exportVariable('SWIFTLY_BIN_DIR', binDir);
+  exportVariable("SWIFTLY_HOME_DIR", homeDir);
+  exportVariable("SWIFTLY_BIN_DIR", binDir);
 
   addPath(binDir);
 

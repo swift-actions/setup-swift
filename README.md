@@ -61,6 +61,39 @@ steps:
   run: swift --version
 ```
 
+To request development snapshots, use one of these options:
+
+**Main development snapshot (trunk)**
+
+```yaml
+swift-version: "main-snapshot-2024-08-01"
+```
+
+Or you can omit date to lookup for latest available snapshot 
+
+```yaml
+swift-version: "main-snapshot"
+```
+
+**Specific version development snapshot**
+
+```yaml
+swift-version: "5.7-snapshot-2022-08-30"
+```
+
+If date is ommited, it will lookup for the latest snapshot
+
+```yaml
+swift-version: "5.7-snapshot"
+```
+
+Note that you may run into GitHub API limits, which can be avoided if you pass API token via environment variable
+
+```yaml
+env:
+    GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
 ## Note about versions
 
 This project uses strict semantic versioning to determine what version of Swift to configure. This differs slightly from the official convention used by Swift.

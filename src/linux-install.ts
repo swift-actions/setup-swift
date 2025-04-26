@@ -1,31 +1,28 @@
 import * as os from "os";
 import * as path from "path";
-import { exec } from "@actions/exec";
 import * as core from "@actions/core";
 import * as toolCache from "@actions/tool-cache";
 import { System } from "./os";
-import { swiftPackage, Package } from "./swift-versions";
+import { Package } from "./swift-package";
 import { setupKeys, verify } from "./gpg";
 
-export async function install(version: string, system: System) {
+export async function install(swiftPkg: Package, system: System) {
   if (os.platform() !== "linux") {
     core.error("Trying to run linux installer on non-linux os");
     return;
   }
-
+  const version = swiftPkg.version;
   let swiftPath = toolCache.find(`swift-${system.name}`, version);
 
   if (swiftPath === null || swiftPath.trim().length == 0) {
     core.debug(`No matching installation found`);
 
     await setupKeys();
-
-    const swiftPkg = swiftPackage(version, system);
     let { pkg, signature } = await download(swiftPkg);
 
     await verify(signature, pkg);
 
-    swiftPath = await unpack(pkg, swiftPkg.name, version, system);
+    swiftPath = await unpack(swiftPkg, pkg, version, system);
   } else {
     core.debug("Matching installation found");
   }
@@ -51,16 +48,16 @@ async function download({ url, name }: Package) {
 }
 
 async function unpack(
+  { name }: Package,
   packagePath: string,
-  packageName: string,
   version: string,
   system: System
 ) {
   core.debug("Extracting package");
-  let extractPath = await toolCache.extractTar(packagePath);
+  const extractedPath = await toolCache.extractTar(packagePath);
   core.debug("Package extracted");
-  let cachedPath = await toolCache.cacheDir(
-    path.join(extractPath, packageName),
+  const cachedPath = await toolCache.cacheDir(
+    path.join(extractedPath, name),
     `swift-${system.name}`,
     version
   );

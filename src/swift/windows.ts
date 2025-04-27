@@ -30,5 +30,5 @@ async function download(version: string) {
     join(tmpPath, "swift-installer.exe"),
   );
 
-  await cmd(installerPath);
+  await cmd(installerPath, "/passive");
 }

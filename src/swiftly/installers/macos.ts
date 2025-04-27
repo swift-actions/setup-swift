@@ -1,6 +1,7 @@
-import { downloadTool, find } from "@actions/tool-cache";
-import { cmd } from "../../core";
+import { downloadTool, extractTar, find } from "@actions/tool-cache";
+import { cmd, tempDir } from "../../core";
 import { addPath, debug } from "@actions/core";
+import { join } from "path";
 
 export async function setupMacOS() {
   let path = find("swiftly", "1.0.0");
@@ -17,8 +18,10 @@ export async function setupMacOS() {
 }
 
 async function download() {
+  const tmpPath = tempDir();
   const pkg = await downloadTool(
     "https://download.swift.org/swiftly/darwin/swiftly.pkg",
+    join(tmpPath, "swiftly.pkg"),
   );
   await cmd("installer", "-pkg", pkg, "-target", "CurrentUserHomeDirectory");
   return "~/.swiftly/bin/swiftly";

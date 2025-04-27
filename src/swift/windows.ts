@@ -1,7 +1,8 @@
 import { addPath, debug } from "@actions/core";
 import { downloadTool, find } from "@actions/tool-cache";
-import { cmd } from "../core";
+import { cmd, tempDir } from "../core";
 import { machine } from "os";
+import { join } from "path";
 
 /**
  * Setup Swift on Windows as theres no support for Swiftly yet.
@@ -22,7 +23,12 @@ async function download(version: string) {
 
   debug(`Downloading Swift installer from ${url}`);
 
-  const installerPath = await downloadTool(url);
+  const tmpPath = tempDir();
+
+  const installerPath = await downloadTool(
+    url,
+    join(tmpPath, "swift-installer.exe"),
+  );
 
   await cmd(installerPath);
 }

@@ -1,7 +1,7 @@
 import { EOL } from "os";
 import { equalVersions, getOS } from "./core";
-import { installSwift, setupLinux, setupMacOS, setupWindows } from "./swiftly";
-import { currentVersion } from "./swift";
+import { installSwift, setupLinux, setupMacOS } from "./swiftly";
+import { currentVersion, setupWindows } from "./swift";
 import { error, getInput, info, setFailed, setOutput } from "@actions/core";
 
 /**
@@ -24,17 +24,16 @@ async function run() {
     switch (os) {
       case "darwin":
         await setupMacOS();
+        await installSwift(version);
         break;
       case "linux":
         await setupLinux({ skipVerifySignature: true });
+        await installSwift(version);
         break;
       case "win32":
-        await setupWindows();
+        await setupWindows(version);
         break;
     }
-
-    // Install the requested version
-    await installSwift(version);
 
     // Verify the requested version is now installed
     current = await currentVersion();

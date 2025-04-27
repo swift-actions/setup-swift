@@ -1,2 +1,2 @@
 export * from "./swiftly";
-export * from "./install-linux";
+export * from "./installers";

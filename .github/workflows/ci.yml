@@ -26,7 +26,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest, windows-latest]
+        os:
+          [
+            ubuntu-latest,
+            ubuntu-24.04-arm,
+            macos-latest,
+            windows-latest,
+            windows-11-arm,
+          ]
         swift: ["6.1"]
     steps:
       - uses: actions/checkout@v4

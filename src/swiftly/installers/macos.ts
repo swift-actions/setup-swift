@@ -23,6 +23,10 @@ async function download() {
     "https://download.swift.org/swiftly/darwin/swiftly.pkg",
     join(tmpPath, "swiftly.pkg"),
   );
-  await cmd("installer", "-pkg", pkg, "-target", "CurrentUserHomeDirectory");
-  return "~/.swiftly/bin/swiftly";
+
+  const target = join(tmpPath, "bin");
+
+  await cmd("installer", "-pkg", pkg, "-target", target);
+
+  return target;
 }

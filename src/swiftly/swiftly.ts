@@ -50,7 +50,7 @@ export async function installSwift(version: string) {
     "--use",
     version,
     "--assume-yes",
-    "--post-install-script",
+    "--post-install-file",
     postInstallScriptPath,
   );
 

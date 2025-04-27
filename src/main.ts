@@ -1,6 +1,6 @@
 import { EOL } from "os";
 import { equalVersions, getOS } from "./core";
-import { installSwift, setupLinux, setupMacOS } from "./swiftly";
+import { installSwift, setupLinux, setupMacOS, setupWindows } from "./swiftly";
 import { currentVersion } from "./swift";
 import { error, getInput, info, setFailed, setOutput } from "@actions/core";
 
@@ -29,7 +29,8 @@ async function run() {
         await setupLinux({ skipVerifySignature: true });
         break;
       case "win32":
-        throw Error("Not implemented yet on Windows");
+        await setupWindows();
+        break;
     }
 
     // Install the requested version

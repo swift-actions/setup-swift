@@ -4,6 +4,9 @@ import { addPath, debug } from "@actions/core";
 import { join, resolve } from "path";
 import { homedir } from "os";
 
+/**
+ * Setup Swiftly on macOS
+ */
 export async function setupMacOS() {
   let path = find("swiftly", "1.0.0");
 

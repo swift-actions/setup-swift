@@ -1,7 +1,8 @@
 import { downloadTool, extractTar, find } from "@actions/tool-cache";
 import { cmd, tempDir } from "../../core";
 import { addPath, debug } from "@actions/core";
-import { join } from "path";
+import { join, resolve } from "path";
+import { homedir } from "os";
 
 export async function setupMacOS() {
   let path = find("swiftly", "1.0.0");
@@ -24,9 +25,6 @@ async function download() {
     join(tmpPath, "swiftly.pkg"),
   );
 
-  const target = join(tmpPath, "bin");
-
-  await cmd("installer", "-pkg", pkg, "-target", target);
-
-  return target;
+  await cmd("installer", "-pkg", pkg, "-target", "CurrentUserHomeDirectory");
+  return join(homedir(), ".swiftly", "bin");
 }

@@ -1,6 +1,6 @@
 import { addPath, debug, exportVariable, info } from "@actions/core";
 import { cmd } from "../core";
-import { mkdtempSync } from "fs";
+import { existsSync, mkdtempSync } from "fs";
 import { join } from "path";
 import { tmpdir } from "os";
 
@@ -21,6 +21,8 @@ function setupPaths() {
 
   debug(`Using Swiftly home dir: ${homeDir}`);
   debug(`Using Swiftly bin dir: ${binDir}`);
+
+  return tmpPath;
 }
 
 /**
@@ -28,7 +30,7 @@ function setupPaths() {
  * @param version Version to install
  */
 export async function installSwift(version: string) {
-  setupPaths();
+  const tmpPath = setupPaths();
 
   info("Initializing Swiftly");
   await swiftly(
@@ -39,8 +41,24 @@ export async function installSwift(version: string) {
     "--no-modify-profile",
   );
 
+  // Sometimes Swiftly needs to perform additional actions after installation
+  const postInstallScriptPath = join(tmpPath, "post-install.sh");
+
   info(`Installing Swift ${version}`);
-  await swiftly("install", "--use", version, "--assume-yes");
+  await swiftly(
+    "install",
+    "--use",
+    version,
+    "--assume-yes",
+    "--post-install-script",
+    postInstallScriptPath,
+  );
+
+  // Run the post-install script if it exists
+  if (existsSync(postInstallScriptPath)) {
+    info("Running post-install script");
+    await cmd("bash", postInstallScriptPath);
+  }
 
   const location = await swiftly("use", "--print-location");
   debug(`Swiftly installed Swift to ${location}`);

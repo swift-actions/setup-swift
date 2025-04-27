@@ -1,9 +1,8 @@
 import { EOL } from "os";
 import { equalVersions, getOS } from "./core";
-import { installSwift, setupLinux } from "./swiftly";
+import { installSwift, setupLinux, setupMacOS } from "./swiftly";
 import { currentVersion } from "./swift";
 import { error, getInput, info, setFailed, setOutput } from "@actions/core";
-import { coerce, eq } from "semver";
 
 /**
  * Main entry point for the action
@@ -24,7 +23,8 @@ async function run() {
     // Setup Swiftly on the runner
     switch (os) {
       case "darwin":
-        throw Error("Not implemented yet on macOS");
+        await setupMacOS();
+        break;
       case "linux":
         await setupLinux({ skipVerifySignature: true });
         break;

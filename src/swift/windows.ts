@@ -9,7 +9,9 @@ import { join, resolve } from "path";
  */
 export async function setupWindows(version: string) {
   const path = await download(version);
-  addPath(path);
+  addPath(
+    "C:\\Library\\Developer\\Toolchains\\unknown-Asserts-development.xctoolchain\\usr\\bin",
+  );
 }
 
 async function download(version: string) {
@@ -36,7 +38,7 @@ async function download(version: string) {
   await cmd(
     installerPath,
     "/passive",
-    `InstallRoot=${binPath}`,
+    //`InstallRoot=${binPath}`,
     "OptionsInstallIDE=0",
   );
 

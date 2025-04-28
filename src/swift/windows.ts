@@ -8,8 +8,8 @@ import { join, resolve } from "path";
  * Setup Swift on Windows as theres no support for Swiftly yet.
  */
 export async function setupWindows(version: string) {
-  await download(version);
-  addPath(resolve("%LocalAppData%", "Programs", "Swift"));
+  const path = await download(version);
+  addPath(path);
 }
 
 async function download(version: string) {
@@ -31,5 +31,14 @@ async function download(version: string) {
     join(tmpPath, "swift-installer.exe"),
   );
 
-  await cmd(installerPath, "/passive");
+  const binPath = join(tmpPath, "Swift");
+
+  await cmd(
+    installerPath,
+    "/passive",
+    `InstallRoot=${binPath}`,
+    "OptionsInstallIDE=0",
+  );
+
+  return binPath;
 }

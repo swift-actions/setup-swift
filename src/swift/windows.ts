@@ -3,6 +3,7 @@ import { downloadTool } from "@actions/tool-cache";
 import { cmd, tempDir } from "../core";
 import { machine } from "os";
 import { join, resolve } from "path";
+import { coerce } from "semver";
 
 /**
  * Setup Swift on Windows as theres no support for Swiftly yet.
@@ -40,12 +41,12 @@ async function download(version: string) {
     "OptionsInstallIDE=0",
   );
 
-  await cmd("dir", join(targetPath, "Toolchains"));
+  await cmd("dir", join(targetPath, "Toolchains", "6.1.0+Asserts"));
 
   return join(
     targetPath,
     "Toolchains",
-    "unknown-Asserts-development.xctoolchain",
+    `${coerce(version)}+Asserts`,
     "usr",
     "bin",
   );

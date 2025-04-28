@@ -2,7 +2,7 @@ import { addPath, debug } from "@actions/core";
 import { downloadTool } from "@actions/tool-cache";
 import { cmd, tempDir } from "../core";
 import { machine } from "os";
-import { join, resolve } from "path";
+import { join } from "path";
 import { coerce } from "semver";
 
 /**
@@ -34,12 +34,7 @@ async function download(version: string) {
 
   const targetPath = join(tmpPath, "Swift");
 
-  await cmd(
-    installerPath,
-    "/passive",
-    `InstallRoot=${targetPath}`,
-    "OptionsInstallIDE=0",
-  );
+  await cmd(installerPath, "/passive", `InstallRoot=${targetPath}`);
 
   await cmd("dir", join(targetPath, "Toolchains", "6.1.0+Asserts"));
 

@@ -40,7 +40,7 @@ async function download(version: string) {
     "OptionsInstallIDE=0",
   );
 
-  await cmd("dir", targetPath, "Toolchains");
+  await cmd("dir", join(targetPath, "Toolchains"));
 
   return join(
     targetPath,

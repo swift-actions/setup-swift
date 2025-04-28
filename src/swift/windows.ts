@@ -1,14 +1,15 @@
 import { addPath, debug } from "@actions/core";
-import { downloadTool, find } from "@actions/tool-cache";
+import { downloadTool } from "@actions/tool-cache";
 import { cmd, tempDir } from "../core";
 import { machine } from "os";
-import { join } from "path";
+import { join, resolve } from "path";
 
 /**
  * Setup Swift on Windows as theres no support for Swiftly yet.
  */
 export async function setupWindows(version: string) {
   await download(version);
+  addPath(resolve("%LocalAppData%", "Programs", "Swift"));
 }
 
 async function download(version: string) {

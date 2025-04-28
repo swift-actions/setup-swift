@@ -42,7 +42,7 @@ async function download(version: string) {
     "OptionsInstallIDE=0",
   );
 
-  await cmd("dir", binPath);
+  // await cmd("dir", binPath, "Toolchains");
 
   return binPath;
 }

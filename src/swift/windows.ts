@@ -9,9 +9,7 @@ import { join, resolve } from "path";
  */
 export async function setupWindows(version: string) {
   const path = await download(version);
-  addPath(
-    "C:\\Library\\Developer\\Toolchains\\unknown-Asserts-development.xctoolchain\\usr\\bin",
-  );
+  addPath(path);
 }
 
 async function download(version: string) {
@@ -33,16 +31,22 @@ async function download(version: string) {
     join(tmpPath, "swift-installer.exe"),
   );
 
-  const binPath = join(tmpPath, "Swift");
+  const targetPath = join(tmpPath, "Swift");
 
   await cmd(
     installerPath,
     "/passive",
-    //`InstallRoot=${binPath}`,
+    `InstallRoot=${targetPath}`,
     "OptionsInstallIDE=0",
   );
 
-  // await cmd("dir", binPath, "Toolchains");
+  await cmd("dir", targetPath, "Toolchains");
 
-  return binPath;
+  return join(
+    targetPath,
+    "Toolchains",
+    "unknown-Asserts-development.xctoolchain",
+    "usr",
+    "bin",
+  );
 }

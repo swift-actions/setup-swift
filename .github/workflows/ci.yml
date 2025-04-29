@@ -26,7 +26,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest]
+        os:
+          [
+            ubuntu-latest,
+            ubuntu-24.04-arm,
+            macos-latest,
+            windows-latest,
+            windows-11-arm,
+          ]
         swift: ["6.1"]
     steps:
       - uses: actions/checkout@v4
@@ -36,6 +43,9 @@ jobs:
           node-version-file: ".nvmrc"
       - run: npm install
       - run: npm run build && npm run pack-source-map
+      - name: Add msbuild to PATH
+        if: ${{ matrix.os == 'windows-latest' || matrix.os == 'windows-11-arm' }}
+        uses: microsoft/setup-msbuild@v2
       - uses: ./
         with:
           swift-version: ${{ matrix.swift }}

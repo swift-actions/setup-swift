@@ -34,7 +34,13 @@ async function download(version: string) {
 
   const targetPath = join(tmpPath, "Swift");
 
-  await cmd(installerPath, "/passive", "/quiet", "/norestart", `InstallRoot=${targetPath}`);
+  await cmd(
+    installerPath,
+    "/passive",
+    "/quiet",
+    "/norestart",
+    `InstallRoot=${targetPath}`,
+  );
 
   return join(
     targetPath,

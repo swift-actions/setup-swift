@@ -1,8 +1,9 @@
 import { EOL } from "os";
 import { equalVersions, getOS } from "./core";
 import { installSwift, setupLinux, setupMacOS } from "./swiftly";
-import { currentVersion, setupWindows } from "./swift";
+import { currentVersion } from "./swift";
 import { error, getInput, info, setFailed, setOutput } from "@actions/core";
+import { setupWindows } from "./windows";
 
 /**
  * Main entry point for the action

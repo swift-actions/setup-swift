@@ -1,36 +1,48 @@
 import { EOL } from "os";
-import * as core from "@actions/core";
-import * as system from "./os";
-import * as versions from "./swift-versions";
-import * as macos from "./macos-install";
-import * as linux from "./linux-install";
-import * as windows from "./windows-install";
-import { getVersion } from "./get-version";
+import { equalVersions, getOS } from "./core";
+import { installSwift, setupLinux, setupMacOS } from "./swiftly";
+import { currentVersion } from "./swift";
+import { error, getInput, info, setFailed, setOutput } from "@actions/core";
+import { setupWindows } from "./windows";
 
+/**
+ * Main entry point for the action
+ */
 async function run() {
   try {
-    const requestedVersion = core.getInput("swift-version", { required: true });
+    const version = getInput("swift-version", { required: true });
+    const os = await getOS();
 
-    let platform = await system.getSystem();
-    let version = versions.verify(requestedVersion, platform);
-
-    switch (platform.os) {
-      case system.OS.MacOS:
-        await macos.install(version, platform);
-        break;
-      case system.OS.Ubuntu:
-        await linux.install(version, platform);
-        break;
-      case system.OS.Windows:
-        await windows.install(version, platform);
+    // First check if the requested version is already installed
+    let current = await currentVersion().catch(() => null);
+    if (equalVersions(version, current)) {
+      info(`Swift ${version} is already installed`);
+      setOutput("version", version);
+      return;
     }
 
-    const current = await getVersion();
-    if (current === version) {
-      core.setOutput("version", version);
+    // Setup Swiftly on the runner
+    switch (os) {
+      case "darwin":
+        await setupMacOS();
+        await installSwift(version);
+        break;
+      case "linux":
+        await setupLinux({ skipVerifySignature: true });
+        await installSwift(version);
+        break;
+      case "win32":
+        await setupWindows(version);
+        break;
+    }
+
+    // Verify the requested version is now installed
+    current = await currentVersion();
+    if (equalVersions(version, current)) {
+      setOutput("version", version);
     } else {
-      core.error(
-        `Failed to setup requested swift version. requestd: ${version}, actual: ${current}`
+      error(
+        `Failed to setup requested Swift version. requested: ${version}, actual: ${current}`,
       );
     }
   } catch (error) {
@@ -41,8 +53,8 @@ async function run() {
       dump = `${error}`;
     }
 
-    core.setFailed(
-      `Unexpected error, unable to continue. Please report at https://github.com/swift-actions/setup-swift/issues${EOL}${dump}`
+    setFailed(
+      `Unexpected error, unable to continue. Please report at https://github.com/swift-actions/setup-swift/issues${EOL}${dump}`,
     );
   }
 }

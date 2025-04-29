@@ -2,7 +2,7 @@ name: Stability
 
 on:
   schedule:
-    - cron:  '0 */12 * * *'
+    - cron: "0 */12 * * *"
 
 jobs:
   v1:
@@ -13,12 +13,12 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         swift: ["5.10"]
     steps:
-    - uses: swift-actions/setup-swift@v2
-      with:
-        swift-version: ${{ matrix.swift }}
-    - name: Swift version
-      if: always()
-      run: swift --version | grep ${{ matrix.swift }} || exit 1
+      - uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: ${{ matrix.swift }}
+      - name: Swift version
+        if: always()
+        run: swift --version | grep ${{ matrix.swift }} || exit 1
   main:
     name: "main: Swift ${{ matrix.swift }} on ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
@@ -27,9 +27,9 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         swift: ["5.10"]
     steps:
-    - uses: swift-actions/setup-swift@main
-      with:
-        swift-version: ${{ matrix.swift }}
-    - name: Swift version
-      if: always()
-      run: swift --version | grep ${{ matrix.swift }} || exit 1
+      - uses: swift-actions/setup-swift@main
+        with:
+          swift-version: ${{ matrix.swift }}
+      - name: Swift version
+        if: always()
+        run: swift --version | grep ${{ matrix.swift }} || exit 1

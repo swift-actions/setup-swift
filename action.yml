@@ -1,11 +1,11 @@
 name: Setup Swift
-description: Setup a Swift environment on Ubuntu or macOS 
+description: Setup a Swift environment on Ubuntu or macOS
 author: Frederik Wallner
 inputs:
-  swift-version: 
+  swift-version:
     description: Swift version to configure
     required: true
-    default: '6.1.0'
+    default: "6.1.0"
 outputs:
   version:
     description: The full Swift version that was configured
@@ -13,5 +13,5 @@ runs:
   using: node20
   main: dist/index.js
 branding:
-  icon: 'command'  
-  color: 'orange'
+  icon: "command"
+  color: "orange"

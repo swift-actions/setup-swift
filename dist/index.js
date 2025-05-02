@@ -78,7 +78,7 @@ const core = __importStar(__nccwpck_require__(2186));
 const toolCache = __importStar(__nccwpck_require__(7784));
 async function setupKeys() {
     core.debug("Fetching verification keys");
-    let path = await toolCache.downloadTool("https://swift.org/keys/all-keys.asc");
+    let path = await toolCache.downloadTool("https://www.swift.org/keys/all-keys.asc");
     core.debug("Importing verification keys");
     await (0, exec_1.exec)(`gpg --import "${path}"`);
     core.debug("Refreshing keys");

@@ -141,7 +141,7 @@ export function verify(version: string, system: System) {
   if (matchingVersion === null) {
     if (softFailVersionCheck) {
       core.warning(
-        `Swift version "${version}" not in the hard-coded list; proceeding anyway.`
+        `Swift version "${version}" not in the list of tested versions; proceeding anyway because soft-fail-version-check is enabled.`
       );
       return version;
     }

@@ -459,6 +459,7 @@ exports.verify = exports.swiftPackage = void 0;
 const semver = __importStar(__nccwpck_require__(1383));
 const core = __importStar(__nccwpck_require__(2186));
 const os_1 = __nccwpck_require__(1855);
+const softFailVersionCheck = core.getInput("soft-fail-version-check").toLowerCase() === "true";
 const VERSIONS_LIST = [
     ["6.1.0", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
     ["6.0.3", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
@@ -575,6 +576,10 @@ function verify(version, system) {
     let systemVersions = AVAILABLE_VERSIONS.filter(([_, os]) => os.includes(system.os)).map(([version, _]) => version);
     let matchingVersion = evaluateVersions(systemVersions, version);
     if (matchingVersion === null) {
+        if (softFailVersionCheck) {
+            core.warning(`Swift version "${version}" not in the hard-coded list; proceeding anyway.`);
+            return version;
+        }
         throw new Error(`Version "${version}" is not available`);
     }
     core.debug(`Found matching version ${matchingVersion}`);

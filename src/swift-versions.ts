@@ -2,7 +2,8 @@ import * as semver from "semver";
 import * as core from "@actions/core";
 import { System, OS } from "./os";
 
-const softFailVersionCheck = core.getInput("soft-fail-version-check").toLowerCase() === "true";
+const softFailVersionCheck =
+  core.getInput("soft-fail-version-check").toLowerCase() === "true";
 
 const VERSIONS_LIST: [string, OS[]][] = [
   ["6.1.0", [OS.MacOS, OS.Ubuntu]],
@@ -76,10 +77,10 @@ const VERSIONS_LIST: [string, OS[]][] = [
 ];
 
 const AVAILABLE_VERSIONS: [semver.SemVer, OS[]][] = VERSIONS_LIST.map(
-    ([version, os]) => {
-      const semverVersion = semver.coerce(version);
-      return <[semver.SemVer, OS[]]>[semverVersion, os];
-    }
+  ([version, os]) => {
+    const semverVersion = semver.coerce(version);
+    return <[semver.SemVer, OS[]]>[semverVersion, os];
+  }
 );
 
 function notEmpty<T>(value: T | null | undefined): value is T {
@@ -133,14 +134,14 @@ export function verify(version: string, system: System) {
   core.debug(`Resolved range ${range}`);
 
   let systemVersions = AVAILABLE_VERSIONS.filter(([_, os]) =>
-      os.includes(system.os)
+    os.includes(system.os)
   ).map(([version, _]) => version);
 
   let matchingVersion = evaluateVersions(systemVersions, version);
   if (matchingVersion === null) {
     if (softFailVersionCheck) {
       core.warning(
-          `Swift version "${version}" not in the hard-coded list; proceeding anyway.`
+        `Swift version "${version}" not in the hard-coded list; proceeding anyway.`
       );
       return version;
     }
@@ -177,6 +178,6 @@ function evaluateVersions(versions: semver.SemVer[], versionSpec: string) {
   }
 
   return `${version.major}.${version.minor}${
-      version.patch > 0 ? `.${version.patch}` : ""
+    version.patch > 0 ? `.${version.patch}` : ""
   }`;
 }

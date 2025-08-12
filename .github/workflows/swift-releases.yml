@@ -9,7 +9,7 @@ jobs:
     name: Swift release
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - run: ./.github/workflows/check_swift_releases.sh

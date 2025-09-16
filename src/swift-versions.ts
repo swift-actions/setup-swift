@@ -2,6 +2,9 @@ import * as semver from "semver";
 import * as core from "@actions/core";
 import { System, OS } from "./os";
 
+const softFailVersionCheck =
+  core.getInput("soft-fail-version-check").toLowerCase() === "true";
+
 const VERSIONS_LIST: [string, OS[]][] = [
   ["6.2", [OS.MacOS, OS.Ubuntu]],
   ["6.1.2", [OS.MacOS, OS.Ubuntu]],
@@ -139,6 +142,12 @@ export function verify(version: string, system: System) {
 
   let matchingVersion = evaluateVersions(systemVersions, version);
   if (matchingVersion === null) {
+    if (softFailVersionCheck) {
+      core.warning(
+        `Swift version "${version}" not in the list of tested versions; proceeding anyway because soft-fail-version-check is enabled.`
+      );
+      return version;
+    }
     throw new Error(`Version "${version}" is not available`);
   }
 

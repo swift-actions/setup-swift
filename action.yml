@@ -6,6 +6,10 @@ inputs:
     description: Swift version to configure
     required: true
     default: '6.1.0'
+  soft-fail-version-check:
+    description: 'If true, unknown Swift versions will only warn instead of error'
+    required: false
+    default: 'false'
 outputs:
   version:
     description: The full Swift version that was configured

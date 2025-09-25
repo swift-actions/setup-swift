@@ -19,6 +19,9 @@
 > [!IMPORTANT]
 > 3.0 is coming, powered by Swiftly 🚀 - follow progress on https://github.com/swift-actions/setup-swift/pull/710
 
+> [!IMPORTANT]
+> Experimental support for Swift 6.2. To install Swift 6.2, use the option to install a specific version. The default version is still 6.1.
+
 ## Usage
 
 To run the action with the latest swift version available, simply add the action as a step in your workflow:
@@ -39,9 +42,9 @@ A specific Swift version can be set using the `swift-version` input:
 ```yaml
 - uses: swift-actions/setup-swift@v2
   with:
-    swift-version: "5.1.0"
+    swift-version: "6.2.0"
 - name: Get swift version
-  run: swift --version # Swift 5.1.0
+  run: swift --version # Swift 6.2.0
 ```
 
 Works perfect together with matrixes: 

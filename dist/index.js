@@ -460,7 +460,11 @@ const semver = __importStar(__nccwpck_require__(1383));
 const core = __importStar(__nccwpck_require__(2186));
 const os_1 = __nccwpck_require__(1855);
 const VERSIONS_LIST = [
-    ["6.1.0", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+	["6.2.0", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+	["6.1.3", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+	["6.1.2", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["6.1.1", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+	["6.1.0", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
     ["6.0.3", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
     ["6.0.2", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
     ["6.0.1", [os_1.OS.MacOS, os_1.OS.Ubuntu]],

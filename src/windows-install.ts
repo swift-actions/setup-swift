@@ -21,7 +21,7 @@ export async function install(version: string, system: System) {
   if (swiftPath === null || swiftPath.trim().length == 0) {
     core.debug(`No cached installer found`);
 
-    await setupKeys();
+    await setupKeys(system);
 
     let { exe, signature } = await download(swiftPkg);
     await verify(signature, exe);

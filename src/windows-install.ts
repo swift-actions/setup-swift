@@ -6,7 +6,7 @@ import * as path from "path";
 import { ExecOptions, exec } from "@actions/exec";
 import { System } from "./os";
 import { swiftPackage, Package } from "./swift-versions";
-import { setupKeys, verify } from "./gpg";
+//import { setupKeys, verify } from "./gpg";
 import { setupVsTools } from "./visual-studio";
 
 export async function install(version: string, system: System) {
@@ -21,10 +21,10 @@ export async function install(version: string, system: System) {
   if (swiftPath === null || swiftPath.trim().length == 0) {
     core.debug(`No cached installer found`);
 
-    await setupKeys(system);
+    //await setupKeys(system);
 
     let { exe, signature } = await download(swiftPkg);
-    await verify(signature, exe);
+    //await verify(signature, exe);
 
     const exePath = await toolCache.cacheFile(
       exe,

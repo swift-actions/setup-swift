@@ -18,7 +18,7 @@ export async function install(version: string, system: System) {
   if (swiftPath === null || swiftPath.trim().length == 0) {
     core.debug(`No matching installation found`);
 
-    await setupKeys();
+    await setupKeys(system);
 
     const swiftPkg = swiftPackage(version, system);
     let { pkg, signature } = await download(swiftPkg);

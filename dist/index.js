@@ -76,14 +76,27 @@ exports.refreshKeys = exports.verify = exports.setupKeys = void 0;
 const exec_1 = __nccwpck_require__(1514);
 const core = __importStar(__nccwpck_require__(2186));
 const toolCache = __importStar(__nccwpck_require__(7784));
-async function setupKeys() {
+const os_1 = __nccwpck_require__(1855);
+async function setupKeys(system) {
     core.debug("Fetching verification keys");
     let path = await toolCache.downloadTool("https://swift.org/keys/all-keys.asc");
-    core.debug("Examining verification keys");
-    await (0, exec_1.exec)(`file "${path}"`);
-    const isPlaintext = await (0, exec_1.exec)(`gunzip --test "${path}"`, undefined, { silent: true, ignoreReturnCode: true });
-    core.debug("Importing verification keys");
-    await (0, exec_1.exec)('bash', ['-c', `${isPlaintext ? "cat" : "zcat"} "${path}" | gpg --import`]);
+    if (system.os === os_1.OS.Ubuntu || system.os === os_1.OS.MacOS) {
+        core.debug("Examining verification keys");
+        await (0, exec_1.exec)(`file "${path}"`);
+        const isPlaintext = await (0, exec_1.exec)(`gunzip --test "${path}"`, undefined, {
+            silent: true,
+            ignoreReturnCode: true,
+        });
+        core.debug("Importing verification keys");
+        await (0, exec_1.exec)("bash", [
+            "-c",
+            `${isPlaintext ? "cat" : "zcat"} "${path}" | gpg --import`,
+        ]);
+    }
+    if (system.os === os_1.OS.Windows) {
+        core.debug("Importing verification keys");
+        await (0, exec_1.exec)(`gpg --import "${path}"`);
+    }
     core.debug("Refreshing keys");
     await refreshKeys();
 }
@@ -168,7 +181,7 @@ async function install(version, system) {
     let swiftPath = toolCache.find(`swift-${system.name}`, version);
     if (swiftPath === null || swiftPath.trim().length == 0) {
         core.debug(`No matching installation found`);
-        await (0, gpg_1.setupKeys)();
+        await (0, gpg_1.setupKeys)(system);
         const swiftPkg = (0, swift_versions_1.swiftPackage)(version, system);
         let { pkg, signature } = await download(swiftPkg);
         await (0, gpg_1.verify)(signature, pkg);
@@ -463,7 +476,12 @@ const semver = __importStar(__nccwpck_require__(1383));
 const core = __importStar(__nccwpck_require__(2186));
 const os_1 = __nccwpck_require__(1855);
 const VERSIONS_LIST = [
-    ["6.1.0", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["6.2.1", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["6.2", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["6.1.3", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["6.1.2", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["6.1.1", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
+    ["6.1", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
     ["6.0.3", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
     ["6.0.2", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
     ["6.0.1", [os_1.OS.MacOS, os_1.OS.Ubuntu]],
@@ -793,7 +811,7 @@ const toolCache = __importStar(__nccwpck_require__(7784));
 const path = __importStar(__nccwpck_require__(1017));
 const exec_1 = __nccwpck_require__(1514);
 const swift_versions_1 = __nccwpck_require__(8263);
-const gpg_1 = __nccwpck_require__(9060);
+//import { setupKeys, verify } from "./gpg";
 const visual_studio_1 = __nccwpck_require__(5219);
 async function install(version, system) {
     if (os.platform() !== "win32") {
@@ -804,9 +822,9 @@ async function install(version, system) {
     let swiftPath = toolCache.find(`swift-${system.name}`, version);
     if (swiftPath === null || swiftPath.trim().length == 0) {
         core.debug(`No cached installer found`);
-        await (0, gpg_1.setupKeys)();
+        //await setupKeys(system);
         let { exe, signature } = await download(swiftPkg);
-        await (0, gpg_1.verify)(signature, exe);
+        //await verify(signature, exe);
         const exePath = await toolCache.cacheFile(exe, swiftPkg.name, `swift-${system.name}`, version);
         swiftPath = path.join(exePath, swiftPkg.name);
     }

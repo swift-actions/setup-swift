@@ -9,7 +9,7 @@ export async function setupKeys(os: OS) {
     "https://swift.org/keys/all-keys.asc",
   );
 
-  if (os === 'linux' || os === 'darwin') {
+  if (os === "linux" || os === "darwin") {
     core.debug("Examining verification keys");
     await exec(`file "${path}"`);
     const isPlaintext = await exec(`gunzip --test "${path}"`, undefined, {
@@ -24,7 +24,7 @@ export async function setupKeys(os: OS) {
     ]);
   }
 
-  if (os === 'win32') {
+  if (os === "win32") {
     core.debug("Importing verification keys");
     await exec(`gpg --import "${path}"`);
   }

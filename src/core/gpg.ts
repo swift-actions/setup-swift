@@ -1,15 +1,15 @@
 import { exec } from "@actions/exec";
 import * as core from "@actions/core";
 import * as toolCache from "@actions/tool-cache";
-import { OS, System } from "./os";
+import { OS } from "./os";
 
-export async function setupKeys(system: System) {
+export async function setupKeys(os: OS) {
   core.debug("Fetching verification keys");
   let path = await toolCache.downloadTool(
     "https://swift.org/keys/all-keys.asc",
   );
 
-  if (system.os === OS.Ubuntu || system.os === OS.MacOS) {
+  if (os === 'linux' || os === 'darwin') {
     core.debug("Examining verification keys");
     await exec(`file "${path}"`);
     const isPlaintext = await exec(`gunzip --test "${path}"`, undefined, {
@@ -24,7 +24,7 @@ export async function setupKeys(system: System) {
     ]);
   }
 
-  if (system.os === OS.Windows) {
+  if (os === 'win32') {
     core.debug("Importing verification keys");
     await exec(`gpg --import "${path}"`);
   }

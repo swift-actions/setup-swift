@@ -9,3 +9,5 @@ export async function getOS() {
 
   return detectedSystem.os;
 }
+
+export type OS = getos.Os["os"];

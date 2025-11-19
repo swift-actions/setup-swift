@@ -27,7 +27,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest]
-        swift: ["6.1"]
+        swift: ["6.2"]
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node

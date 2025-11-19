@@ -8,7 +8,7 @@
     <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Ubuntu%20%7C%20Windows-lightgray" alt="Supports macOS, Ubuntu & Windows" />
   </a>
   <a href="https://swift.org">
-    <img src="https://img.shields.io/badge/Swift-6.0.2-F05138?logo=swift&logoColor=white" alt="Swift 6.1.0" />
+    <img src="https://img.shields.io/badge/Swift-6.2-F05138?logo=swift&logoColor=white" alt="Swift 6.2" />
   </a>
   <a href="https://github.com/swift-actions/setup-swift/releases/latest">
     <img src="https://img.shields.io/github/v/release/swift-actions/setup-swift?sort=semver" alt="Latest release" />
@@ -19,6 +19,7 @@
 
 > [!IMPORTANT]
 > 3.0 is coming, powered by Swiftly 🚀 - follow progress on https://github.com/swift-actions/setup-swift/pull/710
+
 
 ## Usage
 
@@ -33,7 +34,7 @@ After the environment is configured you can run swift commands using the standar
 ```yaml
 - uses: swift-actions/setup-swift@v2
 - name: Get swift version
-  run: swift --version # Swift 6.1.0
+  run: swift --version # Swift 6.2
 ```
 
 A specific Swift version can be set using the `swift-version` input:

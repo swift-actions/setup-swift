@@ -1,15 +1,33 @@
 import { exec } from "@actions/exec";
 import * as core from "@actions/core";
 import * as toolCache from "@actions/tool-cache";
+import { OS, System } from "./os";
 
-export async function setupKeys() {
+export async function setupKeys(system: System) {
   core.debug("Fetching verification keys");
   let path = await toolCache.downloadTool(
     "https://swift.org/keys/all-keys.asc",
   );
 
-  core.debug("Importing verification keys");
-  await exec(`gpg --import "${path}"`);
+  if (system.os === OS.Ubuntu || system.os === OS.MacOS) {
+    core.debug("Examining verification keys");
+    await exec(`file "${path}"`);
+    const isPlaintext = await exec(`gunzip --test "${path}"`, undefined, {
+      silent: true,
+      ignoreReturnCode: true,
+    });
+
+    core.debug("Importing verification keys");
+    await exec("bash", [
+      "-c",
+      `${isPlaintext ? "cat" : "zcat"} "${path}" | gpg --import`,
+    ]);
+  }
+
+  if (system.os === OS.Windows) {
+    core.debug("Importing verification keys");
+    await exec(`gpg --import "${path}"`);
+  }
 
   core.debug("Refreshing keys");
   await refreshKeys();

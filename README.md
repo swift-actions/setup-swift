@@ -1,4 +1,5 @@
 # Setup Swift
+
 <p>
   <a href="https://github.com/features/actions">
     <img src="https://img.shields.io/badge/GitHub-Action-blue?logo=github" alt="GitHub Action" />
@@ -19,7 +20,6 @@
 > [!IMPORTANT]
 > 3.0 is coming, powered by Swiftly 🚀 - follow progress on https://github.com/swift-actions/setup-swift/pull/710
 
-
 ## Usage
 
 To run the action with the latest swift version available, simply add the action as a step in your workflow:
@@ -29,6 +29,7 @@ To run the action with the latest swift version available, simply add the action
 ```
 
 After the environment is configured you can run swift commands using the standard [`run`](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions#jobsjob_idstepsrun) step:
+
 ```yaml
 - uses: swift-actions/setup-swift@v2
 - name: Get swift version
@@ -45,7 +46,7 @@ A specific Swift version can be set using the `swift-version` input:
   run: swift --version # Swift 5.1.0
 ```
 
-Works perfect together with matrixes: 
+Works perfect together with matrixes:
 
 ```yaml
 name: Swift ${{ matrix.swift }} on ${{ matrix.os }}
@@ -55,11 +56,11 @@ strategy:
     os: [ubuntu-latest, macos-latest]
     swift: ["5.4.3", "5.2.4"]
 steps:
-- uses: swift-actions/setup-swift@v2
-  with:
-    swift-version: ${{ matrix.swift }}
-- name: Get swift version
-  run: swift --version
+  - uses: swift-actions/setup-swift@v2
+    with:
+      swift-version: ${{ matrix.swift }}
+  - name: Get swift version
+    run: swift --version
 ```
 
 ## Note about versions
@@ -68,8 +69,8 @@ This project uses strict semantic versioning to determine what version of Swift 
 
 For example, Swift is available as version `5.1` but using this as value for `swift-version` will be interpreted as a version _range_ of `5.1.X` where `X` is the latest patch version available for that major and minor version.
 
-
 In other words specifying...
+
 - `"5.1.0"` will resolve to version `5.1`
 - `"5.1"` will resolve to latest patch version (aka `5.1.1`)
 - `"5"` will resolve to latest minor and patch version (aka `5.10`)
@@ -105,5 +106,6 @@ We recommend using the specific version tag together with [Dependabot](https://d
 If you don't plan on keeping tabs on updates or don't want to use Dependabot but still would like to always use the latest version, you can use the main version tag.
 
 ## Legal
-Uses MIT license. 
+
+Uses MIT license.
 The Swift logo is a trademark of Apple Inc.

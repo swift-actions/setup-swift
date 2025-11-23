@@ -12,7 +12,12 @@ jest.mock("fs", () => {
   };
 });
 
-const windows: System = { os: OS.Windows, version: "latest", name: "Windows" };
+const windows: System = {
+  os: OS.Windows,
+  version: "latest",
+  name: "Windows",
+  arch: "x64",
+};
 
 describe("visual studio resolver", () => {
   const env = process.env;

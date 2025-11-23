@@ -108,7 +108,9 @@ export function swiftPackage(version: string, system: System): Package {
       break;
     case OS.Ubuntu:
       platform = `ubuntu${system.version.replace(/\D/g, "")}`;
+      if (system.arch === "arm64") platform += "-aarch64";
       archiveName = `swift-${version}-RELEASE-ubuntu${system.version}`;
+      if (system.arch === "arm64") archiveName += "-aarch64";
       archiveFile = `${archiveName}.tar.gz`;
       break;
     case OS.Windows:

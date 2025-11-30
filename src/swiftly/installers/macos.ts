@@ -8,7 +8,7 @@ import { homedir } from "os";
  * Setup Swiftly on macOS
  */
 export async function setupMacOS() {
-  let path = find("swiftly", "1.0.0");
+  let path = find("swiftly", "1.1.0");
 
   if (!path) {
     path = await download();

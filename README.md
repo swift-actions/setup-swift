@@ -15,7 +15,7 @@
   </a>
 </p>
 
-[GitHub Action](https://github.com/features/actions) that will setup a [Swift](https://swift.org) environment with a specific version using [Swiftly](https://github.com/swift-actions/swiftly). Works on both Ubuntu and macOS runners.
+[GitHub Action](https://github.com/features/actions) that will setup a [Swift](https://swift.org) environment with a specific version using [Swiftly](https://www.swift.org/swiftly/documentation/swiftlydocs/). Works on both Ubuntu and macOS runners.
 
 > [!IMPORTANT]
 > Version 3 is currently in beta. Please report any issues you encounter. To use legacy version 2, use `@v2`.

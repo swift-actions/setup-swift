@@ -2,7 +2,14 @@ import { EOL } from "os";
 import { equalVersions, getOS } from "./core";
 import { installSwift, setupLinux, setupMacOS } from "./swiftly";
 import { currentVersion } from "./swift";
-import { error, getInput, info, setFailed, setOutput } from "@actions/core";
+import {
+  error,
+  getBooleanInput,
+  getInput,
+  info,
+  setFailed,
+  setOutput,
+} from "@actions/core";
 import { setupWindows } from "./windows";
 
 /**
@@ -11,6 +18,7 @@ import { setupWindows } from "./windows";
 async function run() {
   try {
     const version = getInput("swift-version", { required: true });
+    const skipVerifySignature = getBooleanInput("skip-verify-signature");
     const os = await getOS();
 
     // First check if the requested version is already installed
@@ -28,7 +36,7 @@ async function run() {
         await installSwift(version);
         break;
       case "linux":
-        await setupLinux({ skipVerifySignature: true });
+        await setupLinux({ skipVerifySignature });
         await installSwift(version);
         break;
       case "win32":

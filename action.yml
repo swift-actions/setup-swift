@@ -5,7 +5,10 @@ inputs:
   swift-version:
     description: Swift version to configure
     required: true
-    default: "6.1.0"
+    default: "latest"
+  skip-verify-signature:
+    description: Skip GPG signature verification where applicable
+    default: false
 outputs:
   version:
     description: The full Swift version that was configured

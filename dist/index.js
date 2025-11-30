@@ -368,7 +368,7 @@ const core_2 = __nccwpck_require__(582);
  */
 async function setupLinux(options) {
     await prerequisites();
-    let path = (0, tool_cache_1.find)("swiftly", "1.0.0");
+    let path = (0, tool_cache_1.find)("swiftly", "1.1.0");
     if (!path) {
         path = await download(options);
     }
@@ -381,7 +381,7 @@ async function setupLinux(options) {
 async function download({ skipVerifySignature = false } = {}) {
     (0, core_1.info)("Downloading Swiftly");
     const m = (0, os_1.machine)();
-    const url = `https://download.swift.org/swiftly/linux/swiftly-1.0.0-${m}.tar.gz`;
+    const url = `https://download.swift.org/swiftly/linux/swiftly-1.1.0-${m}.tar.gz`;
     (0, core_1.debug)(`Downloading Swiftly from ${url}`);
     const [pkg, signature] = await Promise.all([
         (0, tool_cache_1.downloadTool)(url),
@@ -395,7 +395,7 @@ async function download({ skipVerifySignature = false } = {}) {
     }
     const extracted = await (0, tool_cache_1.extractTar)(pkg);
     (0, core_1.debug)(`Extracted Swiftly to ${extracted}`);
-    const cached = await (0, tool_cache_1.cacheDir)(extracted, "swiftly", "1.0.0");
+    const cached = await (0, tool_cache_1.cacheDir)(extracted, "swiftly", "1.1.0");
     (0, core_1.debug)(`Cached Swiftly to ${cached}`);
     return cached;
 }
@@ -423,7 +423,7 @@ const os_1 = __nccwpck_require__(857);
  * Setup Swiftly on macOS
  */
 async function setupMacOS() {
-    let path = (0, tool_cache_1.find)("swiftly", "1.0.0");
+    let path = (0, tool_cache_1.find)("swiftly", "1.1.0");
     if (!path) {
         path = await download();
     }
@@ -39672,6 +39672,7 @@ const windows_1 = __nccwpck_require__(4698);
 async function run() {
     try {
         const version = (0, core_2.getInput)("swift-version", { required: true });
+        const skipVerifySignature = (0, core_2.getBooleanInput)("skip-verify-signature");
         const os = await (0, core_1.getOS)();
         // First check if the requested version is already installed
         let current = await (0, swift_1.currentVersion)().catch(() => null);
@@ -39687,7 +39688,7 @@ async function run() {
                 await (0, swiftly_1.installSwift)(version);
                 break;
             case "linux":
-                await (0, swiftly_1.setupLinux)({ skipVerifySignature: true });
+                await (0, swiftly_1.setupLinux)({ skipVerifySignature });
                 await (0, swiftly_1.installSwift)(version);
                 break;
             case "win32":

@@ -5,8 +5,8 @@ on:
     - cron: "0 */12 * * *"
 
 jobs:
-  v1:
-    name: "v1: Swift ${{ matrix.swift }} on ${{ matrix.os }}"
+  v2:
+    name: "v2: Swift ${{ matrix.swift }} on ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -14,6 +14,20 @@ jobs:
         swift: ["6.2"]
     steps:
       - uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: ${{ matrix.swift }}
+      - name: Swift version
+        if: always()
+        run: swift --version | grep ${{ matrix.swift }} || exit 1
+  v3:
+    name: "v3: Swift ${{ matrix.swift }} on ${{ matrix.os }}"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        swift: ["6.2"]
+    steps:
+      - uses: swift-actions/setup-swift@v3
         with:
           swift-version: ${{ matrix.swift }}
       - name: Swift version

@@ -1,4 +1,4 @@
-# Setup Swift
+# Setup Swift using Swiftly
 
 <p>
   <a href="https://github.com/features/actions">
@@ -15,17 +15,17 @@
   </a>
 </p>
 
-[GitHub Action](https://github.com/features/actions) that will setup a [Swift](https://swift.org) environment with a specific version. Works on both Ubuntu and macOS runners.
+[GitHub Action](https://github.com/features/actions) that will setup a [Swift](https://swift.org) environment with a specific version using [Swiftly](https://github.com/swift-actions/swiftly). Works on both Ubuntu and macOS runners.
 
 > [!IMPORTANT]
-> 3.0 is coming, powered by Swiftly 🚀 - follow progress on https://github.com/swift-actions/setup-swift/pull/710
+> Version 3 is currently in beta. Please report any issues you encounter. To use legacy version 2, use `@v2`.
 
 ## Usage
 
 To run the action with the latest swift version available, simply add the action as a step in your workflow:
 
 ```yaml
-- uses: swift-actions/setup-swift@v2
+- uses: swift-actions/setup-swift@v3
 ```
 
 After the environment is configured you can run swift commands using the standard [`run`](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions#jobsjob_idstepsrun) step:
@@ -41,7 +41,7 @@ A specific Swift version can be set using the `swift-version` input:
 ```yaml
 - uses: swift-actions/setup-swift@v2
   with:
-    swift-version: "5.1.0"
+    swift-version: "5.1"
 - name: Get swift version
   run: swift --version # Swift 5.1.0
 ```
@@ -63,17 +63,15 @@ steps:
     run: swift --version
 ```
 
-## Note about versions
+### Skip GPG signature verification
 
-This project uses strict semantic versioning to determine what version of Swift to configure. This differs slightly from the official convention used by Swift.
+If you are running on a runner that is not able to verify the GPG signature of the Swiftly package, you can skip the verification by setting the `skip-verify-signature` input to `true`.
 
-For example, Swift is available as version `5.1` but using this as value for `swift-version` will be interpreted as a version _range_ of `5.1.X` where `X` is the latest patch version available for that major and minor version.
-
-In other words specifying...
-
-- `"5.1.0"` will resolve to version `5.1`
-- `"5.1"` will resolve to latest patch version (aka `5.1.1`)
-- `"5"` will resolve to latest minor and patch version (aka `5.10`)
+```yaml
+- uses: swift-actions/setup-swift@v3
+  with:
+    skip-verify-signature: true
+```
 
 ### Caveats
 
@@ -95,7 +93,7 @@ Not:
 
 ## Keeping the action up-to-date
 
-You have two options for keeping this action up-to-date: either you define a specific version (like `v2.0.1`) or use the major version tag (like `v2`).
+You have two options for keeping this action up-to-date: either you define a specific version (like `v3.0.0`) or use the major version tag (like `v3`).
 
 ### Specific version
 

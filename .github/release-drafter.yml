@@ -1,32 +1,32 @@
-name-template: '$RESOLVED_VERSION'
-tag-template: 'v$RESOLVED_VERSION'
+name-template: "$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
 exclude-labels:
-  - 'tooling'
-  - 'documentation'
+  - "tooling"
+  - "documentation"
 categories:
-  - title: 'Security'
-    label: 'security'
-  - title: 'Breaking changes'
-    label: 'breaking'
-  - title: 'Features'
-    label: 'enhancement'
-  - title: 'Fixes'
-    label: 'bug'
-  - title: 'Dependencies'
-    label: 'dependencies'
+  - title: "Security"
+    label: "security"
+  - title: "Breaking changes"
+    label: "breaking"
+  - title: "Features"
+    label: "enhancement"
+  - title: "Fixes"
+    label: "bug"
+  - title: "Dependencies"
+    label: "dependencies"
 version-resolver:
   major:
     labels:
-      - 'major'
-      - 'breaking'
+      - "major"
+      - "breaking"
   minor:
     labels:
-      - 'minor'
-      - 'enhancement'
+      - "minor"
+      - "enhancement"
   patch:
     labels:
-      - 'patch'
-      - 'bug'
+      - "patch"
+      - "bug"
   default: patch
 template: |
   $CHANGES

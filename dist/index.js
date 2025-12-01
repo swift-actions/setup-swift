@@ -107,64 +107,12 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.setupKeys = setupKeys;
 exports.verify = verify;
-exports.refreshKeys = refreshKeys;
 const exec_1 = __nccwpck_require__(5236);
 const core = __importStar(__nccwpck_require__(7484));
-const toolCache = __importStar(__nccwpck_require__(3472));
-async function setupKeys(os) {
-    core.debug("Fetching verification keys");
-    let path = await toolCache.downloadTool("https://swift.org/keys/all-keys.asc");
-    if (os === "linux" || os === "darwin") {
-        core.debug("Examining verification keys");
-        await (0, exec_1.exec)(`file "${path}"`);
-        const isPlaintext = await (0, exec_1.exec)(`gunzip --test "${path}"`, undefined, {
-            silent: true,
-            ignoreReturnCode: true,
-        });
-        core.debug("Importing verification keys");
-        await (0, exec_1.exec)("bash", [
-            "-c",
-            `${isPlaintext ? "cat" : "zcat"} "${path}" | gpg --import`,
-        ]);
-    }
-    if (os === "win32") {
-        core.debug("Importing verification keys");
-        await (0, exec_1.exec)(`gpg --import "${path}"`);
-    }
-    core.debug("Refreshing keys");
-    await refreshKeys();
-}
 async function verify(signaturePath, packagePath) {
     core.debug("Verifying signature");
     await (0, exec_1.exec)("gpg", ["--verify", signaturePath, packagePath]);
-}
-async function refreshKeys() {
-    const pool = ["hkp://keyserver.ubuntu.com"];
-    for (const server of pool) {
-        core.debug(`Refreshing keys from ${server}`);
-        // 1st try...
-        if (await refreshKeysFromServer(server)) {
-            core.debug(`Refresh successful on first attempt`);
-            return;
-        }
-        // 2nd try...
-        if (await refreshKeysFromServer(server)) {
-            core.debug(`Refresh successful on second attempt`);
-            return;
-        }
-        core.debug(`Refresh failed`);
-    }
-    throw new Error("Failed to refresh keys from any server in the pool.");
-}
-function refreshKeysFromServer(server) {
-    return (0, exec_1.exec)(`gpg --keyserver ${server} --refresh-keys Swift`)
-        .then((code) => code === 0)
-        .catch((error) => {
-        core.warning(`An error occurred when trying to refresh keys from ${server}: ${error}`);
-        return false;
-    });
 }
 
 

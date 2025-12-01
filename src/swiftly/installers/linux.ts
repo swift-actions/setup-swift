@@ -1,8 +1,8 @@
 import { machine } from "os";
 import { addPath, debug, info } from "@actions/core";
 import { downloadTool, find, extractTar, cacheDir } from "@actions/tool-cache";
-import { verify } from "../../core/gpg";
-import { cmd } from "../../core";
+import { setupKeys, verify } from "../../core/gpg";
+import { cmd, getOS } from "../../core";
 
 interface Options {
   /** Skip signature verification */
@@ -44,6 +44,8 @@ async function download({ skipVerifySignature = false }: Options = {}) {
   if (skipVerifySignature) {
     info("Skipping signature verification");
   } else {
+    const os = await getOS();
+    await setupKeys(os);
     await verify(signature, pkg);
   }
 

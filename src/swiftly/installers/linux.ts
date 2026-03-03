@@ -32,7 +32,7 @@ async function download({ skipVerifySignature = false }: Options = {}) {
   info("Downloading Swiftly");
 
   const m = machine();
-  const url = `https://download.swift.org/swiftly/linux/swiftly-1.1.0-${m}.tar.gz`;
+  const url = `https://download.swift.org/swiftly/linux/swiftly-${m}.tar.gz`;
 
   debug(`Downloading Swiftly from ${url}`);
 

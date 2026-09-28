@@ -22,7 +22,7 @@
 
 ## Usage
 
-Add the action as a step in your workflow. When neither version input is set, it reads `.swift-version` from the workspace root if available; otherwise, it selects the latest Swift version:
+To run the action, simply add the action as a step in your workflow:
 
 ```yaml
 - uses: swift-actions/setup-swift@v3

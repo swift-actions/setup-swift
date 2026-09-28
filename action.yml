@@ -4,8 +4,8 @@ author: Frederik Wallner
 inputs:
   swift-version:
     description: Swift version to configure
-    required: true
-    default: "latest"
+  swift-version-file:
+    description: Path to a file containing the Swift version or a Package.swift manifest
   skip-verify-signature:
     description: Skip GPG signature verification where applicable
     default: false

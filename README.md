@@ -22,7 +22,7 @@
 
 ## Usage
 
-To run the action with the latest swift version available, simply add the action as a step in your workflow:
+To run the action, simply add the action as a step in your workflow:
 
 ```yaml
 - uses: swift-actions/setup-swift@v3
@@ -70,6 +70,53 @@ steps:
   - name: Get swift version
     run: swift --version
 ```
+
+### Read the Swift version from a file
+
+When neither `swift-version` nor `swift-version-file` is set, the action reads
+`.swift-version` from the workspace root if it exists. Otherwise, it uses
+`latest`. Check out your repository before running the action to make the file
+available:
+
+```yaml
+- uses: actions/checkout@v4
+- uses: swift-actions/setup-swift@v3
+```
+
+Use `swift-version-file` to select another file. Relative paths are resolved
+from the workspace root; absolute paths are also supported. The file should
+contain a single Swift version or Swiftly selector, such as `6.2.1`, `6.2`, or
+`main-snapshot`.
+
+```yaml
+- uses: actions/checkout@v4
+- uses: swift-actions/setup-swift@v3
+  with:
+    swift-version-file: path/to/.swift-version
+```
+
+You can also explicitly select a `Package.swift` manifest:
+
+```yaml
+- uses: actions/checkout@v4
+- uses: swift-actions/setup-swift@v3
+  with:
+    swift-version-file: path/to/Package.swift
+```
+
+The action reads its `// swift-tools-version:` declaration without executing
+the manifest. Although this declaration specifies the package's minimum tools
+version, the action uses it as the requested Swift version: `6.2` selects the
+latest `6.2.x` release, while `6.2.1` selects that exact release.
+The `version` output reports the installed compiler version, such as `6.2.4`
+for a `6.2` request.
+
+An explicit `swift-version` takes precedence over `swift-version-file`, which
+takes precedence over the root `.swift-version`. Set `swift-version: latest`
+to always request the latest release, regardless of version files.
+
+An explicitly selected file must exist. Read errors, empty or multiline version
+files, and manifests without a valid tools version cause the action to fail.
 
 ### Skip GPG signature verification
 

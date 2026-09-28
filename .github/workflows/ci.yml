@@ -22,12 +22,13 @@ jobs:
       - run: npm run format-check
       - run: npm test
   integration-test:
-    name: Integrate Swift ${{ matrix.swift }} on ${{ matrix.os }}
+    name: Integrate Swift ${{ matrix.swift }} from ${{ matrix.source }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest]
         swift: ["6.2"]
+        source: [input, version-file, manifest]
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node
@@ -36,8 +37,34 @@ jobs:
           node-version-file: ".nvmrc"
       - run: npm install
       - run: npm run build && npm run pack-source-map
+      - name: Prepare version file
+        if: matrix.source != 'input'
+        shell: bash
+        env:
+          SWIFT_VERSION: ${{ matrix.swift }}
+          VERSION_SOURCE: ${{ matrix.source }}
+        run: |
+          if [ "$VERSION_SOURCE" = version-file ]; then
+            printf '%s\n' "$SWIFT_VERSION" > .swift-version
+          else
+            mkdir -p test-package
+            printf '// swift-tools-version: %s\n' "$SWIFT_VERSION" > test-package/Package.swift
+          fi
       - uses: ./
+        id: setup
         with:
-          swift-version: ${{ matrix.swift }}
+          swift-version: ${{ matrix.source == 'input' && matrix.swift || '' }}
+          swift-version-file: ${{ matrix.source == 'manifest' && 'test-package/Package.swift' || '' }}
       - name: Swift version
-        run: swift --version | grep ${{ matrix.swift }} || exit 1
+        shell: bash
+        env:
+          REQUESTED_VERSION: ${{ matrix.swift }}
+          INSTALLED_VERSION: ${{ steps.setup.outputs.version }}
+        run: |
+          test -n "$INSTALLED_VERSION"
+          case "$INSTALLED_VERSION" in
+            "$REQUESTED_VERSION"|"$REQUESTED_VERSION".*) ;;
+            *) exit 1 ;;
+          esac
+          swift --version | grep -F "Swift version $INSTALLED_VERSION "
+          swift -e 'print("Swift works")'

@@ -295,6 +295,72 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 __exportStar(__nccwpck_require__(5128), exports);
+__exportStar(__nccwpck_require__(7061), exports);
+
+
+/***/ }),
+
+/***/ 7061:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getRequestedVersion = getRequestedVersion;
+const core_1 = __nccwpck_require__(7484);
+const promises_1 = __nccwpck_require__(1943);
+const path_1 = __nccwpck_require__(6928);
+const semver_1 = __nccwpck_require__(2088);
+async function getRequestedVersion() {
+    const version = (0, core_1.getInput)("swift-version");
+    const versionFile = (0, core_1.getInput)("swift-version-file");
+    if (version) {
+        if (versionFile) {
+            (0, core_1.warning)("Both swift-version and swift-version-file are set. Using swift-version.");
+        }
+        return version;
+    }
+    const filePath = (0, path_1.resolve)(process.env.GITHUB_WORKSPACE || process.cwd(), versionFile || ".swift-version");
+    let contents;
+    try {
+        contents = await (0, promises_1.readFile)(filePath, "utf8");
+    }
+    catch (error) {
+        if (!versionFile && error.code === "ENOENT") {
+            return "latest";
+        }
+        throw error;
+    }
+    let requestedVersion = contents.trim();
+    if ((0, path_1.basename)(filePath) === "Package.swift") {
+        requestedVersion = toolsVersionFromManifest(contents);
+        const isNumericVersion = /^[\d.]+$/.test(requestedVersion);
+        const normalizedVersion = requestedVersion.split(".").length === 2
+            ? `${requestedVersion}.0`
+            : requestedVersion;
+        if (!isNumericVersion || !(0, semver_1.valid)(normalizedVersion)) {
+            throw new Error(`No valid swift-tools-version declaration found in ${filePath}.`);
+        }
+    }
+    if (!requestedVersion || /[\r\n]/.test(requestedVersion)) {
+        throw new Error(`Expected a single Swift version in ${filePath}.`);
+    }
+    (0, core_1.info)(`Resolved Swift version ${requestedVersion} from ${filePath}`);
+    return requestedVersion;
+}
+function toolsVersionFromManifest(contents) {
+    const prefix = "swift-tools-version:";
+    for (const line of contents.split(/[\r\n]/)) {
+        const comment = line.trimStart();
+        if (!comment.startsWith("//"))
+            continue;
+        const declaration = comment.slice(2).trimStart();
+        if (declaration.toLowerCase().startsWith(prefix)) {
+            return declaration.slice(prefix.length).split(";")[0].trim();
+        }
+    }
+    return "";
+}
 
 
 /***/ }),
@@ -1684,7 +1750,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getExecOutput = exports.exec = void 0;
-const string_decoder_1 = __nccwpck_require__(3193);
+const string_decoder_1 = __nccwpck_require__(5574);
 const tr = __importStar(__nccwpck_require__(6665));
 /**
  * Exec a command.
@@ -14247,7 +14313,7 @@ const Comparator = __nccwpck_require__(9379)
 const Range = __nccwpck_require__(6782)
 const satisfies = __nccwpck_require__(8011)
 const toComparators = __nccwpck_require__(4750)
-const maxSatisfying = __nccwpck_require__(5574)
+const maxSatisfying = __nccwpck_require__(3193)
 const minSatisfying = __nccwpck_require__(8595)
 const minVersion = __nccwpck_require__(1866)
 const validRange = __nccwpck_require__(4737)
@@ -14727,7 +14793,7 @@ module.exports = ltr
 
 /***/ }),
 
-/***/ 5574:
+/***/ 3193:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const SemVer = __nccwpck_require__(7163)
@@ -32553,7 +32619,7 @@ const { getEncoding } = __nccwpck_require__(396)
 const { DOMException } = __nccwpck_require__(7326)
 const { serializeAMimeType, parseMIMEType } = __nccwpck_require__(4322)
 const { types } = __nccwpck_require__(9023)
-const { StringDecoder } = __nccwpck_require__(3193)
+const { StringDecoder } = __nccwpck_require__(5574)
 const { btoa } = __nccwpck_require__(181)
 
 /** @type {PropertyDescriptor} */
@@ -37806,6 +37872,14 @@ module.exports = require("fs");
 
 /***/ }),
 
+/***/ 1943:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("fs/promises");
+
+/***/ }),
+
 /***/ 8611:
 /***/ ((module) => {
 
@@ -37918,7 +37992,7 @@ module.exports = require("stream/web");
 
 /***/ }),
 
-/***/ 3193:
+/***/ 5574:
 /***/ ((module) => {
 
 "use strict";
@@ -39661,24 +39735,25 @@ var exports = __webpack_exports__;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const os_1 = __nccwpck_require__(857);
-const core_1 = __nccwpck_require__(582);
+const semver_1 = __nccwpck_require__(2088);
+const core_1 = __nccwpck_require__(7484);
+const core_2 = __nccwpck_require__(582);
 const swiftly_1 = __nccwpck_require__(1863);
 const swift_1 = __nccwpck_require__(1636);
-const core_2 = __nccwpck_require__(7484);
 const windows_1 = __nccwpck_require__(4698);
 /**
  * Main entry point for the action
  */
 async function run() {
     try {
-        const version = (0, core_2.getInput)("swift-version", { required: true });
-        const skipVerifySignature = (0, core_2.getBooleanInput)("skip-verify-signature");
-        const os = await (0, core_1.getOS)();
+        const version = await (0, swift_1.getRequestedVersion)();
+        const skipVerifySignature = (0, core_1.getBooleanInput)("skip-verify-signature");
+        const os = await (0, core_2.getOS)();
         // First check if the requested version is already installed
         let current = await (0, swift_1.currentVersion)().catch(() => null);
-        if ((0, core_1.equalVersions)(version, current)) {
-            (0, core_2.info)(`Swift ${version} is already installed`);
-            (0, core_2.setOutput)("version", version);
+        if ((0, semver_1.valid)(version) && (0, core_2.equalVersions)(version, current)) {
+            (0, core_1.info)(`Swift ${version} is already installed`);
+            (0, core_1.setOutput)("version", current);
             return;
         }
         // Setup Swiftly on the runner
@@ -39697,11 +39772,16 @@ async function run() {
         }
         // Verify the requested version is now installed
         current = await (0, swift_1.currentVersion)();
-        if ((0, core_1.equalVersions)(version, current)) {
-            (0, core_2.setOutput)("version", version);
+        const requestedRange = (0, semver_1.validRange)(version);
+        // Swiftly validates and resolves non-semver selectors such as snapshots.
+        const matchesRequest = requestedRange
+            ? (0, semver_1.satisfies)((0, semver_1.coerce)(current) ?? "", requestedRange)
+            : true;
+        if (current && matchesRequest) {
+            (0, core_1.setOutput)("version", current);
         }
         else {
-            (0, core_2.error)(`Failed to setup requested Swift version. requested: ${version}, actual: ${current}`);
+            (0, core_1.setFailed)(`Failed to setup requested Swift version. requested: ${version}, actual: ${current}`);
         }
     }
     catch (error) {
@@ -39712,7 +39792,7 @@ async function run() {
         else {
             dump = `${error}`;
         }
-        (0, core_2.setFailed)(`Unexpected error, unable to continue. Please report at https://github.com/swift-actions/setup-swift/issues${os_1.EOL}${dump}`);
+        (0, core_1.setFailed)(`Unexpected error, unable to continue. Please report at https://github.com/swift-actions/setup-swift/issues${os_1.EOL}${dump}`);
     }
 }
 run();

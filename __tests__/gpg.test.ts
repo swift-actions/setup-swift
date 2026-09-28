@@ -54,12 +54,8 @@ describe("gpg", () => {
   it("throws an error if all servers in the pool fails", async () => {
     mockExec.mockImplementation(() => Promise.resolve(1));
 
-    try {
-      await refreshKeys();
-    } catch (e) {
-      expect(e).toEqual(
-        new Error("Failed to refresh keys from any server in the pool."),
-      );
-    }
+    await expect(refreshKeys()).rejects.toEqual(
+      new Error("Failed to refresh keys from any server in the pool."),
+    );
   });
 });

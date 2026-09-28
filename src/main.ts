@@ -1,15 +1,9 @@
 import { EOL } from "os";
+import { coerce, satisfies, valid, validRange } from "semver";
+import { getBooleanInput, info, setFailed, setOutput } from "@actions/core";
 import { equalVersions, getOS } from "./core";
 import { installSwift, setupLinux, setupMacOS } from "./swiftly";
-import { currentVersion } from "./swift";
-import {
-  error,
-  getBooleanInput,
-  getInput,
-  info,
-  setFailed,
-  setOutput,
-} from "@actions/core";
+import { currentVersion, getRequestedVersion } from "./swift";
 import { setupWindows } from "./windows";
 
 /**
@@ -17,15 +11,15 @@ import { setupWindows } from "./windows";
  */
 async function run() {
   try {
-    const version = getInput("swift-version", { required: true });
+    const version = await getRequestedVersion();
     const skipVerifySignature = getBooleanInput("skip-verify-signature");
     const os = await getOS();
 
     // First check if the requested version is already installed
     let current = await currentVersion().catch(() => null);
-    if (equalVersions(version, current)) {
+    if (valid(version) && equalVersions(version, current)) {
       info(`Swift ${version} is already installed`);
-      setOutput("version", version);
+      setOutput("version", current);
       return;
     }
 
@@ -46,10 +40,16 @@ async function run() {
 
     // Verify the requested version is now installed
     current = await currentVersion();
-    if (equalVersions(version, current)) {
-      setOutput("version", version);
+    const requestedRange = validRange(version);
+    // Swiftly validates and resolves non-semver selectors such as snapshots.
+    const matchesRequest = requestedRange
+      ? satisfies(coerce(current) ?? "", requestedRange)
+      : true;
+
+    if (current && matchesRequest) {
+      setOutput("version", current);
     } else {
-      error(
+      setFailed(
         `Failed to setup requested Swift version. requested: ${version}, actual: ${current}`,
       );
     }

@@ -11,7 +11,7 @@ export async function currentVersion() {
 
 export function versionFromString(subject: string): string | null {
   const match = subject.match(
-    /Swift\ version (?<version>[0-9]+\.[0-9+]+(\.[0-9]+)?)/,
+    /Swift\ version (?<version>[0-9]+\.[0-9]+(?:\.[0-9]+)?(?:-dev)?)/,
   ) || {
     groups: { version: null },
   };

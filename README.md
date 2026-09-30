@@ -20,6 +20,8 @@
 > [!IMPORTANT]
 > Version 3 is currently in beta. Please report any issues you encounter. To use legacy version 2, use `@v2`.
 
+This action runs on Node.js 24. Self-hosted runners require [GitHub Actions runner v2.327.1](https://github.com/actions/runner/releases/tag/v2.327.1) or later.
+
 ## Usage
 
 To run the action with the latest swift version available, simply add the action as a step in your workflow:
@@ -46,6 +48,8 @@ A specific Swift version can be set using the `swift-version` input:
   run: swift --version # Swift 5.1.0
 ```
 
+Release selectors can specify a major version (`"6"`), a minor version (`"6.3"`), or an exact patch version (`"6.3.3"`). Partial selectors accept any installed release in that major or minor series; for example, `"6.3"` accepts `6.3.3` but not `6.4`. If installation is needed, Swiftly resolves a partial selector to the latest matching release. `"latest"` always goes through Swiftly to resolve the latest stable release.
+
 Also works with snapshots:
 
 ```yaml
@@ -53,6 +57,10 @@ Also works with snapshots:
   with:
     swift-version: "main-snapshot"
 ```
+
+Snapshots can also target a release branch (`"6.3-snapshot"`). Adding a `-YYYY-MM-DD` suffix to either snapshot selector pins the snapshot date.
+
+The `version` output reports the installed release version, not the requested selector. For snapshots, it reports Swiftly's resolved, dated toolchain identifier. The action fails if the installed toolchain does not match the requested selector.
 
 Works perfect together with matrixes:
 
@@ -72,6 +80,8 @@ steps:
 ```
 
 ### Skip GPG signature verification
+
+On Linux, the action imports Swift's signing keys and refreshes them from `keyserver.ubuntu.com` before verifying the Swiftly download.
 
 If you are running on a runner that is not able to verify the GPG signature of the Swiftly package, you can skip the verification by setting the `skip-verify-signature` input to `true`.
 
@@ -110,6 +120,17 @@ We recommend using the specific version tag together with [Dependabot](https://d
 ### Major version tag
 
 If you don't plan on keeping tabs on updates or don't want to use Dependabot but still would like to always use the latest version, you can use the main version tag.
+
+## Development
+
+Use Node.js 24 (see `.nvmrc`) and npm 10 or later. Install dependencies with `npm ci` to use the committed `package-lock.json`, matching CI and release builds.
+
+```sh
+npm ci
+npm run build
+npm test
+npm run format-check
+```
 
 ## Legal
 

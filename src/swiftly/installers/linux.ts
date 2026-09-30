@@ -1,7 +1,7 @@
 import { machine } from "os";
 import { addPath, debug, info } from "@actions/core";
 import { downloadTool, find, extractTar, cacheDir } from "@actions/tool-cache";
-import { verify } from "../../core/gpg";
+import { setupKeys, verify } from "../../core/gpg";
 import { cmd } from "../../core";
 
 interface Options {
@@ -15,7 +15,7 @@ interface Options {
 export async function setupLinux(options: Options) {
   await prerequisites();
 
-  let path = find("swiftly", "1.1.0");
+  let path = find("swiftly", "1.2.0");
 
   if (!path) {
     path = await download(options);
@@ -32,7 +32,7 @@ async function download({ skipVerifySignature = false }: Options = {}) {
   info("Downloading Swiftly");
 
   const m = machine();
-  const url = `https://download.swift.org/swiftly/linux/swiftly-1.1.0-${m}.tar.gz`;
+  const url = `https://download.swift.org/swiftly/linux/swiftly-1.2.0-${m}.tar.gz`;
 
   debug(`Downloading Swiftly from ${url}`);
 
@@ -44,13 +44,14 @@ async function download({ skipVerifySignature = false }: Options = {}) {
   if (skipVerifySignature) {
     info("Skipping signature verification");
   } else {
+    await setupKeys("linux");
     await verify(signature, pkg);
   }
 
   const extracted = await extractTar(pkg);
   debug(`Extracted Swiftly to ${extracted}`);
 
-  const cached = await cacheDir(extracted, "swiftly", "1.1.0");
+  const cached = await cacheDir(extracted, "swiftly", "1.2.0");
   debug(`Cached Swiftly to ${cached}`);
 
   return cached;

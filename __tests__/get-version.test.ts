@@ -29,4 +29,12 @@ Target: x86_64-apple-macosx11.0`,
     );
     expect(version).toBe("5.5.1");
   });
+
+  it("retains the development marker for snapshot validation", () => {
+    expect(
+      versionFromString(
+        "Swift version 6.4-dev (LLVM 123456, Swift abcdef)\nTarget: x86_64-unknown-linux-gnu",
+      ),
+    ).toBe("6.4-dev");
+  });
 });

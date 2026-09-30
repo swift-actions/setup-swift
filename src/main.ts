@@ -1,9 +1,8 @@
 import { EOL } from "os";
-import { equalVersions, getOS } from "./core";
+import { matchesVersion, getOS } from "./core";
 import { installSwift, setupLinux, setupMacOS } from "./swiftly";
 import { currentVersion } from "./swift";
 import {
-  error,
   getBooleanInput,
   getInput,
   info,
@@ -23,21 +22,22 @@ async function run() {
 
     // First check if the requested version is already installed
     let current = await currentVersion().catch(() => null);
-    if (equalVersions(version, current)) {
-      info(`Swift ${version} is already installed`);
-      setOutput("version", version);
+    if (version !== "latest" && current && matchesVersion(version, current)) {
+      info(`Swift ${current} is already installed`);
+      setOutput("version", current);
       return;
     }
 
     // Setup Swiftly on the runner
+    let installedVersion: string | undefined;
     switch (os) {
       case "darwin":
         await setupMacOS();
-        await installSwift(version);
+        installedVersion = await installSwift(version);
         break;
       case "linux":
         await setupLinux({ skipVerifySignature });
-        await installSwift(version);
+        installedVersion = await installSwift(version);
         break;
       case "win32":
         await setupWindows(version);
@@ -46,10 +46,24 @@ async function run() {
 
     // Verify the requested version is now installed
     current = await currentVersion();
-    if (equalVersions(version, current)) {
-      setOutput("version", version);
+    const resolvedVersion = installedVersion ?? current;
+    const isSnapshot = resolvedVersion?.includes("-snapshot-") ?? false;
+    const snapshotBranch =
+      resolvedVersion && isSnapshot
+        ? resolvedVersion.slice(0, resolvedVersion.indexOf("-snapshot-"))
+        : undefined;
+    if (
+      current &&
+      matchesVersion(version, resolvedVersion) &&
+      (isSnapshot
+        ? current.endsWith("-dev") &&
+          (snapshotBranch === "main" ||
+            matchesVersion(snapshotBranch, current.slice(0, -4)))
+        : matchesVersion(resolvedVersion, current))
+    ) {
+      setOutput("version", isSnapshot ? resolvedVersion : current);
     } else {
-      error(
+      setFailed(
         `Failed to setup requested Swift version. requested: ${version}, actual: ${current}`,
       );
     }

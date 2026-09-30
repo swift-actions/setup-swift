@@ -63,4 +63,10 @@ export async function installSwift(version: string) {
   debug(`Swiftly installed Swift to ${location}`);
 
   addPath(location);
+
+  const selected = JSON.parse(await swiftly("use", "--format", "json"));
+  if (typeof selected.version !== "string") {
+    throw new Error("Swiftly did not report a selected toolchain version.");
+  }
+  return selected.version;
 }

@@ -1,32 +1,45 @@
 name-template: "$RESOLVED_VERSION"
 tag-template: "v$RESOLVED_VERSION"
-exclude-labels:
-  - "tooling"
-  - "documentation"
 categories:
   - title: "Security"
-    label: "security"
+    when:
+      label: "security"
   - title: "Breaking changes"
-    label: "breaking"
+    when:
+      label: "breaking"
   - title: "Features"
-    label: "enhancement"
+    when:
+      label: "enhancement"
   - title: "Fixes"
-    label: "bug"
+    when:
+      label: "bug"
   - title: "Dependencies"
-    label: "dependencies"
-version-resolver:
-  major:
-    labels:
-      - "major"
-      - "breaking"
-  minor:
-    labels:
-      - "minor"
-      - "enhancement"
-  patch:
-    labels:
-      - "patch"
-      - "bug"
-  default: patch
+    when:
+      label: "dependencies"
+  - type: "pre-exclude"
+    when:
+      labels:
+        - "tooling"
+        - "documentation"
+  - type: "version-resolver"
+    semver-increment: "major"
+    when:
+      labels:
+        - "major"
+        - "breaking"
+  - type: "version-resolver"
+    semver-increment: "minor"
+    when:
+      labels:
+        - "minor"
+        - "enhancement"
+  - type: "version-resolver"
+    semver-increment: "patch"
+    when:
+      labels:
+        - "patch"
+        - "bug"
+  - type: "version-resolver"
+    semver-increment: "patch"
 template: |
   $CHANGES
